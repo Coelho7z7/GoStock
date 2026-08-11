@@ -9,66 +9,35 @@ import (
 	"gostock/utils"
 )
 
+func proximoID(produtos []models.Produto) int {
+	maiorID := 0
+
+	for _, produto := range produtos {
+		if produto.ID > maiorID {
+			maiorID = produto.ID
+		}
+	}
+	return maiorID + 1
+}
+
 func CadastrarProduto(produtos *[]models.Produto, reader *bufio.Reader) {
-	var nome string
-
-	for {
-		nome = utils.LerTexto(reader, "Nome: ")
-
-		if nome == "" {
-			fmt.Println("O nome não pode ficar vazio.")
-			continue
-		}
-
-		break
-	}
-
-	var quantidade int
-
-	for {
-		var err error
-
-		quantidade, err = utils.LerInteiro(reader, "Quantidade: ")
-
-		if err != nil {
-			fmt.Println("Quantidade inválida. Tente novamente.")
-			continue
-		}
-		if quantidade < 0 {
-			fmt.Println("A quantidade não pode ser negativa.")
-			continue
-		}
-
-		break
-	}
-
-	var preco float64
-
-	for {
-		var err error
-
-		preco, err = utils.LerFloat(reader, "Preço: ")
-
-		if err != nil {
-			fmt.Println("Preço inválido. Tente novamente.")
-			continue
-		}
-		if preco < 0 {
-			fmt.Println("O preço não pode ser negativa")
-			continue
-		}
-
-		break
-	}
+	nome := utils.LerNomeValido(reader)
+	quantidade := utils.LerQuantidadeValida(reader, "Quantidade:")
+	preco := utils.LerPrecoValido(reader, "Preço:")
 
 	produto := models.Produto{
+		ID:         proximoID(*produtos),
 		Nome:       nome,
 		Quantidade: quantidade,
 		Preco:      preco,
 	}
-
 	*produtos = append(*produtos, produto)
+	err := utils.SalvarProdutos(*produtos)
 
+	if err != nil {
+		fmt.Println("Erro ao salvar produtos:", err)
+		return
+	}
 	fmt.Println("Produto cadastrado com sucesso!")
 }
 
@@ -79,6 +48,7 @@ func ListarProdutos(produtos []models.Produto) {
 	}
 
 	for _, produto := range produtos {
+		fmt.Println("ID:", produto.ID)
 		fmt.Println("Nome:", produto.Nome)
 		fmt.Println("Quantidade:", produto.Quantidade)
 		fmt.Println("Preço:", produto.Preco)
@@ -87,11 +57,11 @@ func ListarProdutos(produtos []models.Produto) {
 }
 
 func BuscarProduto(produtos []models.Produto, reader *bufio.Reader) {
-	buscar := utils.LerTexto(reader, "Digite o nome do produto: ")
+	buscar := strings.TrimSpace(utils.LerTexto(reader, "Digite o nome do produto: "))
 	encontrado := false
 
 	for _, produto := range produtos {
-		if strings.EqualFold(buscar, produto.Nome) {
+		if strings.Contains(strings.ToLower(produto.Nome), strings.ToLower(buscar)) {
 			fmt.Println("Produto encontrado!")
 			fmt.Println("Nome:", produto.Nome)
 			fmt.Println("Quantidade:", produto.Quantidade)
@@ -107,11 +77,16 @@ func BuscarProduto(produtos []models.Produto, reader *bufio.Reader) {
 }
 
 func RemoverProduto(produtos *[]models.Produto, reader *bufio.Reader) {
-	remover := utils.LerTexto(reader, "Digite o nome do produto: ")
+	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+
+	if err != nil {
+		fmt.Println("ID inválido.")
+		return
+	}
 	removido := false
 
 	for i, produto := range *produtos {
-		if strings.EqualFold(remover, produto.Nome) {
+		if produto.ID == id {
 			*produtos = append((*produtos)[:i], (*produtos)[i+1:]...)
 
 			fmt.Println("Produto removido com sucesso.")
@@ -126,71 +101,30 @@ func RemoverProduto(produtos *[]models.Produto, reader *bufio.Reader) {
 }
 
 func AtualizarProduto(produtos []models.Produto, reader *bufio.Reader) {
-	atualizar := utils.LerTexto(reader, "Digite o nome do produto: ")
+	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+
+	if err != nil {
+		fmt.Println("ID inválido.")
+		return
+	}
+
 	atualizado := false
 
 	for i, produto := range produtos {
-		if strings.EqualFold(atualizar, produto.Nome) {
+		if produto.ID == id {
 			fmt.Println("Produto encontrado.")
 
-			var novoNome string
+			novoNome := utils.LerNomeValido(reader)
 
-			for {
-				novoNome = utils.LerTexto(reader, "Digite seu novo nome: ")
+			novaQuantidade := utils.LerQuantidadeValida(
+				reader,
+				"Digite sua nova quantidade: ",
+			)
 
-				if novoNome == "" {
-					fmt.Println("O nome não pode ficar vazio.")
-					continue
-				}
-
-				break
-			}
-
-			var novaQuantidade int
-
-			for {
-				var err error
-
-				novaQuantidade, err = utils.LerInteiro(
-					reader,
-					"Digite sua nova quantidade: ",
-				)
-
-				if err != nil {
-					fmt.Println("Quantidade inválida. Tente novamente.")
-					continue
-				}
-
-				if novaQuantidade < 0 {
-					fmt.Println("A quantidade não pode ser negativa.")
-					continue
-				}
-
-				break
-			}
-
-			var novoPreco float64
-
-			for {
-				var err error
-
-				novoPreco, err = utils.LerFloat(
-					reader,
-					"Digite seu novo preço: ",
-				)
-
-				if err != nil {
-					fmt.Println("Preço inválido. Tente novamente.")
-					continue
-				}
-
-				if novoPreco < 0 {
-					fmt.Println("O preço não pode ser negativo.")
-					continue
-				}
-
-				break
-			}
+			novoPreco := utils.LerPrecoValido(
+				reader,
+				"Digite seu novo preço: ",
+			)
 
 			produtos[i].Nome = novoNome
 			produtos[i].Quantidade = novaQuantidade

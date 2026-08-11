@@ -12,7 +12,13 @@ import (
 )
 
 func main() {
-	produtos := []models.Produto{}
+	produtos, err := utils.CarregarProdutos()
+
+	if err != nil {
+		fmt.Println("Não foi possível carregar os produtos:", err)
+		produtos = []models.Produto{}
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -28,6 +34,11 @@ func main() {
 		case 1:
 			services.CadastrarProduto(&produtos, reader)
 
+			err := utils.SalvarProdutos(produtos)
+			if err != nil {
+				fmt.Println("Erro ao salvar produtos:", err)
+			}
+
 		case 2:
 			services.ListarProdutos(produtos)
 
@@ -37,8 +48,18 @@ func main() {
 		case 4:
 			services.RemoverProduto(&produtos, reader)
 
+			err := utils.SalvarProdutos(produtos)
+			if err != nil {
+				fmt.Println("Erro ao salvar produtos:", err)
+			}
+
 		case 5:
 			services.AtualizarProduto(produtos, reader)
+
+			err := utils.SalvarProdutos(produtos)
+			if err != nil {
+				fmt.Println("Erro ao salvar produtos:", err)
+			}
 
 		case 6:
 			fmt.Println("Até mais!")
