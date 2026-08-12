@@ -5,70 +5,113 @@ import (
 	"fmt"
 	"strings"
 
+	"gostock/database"
 	"gostock/models"
 	"gostock/utils"
 )
 
-func proximoID(produtos []models.Produto) int {
-	maiorID := 0
-
-	for _, produto := range produtos {
-		if produto.ID > maiorID {
-			maiorID = produto.ID
-		}
-	}
-	return maiorID + 1
-}
-
-func CadastrarProduto(produtos *[]models.Produto, reader *bufio.Reader) {
+func CadastrarProduto(reader *bufio.Reader) {
 	nome := utils.LerNomeValido(reader)
 	quantidade := utils.LerQuantidadeValida(reader, "Quantidade:")
 	preco := utils.LerPrecoValido(reader, "Preço:")
 
-	produto := models.Produto{
-		ID:         proximoID(*produtos),
-		Nome:       nome,
-		Quantidade: quantidade,
-		Preco:      preco,
-	}
-	*produtos = append(*produtos, produto)
-	err := utils.SalvarProdutos(*produtos)
+	query := `
+		INSERT INTO produtos (nome, preco, quantidade)
+		VALUES (?, ?, ?);
+	`
+
+	_, err := database.DB.Exec(query, nome, preco, quantidade)
 
 	if err != nil {
-		fmt.Println("Erro ao salvar produtos:", err)
+		fmt.Println("Erro ao cadastrar produto:", err)
 		return
 	}
+
 	fmt.Println("Produto cadastrado com sucesso!")
 }
 
-func ListarProdutos(produtos []models.Produto) {
-	if len(produtos) == 0 {
-		fmt.Println("Nenhum produto cadastrado.")
+func ListarProdutos() {
+	query := `
+		SELECT id, nome, preco, quantidade
+		FROM produtos;
+	`
+
+	rows, err := database.DB.Query(query)
+	if err != nil {
+		fmt.Println("Erro ao buscar produtos:", err)
 		return
 	}
+	defer rows.Close()
 
-	for _, produto := range produtos {
+	encontrou := false
+
+	for rows.Next() {
+		var produto models.Produto
+
+		err := rows.Scan(
+			&produto.ID,
+			&produto.Nome,
+			&produto.Preco,
+			&produto.Quantidade,
+		)
+
+		if err != nil {
+			fmt.Println("Erro ao ler produto:", err)
+			return
+		}
+
 		fmt.Println("ID:", produto.ID)
 		fmt.Println("Nome:", produto.Nome)
 		fmt.Println("Quantidade:", produto.Quantidade)
 		fmt.Println("Preço:", produto.Preco)
 		fmt.Println("----------------------")
+
+		encontrou = true
+	}
+
+	if !encontrou {
+		fmt.Println("Nenhum produto cadastrado.")
 	}
 }
 
-func BuscarProduto(produtos []models.Produto, reader *bufio.Reader) {
+func BuscarProduto(reader *bufio.Reader) {
 	buscar := strings.TrimSpace(utils.LerTexto(reader, "Digite o nome do produto: "))
 	encontrado := false
 
-	for _, produto := range produtos {
-		if strings.Contains(strings.ToLower(produto.Nome), strings.ToLower(buscar)) {
-			fmt.Println("Produto encontrado!")
-			fmt.Println("Nome:", produto.Nome)
-			fmt.Println("Quantidade:", produto.Quantidade)
-			fmt.Println("Preço:", produto.Preco)
+	query := `
+		SELECT id, nome, preco, quantidade
+		FROM produtos
+		WHERE nome LIKE ?
+	`
 
-			encontrado = true
+	rows, err := database.DB.Query(query, "%"+buscar+"%")
+	if err != nil {
+		fmt.Println("Erro ao buscar produto:", err)
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var produto models.Produto
+
+		err := rows.Scan(
+			&produto.ID,
+			&produto.Nome,
+			&produto.Preco,
+			&produto.Quantidade,
+		)
+
+		if err != nil {
+			fmt.Println("Erro ao ler produto:", err)
+			return
 		}
+
+		fmt.Println("Produto encontrado!")
+		fmt.Println("Nome:", produto.Nome)
+		fmt.Println("Quantidade:", produto.Quantidade)
+		fmt.Println("Preço:", produto.Preco)
+
+		encontrado = true
 	}
 
 	if !encontrado {
@@ -76,7 +119,7 @@ func BuscarProduto(produtos []models.Produto, reader *bufio.Reader) {
 	}
 }
 
-func RemoverProduto(produtos *[]models.Produto, reader *bufio.Reader) {
+func RemoverProduto(reader *bufio.Reader) {
 	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
 
 	if err != nil {
@@ -84,15 +127,27 @@ func RemoverProduto(produtos *[]models.Produto, reader *bufio.Reader) {
 		return
 	}
 	removido := false
+	query := `
+	DELETE FROM produtos
+	WHERE id = ?
+`
 
-	for i, produto := range *produtos {
-		if produto.ID == id {
-			*produtos = append((*produtos)[:i], (*produtos)[i+1:]...)
+	resultado, err := database.DB.Exec(query, id)
 
-			fmt.Println("Produto removido com sucesso.")
-			removido = true
-			break
-		}
+	if err != nil {
+		fmt.Println("Erro ao remover produto:", err)
+		return
+	}
+
+	linhas, err := resultado.RowsAffected()
+
+	if err != nil {
+		fmt.Println("Erro ao verificar remoção:", err)
+		return
+	}
+	if linhas > 0 {
+		fmt.Println("Produto removido com sucesso.")
+		removido = true
 	}
 
 	if !removido {
@@ -100,7 +155,7 @@ func RemoverProduto(produtos *[]models.Produto, reader *bufio.Reader) {
 	}
 }
 
-func AtualizarProduto(produtos []models.Produto, reader *bufio.Reader) {
+func AtualizarProduto(reader *bufio.Reader) {
 	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
 
 	if err != nil {
@@ -108,35 +163,53 @@ func AtualizarProduto(produtos []models.Produto, reader *bufio.Reader) {
 		return
 	}
 
-	atualizado := false
+	query := `
+		SELECT id
+		FROM produtos
+		WHERE id = ?
+	`
 
-	for i, produto := range produtos {
-		if produto.ID == id {
-			fmt.Println("Produto encontrado.")
+	var produtoID int
 
-			novoNome := utils.LerNomeValido(reader)
+	err = database.DB.QueryRow(query, id).Scan(&produtoID)
 
-			novaQuantidade := utils.LerQuantidadeValida(
-				reader,
-				"Digite sua nova quantidade: ",
-			)
-
-			novoPreco := utils.LerPrecoValido(
-				reader,
-				"Digite seu novo preço: ",
-			)
-
-			produtos[i].Nome = novoNome
-			produtos[i].Quantidade = novaQuantidade
-			produtos[i].Preco = novoPreco
-
-			fmt.Println("Produto atualizado com sucesso!")
-			atualizado = true
-			break
-		}
-	}
-
-	if !atualizado {
+	if err != nil {
 		fmt.Println("Produto não encontrado.")
+		return
 	}
+
+	fmt.Println("Produto encontrado.")
+
+	novoNome := utils.LerNomeValido(reader)
+
+	novaQuantidade := utils.LerQuantidadeValida(
+		reader,
+		"Digite sua nova quantidade: ",
+	)
+
+	novoPreco := utils.LerPrecoValido(
+		reader,
+		"Digite seu novo preço: ",
+	)
+
+	query = `
+		UPDATE produtos
+		SET nome = ?, quantidade = ?, preco = ?
+		WHERE id = ?
+	`
+
+	_, err = database.DB.Exec(
+		query,
+		novoNome,
+		novaQuantidade,
+		novoPreco,
+		id,
+	)
+
+	if err != nil {
+		fmt.Println("Erro ao atualizar produto:", err)
+		return
+	}
+
+	fmt.Println("Produto atualizado com sucesso!")
 }

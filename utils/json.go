@@ -39,4 +39,3 @@ func CarregarProdutos() ([]models.Produto, error) {
 
 	return produtos, nil
 }
-

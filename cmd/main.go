@@ -5,18 +5,26 @@ import (
 	"fmt"
 	"os"
 
-	"gostock/models"
+	"gostock/database"
 	"gostock/services"
 	"gostock/ui"
 	"gostock/utils"
 )
 
 func main() {
-	produtos, err := utils.CarregarProdutos()
 
+	err := database.Conectar()
 	if err != nil {
-		fmt.Println("Não foi possível carregar os produtos:", err)
-		produtos = []models.Produto{}
+		fmt.Println("Erro ao conectar ao banco:", err)
+		return
+	}
+
+	defer database.DB.Close()
+
+	err = database.CriarTabelas()
+	if err != nil {
+		fmt.Println("Erro ao criar tabelas:", err)
+		return
 	}
 
 	reader := bufio.NewReader(os.Stdin)
@@ -32,34 +40,19 @@ func main() {
 
 		switch opcao {
 		case 1:
-			services.CadastrarProduto(&produtos, reader)
-
-			err := utils.SalvarProdutos(produtos)
-			if err != nil {
-				fmt.Println("Erro ao salvar produtos:", err)
-			}
+			services.CadastrarProduto(reader)
 
 		case 2:
-			services.ListarProdutos(produtos)
+			services.ListarProdutos()
 
 		case 3:
-			services.BuscarProduto(produtos, reader)
+			services.BuscarProduto(reader)
 
 		case 4:
-			services.RemoverProduto(&produtos, reader)
-
-			err := utils.SalvarProdutos(produtos)
-			if err != nil {
-				fmt.Println("Erro ao salvar produtos:", err)
-			}
+			services.RemoverProduto(reader)
 
 		case 5:
-			services.AtualizarProduto(produtos, reader)
-
-			err := utils.SalvarProdutos(produtos)
-			if err != nil {
-				fmt.Println("Erro ao salvar produtos:", err)
-			}
+			services.AtualizarProduto(reader)
 
 		case 6:
 			fmt.Println("Até mais!")
