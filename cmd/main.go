@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"gostock/database"
+	"gostock/models"
 	"gostock/services"
 	"gostock/ui"
 	"gostock/utils"
@@ -30,15 +31,53 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		ui.ExibirMenu()
+		fmt.Println("========= GoStock =========")
+		fmt.Println("1 - Entrar")
+		fmt.Println("2 - Criar conta")
+		fmt.Println("3 - Sair")
 
 		opcao, err := utils.LerInteiro(reader, "Escolha uma opção: ")
+
 		if err != nil {
 			fmt.Println("Opção inválida.")
 			continue
 		}
 
 		switch opcao {
+
+		case 1:
+			usuario, sucesso := services.Login(reader)
+
+			if sucesso {
+				MenuEstoque(reader, usuario)
+			}
+		case 2:
+			services.CadastrarUsuario(reader)
+
+		case 3:
+			fmt.Println("Até mais!")
+			return
+
+		default:
+			fmt.Println("Opção inválida.")
+		}
+	}
+}
+
+func MenuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
+
+	for {
+		ui.ExibirMenu()
+
+		opcao, err := utils.LerInteiro(reader, "Escolha uma opção: ")
+
+		if err != nil {
+			fmt.Println("Opção inválida.")
+			continue
+		}
+
+		switch opcao {
+
 		case 1:
 			services.CadastrarProduto(reader)
 
@@ -55,7 +94,7 @@ func main() {
 			services.AtualizarProduto(reader)
 
 		case 6:
-			fmt.Println("Até mais!")
+			fmt.Println("Saindo da conta...")
 			return
 
 		default:
