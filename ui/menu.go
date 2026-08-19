@@ -9,6 +9,7 @@ func ExibirMenu() {
 	fmt.Println("3 - Buscar produtos")
 	fmt.Println("4 - Remover produtos")
 	fmt.Println("5 - Atualizar um produto")
-	fmt.Println("6 - Sair")
+	fmt.Println("6 - Ver movimentações")
+	fmt.Println("7 - Sair")
 	fmt.Println()
 }

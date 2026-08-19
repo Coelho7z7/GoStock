@@ -79,7 +79,7 @@ func MenuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
 		switch opcao {
 
 		case 1:
-			services.CadastrarProduto(reader)
+			services.CadastrarProduto(reader, usuario.ID)
 
 		case 2:
 			services.ListarProdutos()
@@ -91,9 +91,12 @@ func MenuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
 			services.RemoverProduto(reader)
 
 		case 5:
-			services.AtualizarProduto(reader)
+			services.AtualizarProduto(reader, usuario.ID)
 
 		case 6:
+			services.ListarMovimentacoes()
+
+		case 7:
 			fmt.Println("Saindo da conta...")
 			return
 

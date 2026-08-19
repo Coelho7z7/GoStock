@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"fmt"
 	"strings"
+	"time"
 
 	"gostock/database"
 	"gostock/models"
 	"gostock/utils"
 )
 
-func CadastrarProduto(reader *bufio.Reader) {
+func CadastrarProduto(reader *bufio.Reader, usuarioID int) {
 	nome := utils.LerNomeValido(reader)
 	quantidade := utils.LerQuantidadeValida(reader, "Quantidade:")
 	preco := utils.LerPrecoValido(reader, "Preço:")
@@ -20,10 +21,33 @@ func CadastrarProduto(reader *bufio.Reader) {
 		VALUES (?, ?, ?);
 	`
 
-	_, err := database.DB.Exec(query, nome, preco, quantidade)
+	resultado, err := database.DB.Exec(query, nome, preco, quantidade)
 
 	if err != nil {
 		fmt.Println("Erro ao cadastrar produto:", err)
+		return
+	}
+
+	produtoID, err := resultado.LastInsertId()
+
+	if err != nil {
+		fmt.Println("Erro ao obter ID do produto:", err)
+		return
+	}
+
+	_, err = database.DB.Exec(`
+		INSERT INTO movimentacoes
+		(produto_id, usuario_id, tipo, quantidade)
+		VALUES (?, ?, ?, ?)
+	`,
+		produtoID,
+		usuarioID,
+		"ENTRADA",
+		quantidade,
+	)
+
+	if err != nil {
+		fmt.Println("Erro ao registrar movimentação:", err)
 		return
 	}
 
@@ -37,10 +61,12 @@ func ListarProdutos() {
 	`
 
 	rows, err := database.DB.Query(query)
+
 	if err != nil {
 		fmt.Println("Erro ao buscar produtos:", err)
 		return
 	}
+
 	defer rows.Close()
 
 	encontrou := false
@@ -75,7 +101,10 @@ func ListarProdutos() {
 }
 
 func BuscarProduto(reader *bufio.Reader) {
-	buscar := strings.TrimSpace(utils.LerTexto(reader, "Digite o nome do produto: "))
+	buscar := strings.TrimSpace(
+		utils.LerTexto(reader, "Digite o nome do produto: "),
+	)
+
 	encontrado := false
 
 	query := `
@@ -85,10 +114,12 @@ func BuscarProduto(reader *bufio.Reader) {
 	`
 
 	rows, err := database.DB.Query(query, "%"+buscar+"%")
+
 	if err != nil {
 		fmt.Println("Erro ao buscar produto:", err)
 		return
 	}
+
 	defer rows.Close()
 
 	for rows.Next() {
@@ -120,17 +151,22 @@ func BuscarProduto(reader *bufio.Reader) {
 }
 
 func RemoverProduto(reader *bufio.Reader) {
-	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+	id, err := utils.LerInteiro(
+		reader,
+		"Digite o ID do produto: ",
+	)
 
 	if err != nil {
 		fmt.Println("ID inválido.")
 		return
 	}
+
 	removido := false
+
 	query := `
-	DELETE FROM produtos
-	WHERE id = ?
-`
+		DELETE FROM produtos
+		WHERE id = ?
+	`
 
 	resultado, err := database.DB.Exec(query, id)
 
@@ -145,6 +181,7 @@ func RemoverProduto(reader *bufio.Reader) {
 		fmt.Println("Erro ao verificar remoção:", err)
 		return
 	}
+
 	if linhas > 0 {
 		fmt.Println("Produto removido com sucesso.")
 		removido = true
@@ -155,8 +192,11 @@ func RemoverProduto(reader *bufio.Reader) {
 	}
 }
 
-func AtualizarProduto(reader *bufio.Reader) {
-	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+func AtualizarProduto(reader *bufio.Reader, usuarioID int) {
+	id, err := utils.LerInteiro(
+		reader,
+		"Digite o ID do produto: ",
+	)
 
 	if err != nil {
 		fmt.Println("ID inválido.")
@@ -164,14 +204,18 @@ func AtualizarProduto(reader *bufio.Reader) {
 	}
 
 	query := `
-		SELECT id
+		SELECT id, quantidade
 		FROM produtos
 		WHERE id = ?
 	`
 
 	var produtoID int
+	var quantidadeAtual int
 
-	err = database.DB.QueryRow(query, id).Scan(&produtoID)
+	err = database.DB.QueryRow(query, id).Scan(
+		&produtoID,
+		&quantidadeAtual,
+	)
 
 	if err != nil {
 		fmt.Println("Produto não encontrado.")
@@ -186,6 +230,22 @@ func AtualizarProduto(reader *bufio.Reader) {
 		reader,
 		"Digite sua nova quantidade: ",
 	)
+
+	diferenca := novaQuantidade - quantidadeAtual
+
+	tipo := ""
+
+	if diferenca > 0 {
+		tipo = "ENTRADA"
+	} else if diferenca < 0 {
+		tipo = "SAIDA"
+	}
+
+	quantidadeMovimentada := diferenca
+
+	if quantidadeMovimentada < 0 {
+		quantidadeMovimentada = -quantidadeMovimentada
+	}
 
 	novoPreco := utils.LerPrecoValido(
 		reader,
@@ -211,5 +271,97 @@ func AtualizarProduto(reader *bufio.Reader) {
 		return
 	}
 
+	if diferenca != 0 {
+		_, err = database.DB.Exec(`
+			INSERT INTO movimentacoes
+			(produto_id, usuario_id, tipo, quantidade)
+			VALUES (?, ?, ?, ?)
+		`,
+			produtoID,
+			usuarioID,
+			tipo,
+			quantidadeMovimentada,
+		)
+
+		if err != nil {
+			fmt.Println("Erro ao registrar movimentação:", err)
+			return
+		}
+	}
+
 	fmt.Println("Produto atualizado com sucesso!")
+}
+
+func ListarMovimentacoes() {
+	query := `
+		SELECT
+			m.data,
+			p.nome,
+			u.nome,
+			m.tipo,
+			m.quantidade
+		FROM movimentacoes m
+		JOIN produtos p ON p.id = m.produto_id
+		JOIN usuarios u ON u.id = m.usuario_id
+		ORDER BY m.data DESC
+	`
+
+	rows, err := database.DB.Query(query)
+
+	if err != nil {
+		fmt.Println("Erro ao buscar movimentações:", err)
+		return
+	}
+
+	defer rows.Close()
+
+	encontrou := false
+
+	for rows.Next() {
+		var data string
+		var produto string
+		var usuario string
+		var tipo string
+		var quantidade int
+
+		err := rows.Scan(
+			&data,
+			&produto,
+			&usuario,
+			&tipo,
+			&quantidade,
+		)
+
+		if err != nil {
+			fmt.Println("Erro ao ler movimentação:", err)
+			return
+		}
+
+		dataFormatada, err := time.Parse(
+			time.RFC3339,
+			data,
+		)
+
+		if err != nil {
+			fmt.Println("Erro ao formatar data:", err)
+			return
+		}
+
+		fmt.Println("========== MOVIMENTAÇÃO ==========")
+		fmt.Println("Produto:", produto)
+		fmt.Println("Usuário:", usuario)
+		fmt.Println("Tipo:", tipo)
+		fmt.Println("Quantidade:", quantidade)
+		fmt.Println(
+			"Data:",
+			dataFormatada.Local().Format("02/01/2006 15:04:05"),
+		)
+		fmt.Println("==================================")
+
+		encontrou = true
+	}
+
+	if !encontrou {
+		fmt.Println("Nenhuma movimentação registrada.")
+	}
 }
