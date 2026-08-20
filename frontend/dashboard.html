@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoStock - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+    <h1>GoStock</h1>
+
+    <h2>Dashboard</h2>
+
+<p>Bem-vindo, {{ .Usuario.Nome }}!</p>
+    <h3>Menu</h3>
+
+    <ul>
+        <li>Produtos</li>
+        <li>Adicionar estoque</li>
+        <li>Registrar venda</li>
+        <li>Movimentações</li>
+    </ul>
+
+    <h3>Produtos</h3>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {{ range .Produtos }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>{{ .Nome }}</td>
+                <td>R$ {{ .Preco }}</td>
+                <td>{{ .Quantidade }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    <p>Servidor Go conectado ao Dashboard.</p>
+
+</body>
+
+</html>
