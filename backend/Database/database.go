@@ -11,7 +11,7 @@ var DB *sql.DB
 func Conectar() error {
 	var err error
 
-	DB, err = sql.Open("sqlite", "data/gostock.db")
+	DB, err = sql.Open("sqlite", "backend/data/gostock.db")
 	if err != nil {
 		return err
 	}

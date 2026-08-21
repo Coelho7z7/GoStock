@@ -36,10 +36,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/index.html")
+		http.ServeFile(w, r, "frontend/index.html")
 	})
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../frontend"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("frontend"))))
 
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
 
@@ -76,10 +76,11 @@ func main() {
 			Produtos: produtos,
 		}
 
-		tmpl, err := template.ParseFiles("../frontend/dashboard.html")
+		tmpl, err := template.ParseFiles("frontend/dashboard.html")
 
 		if err != nil {
-			http.Error(w, "Erro ao carregar página", http.StatusInternalServerError)
+			fmt.Println("Erro ao carregar dashboard:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
