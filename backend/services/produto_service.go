@@ -501,13 +501,11 @@ func ListarMovimentacoes() {
 }
 
 func BuscarTodosProdutos() ([]models.Produto, error) {
-	query := `
+	rows, err := database.DB.Query(`
 		SELECT id, nome, preco, quantidade
 		FROM produtos
-		ORDER BY id
-	`
-
-	rows, err := database.DB.Query(query)
+		ORDER BY id DESC
+	`)
 	if err != nil {
 		return nil, err
 	}
@@ -519,15 +517,21 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 	for rows.Next() {
 		var produto models.Produto
 
-		err := rows.Scan(
+		if err := rows.Scan(
 			&produto.ID,
 			&produto.Nome,
 			&produto.Preco,
 			&produto.Quantidade,
-		)
-
-		if err != nil {
+		); err != nil {
 			return nil, err
+		}
+
+		if produto.Quantidade == 0 {
+			produto.StatusEstoque = "zerado"
+		} else if produto.Quantidade <= 5 {
+			produto.StatusEstoque = "baixo"
+		} else {
+			produto.StatusEstoque = "normal"
 		}
 
 		produtos = append(produtos, produto)
@@ -538,4 +542,32 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 	}
 
 	return produtos, nil
+}
+
+func AdicionarEstoqueWeb(produtoID int, quantidade int, usuarioID int) error {
+	if quantidade <= 0 {
+		return fmt.Errorf("a quantidade deve ser maior que zero")
+	}
+
+	_, err := database.DB.Exec(`
+		UPDATE produtos
+		SET quantidade = quantidade + ?
+		WHERE id = ?
+	`, quantidade, produtoID)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = database.DB.Exec(`
+		INSERT INTO movimentacoes
+		(produto_id, usuario_id, tipo, quantidade)
+		VALUES (?, ?, ?, ?)
+	`, produtoID, usuarioID, "ENTRADA", quantidade)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

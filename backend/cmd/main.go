@@ -36,10 +36,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "frontend/index.html")
+		http.ServeFile(w, r, "../frontend/index.html")
 	})
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("frontend"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../frontend"))))
 
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
 
@@ -76,7 +76,7 @@ func main() {
 			Produtos: produtos,
 		}
 
-		tmpl, err := template.ParseFiles("frontend/dashboard.html")
+		tmpl, err := template.ParseFiles("../frontend/dashboard.html")
 
 		if err != nil {
 			fmt.Println("Erro ao carregar dashboard:", err)
@@ -119,9 +119,10 @@ func main() {
 	})
 
 	go func() {
-		fmt.Println("Servidor rodando em http://localhost:8080")
+		fmt.Println("Servidor rodando em http://127.0.0.1:8081")
 
-		err := http.ListenAndServe(":8080", nil)
+		err = http.ListenAndServe("127.0.0.1:8081", nil)
+
 		if err != nil {
 			fmt.Println("Erro no servidor:", err)
 		}
