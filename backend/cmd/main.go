@@ -83,7 +83,8 @@ func main() {
 		tmpl, err := template.ParseFiles("../frontend/dashboard.html")
 
 		if err != nil {
-			http.Error(w, "Erro ao carregar página", http.StatusInternalServerError)
+			fmt.Println("Erro ao carregar dashboard:", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
@@ -122,9 +123,10 @@ func main() {
 	})
 
 	go func() {
-		fmt.Println("Servidor rodando em http://localhost:8080")
+		fmt.Println("Servidor rodando em http://127.0.0.1:8081")
 
-		err := http.ListenAndServe(":8080", nil)
+		err = http.ListenAndServe("127.0.0.1:8081", nil)
+
 		if err != nil {
 			fmt.Println("Erro no servidor:", err)
 		}

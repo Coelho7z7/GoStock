@@ -1,20 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoStock</title>
+
+    <title>GoStock - Login</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
-    <h1>GoStock</h1>
-    <p>Gerenciamento de estoque</p>
-    <form action="http://localhost:8080/login" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <label for="password">Senha:</label>
-        <input type="password" id="senha" name="senha" required>
-       
-          <button type="submit">Entrar</button>
-    </form>
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <div class="logo">
+                <span>Go</span>Stock
+            </div>
+
+            <p class="subtitle">
+                Sistema de gerenciamento de estoque
+            </p>
+
+            <form action="/login" method="POST">
+
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+
+                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+
+                    <div class="campo-senha">
+
+                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+                        <button type="button" id="mostrarSenha" class="olho" aria-label="Mostrar senha">
+                            <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+
+                    </div>
+                </div>
+
+                <button type="submit">
+                    Entrar
+                </button>
+
+            </form>
+
+            <p class="footer-text">
+                GoStock © 2026
+            </p>
+
+        </section>
+
+    </main>
+
+    <script src="/static/js/app.js"></script>
+
 </body>
+
 </html>

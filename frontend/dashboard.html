@@ -1,54 +1,261 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>GoStock - Dashboard</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+
+    <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
 
 <body>
 
-    <h1>GoStock</h1>
+    <div class="dashboard">
 
-    <h2>Dashboard</h2>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
 
-<p>Bem-vindo, {{ .Usuario.Nome }}!</p>
-    <h3>Menu</h3>
+            <div class="sidebar-logo">
+                <h1>Go<span>Stock</span></h1>
+                <p>Sistema de estoque</p>
+            </div>
 
-    <ul>
-        <li>Produtos</li>
-        <li>Adicionar estoque</li>
-        <li>Registrar venda</li>
-        <li>Movimentações</li>
-    </ul>
+            <nav class="sidebar-menu">
 
-    <h3>Produtos</h3>
+                <a href="#" class="menu-item active">
+                    <span>▦</span>
+                    Dashboard
+                </a>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Preço</th>
-                <th>Quantidade</th>
-            </tr>
-        </thead>
+                <a href="#" class="menu-item">
+                    <span>□</span>
+                    Produtos
+                </a>
 
-        <tbody>
-            {{ range .Produtos }}
-            <tr>
-                <td>{{ .ID }}</td>
-                <td>{{ .Nome }}</td>
-                <td>R$ {{ .Preco }}</td>
-                <td>{{ .Quantidade }}</td>
-            </tr>
-            {{ end }}
-        </tbody>
-    </table>
+                <a href="#" class="menu-item">
+                    <span>+</span>
+                    Adicionar estoque
+                </a>
 
-    <p>Servidor Go conectado ao Dashboard.</p>
+                <a href="#" class="menu-item">
+                    <span>-</span>
+                    Registrar venda
+                </a>
+
+                <a href="#" class="menu-item">
+                    <span>≡</span>
+                    Movimentações
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>GoStock</p>
+                <small>v1.0.0</small>
+            </div>
+
+        </aside>
+
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Visão geral do seu estoque</p>
+                </div>
+
+                <div class="user-area">
+
+                    <div class="user-info">
+                        <strong>{{ .Usuario.Nome }}</strong>
+                        <span>Usuário</span>
+                    </div>
+
+                    <div class="user-avatar">
+                        {{ printf "%.1s" .Usuario.Nome }}
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- CONTEÚDO -->
+            <section class="content">
+
+                <div class="welcome">
+                    <h1>Bem-vindo, {{ .Usuario.Nome }}!</h1>
+                    <p>Acompanhe as informações do seu estoque.</p>
+                </div>
+
+
+                <!-- CARDS -->
+                <div class="stats">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon blue">
+                            P
+                        </div>
+
+                        <div>
+                            <span>Total de produtos</span>
+                            <strong>{{ len .Produtos }}</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon green">
+                            +
+                        </div>
+
+                        <div>
+                            <span>Entradas</span>
+                            <strong>--</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon red">
+                            -
+                        </div>
+
+                        <div>
+                            <span>Vendas</span>
+                            <strong>--</strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon purple">
+                            M
+                        </div>
+
+                        <div>
+                            <span>Movimentações</span>
+                            <strong>--</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUTOS -->
+                <section class="products-section">
+
+                    <div class="section-header">
+
+                        <div>
+                            <h2>Produtos</h2>
+                            <p>Produtos cadastrados no estoque</p>
+                        </div>
+
+                        <button class="primary-button">
+                            + Novo produto
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Produto</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {{ range .Produtos }}
+
+                                <tr>
+
+                                    <td>
+                                        #{{ .ID }}
+                                    </td>
+
+                                    <td>
+                                        <strong>{{ .Nome }}</strong>
+                                    </td>
+
+                                    <td>
+                                        R$ {{ printf "%.2f" .Preco }}
+                                    </td>
+
+                                    <td>
+                                        {{ .Quantidade }}
+                                    </td>
+
+                                    <td>
+
+                                        {{ if gt .Quantidade 0 }}
+
+                                        <span class="status available">
+                                            Em estoque
+                                        </span>
+
+                                        {{ else }}
+
+                                        <span class="status unavailable">
+                                            Sem estoque
+                                        </span>
+
+                                        {{ end }}
+
+                                    </td>
+
+                                </tr>
+
+                                {{ else }}
+
+                                <tr>
+
+                                    <td colspan="5" class="empty">
+                                        Nenhum produto cadastrado.
+                                    </td>
+
+                                </tr>
+
+                                {{ end }}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+        </main>
+
+    </div>
 
 </body>
 

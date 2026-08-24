@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: #111827;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.sidebar-logo {
+    padding: 30px 25px;
+    border-bottom: 1px solid #273244;
+}
+
+.sidebar-logo h1 {
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
