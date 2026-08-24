@@ -126,3 +126,94 @@ button:active {
 
     font-size: 12px;
 }
+
+.campo-senha{
+    position:relative
+}
+
+V.campo-senha {
+    position: relative;
+    width: 100%;
+}
+
+.campo-senha input {
+    width: 100%;
+    height: 46px;
+    box-sizing: border-box;
+
+    padding: 0 45px 0 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    font-size: 14px;
+    color: #1f2937;
+
+    outline: none;
+}
+
+.campo-senha {
+    position: relative;
+    width: 100%;
+}
+
+.campo-senha input {
+    width: 100%;
+    height: auto;
+
+    padding: 13px 45px 13px 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    font-size: 15px;
+    color: #1f2937;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+.campo-senha input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.campo-senha input::placeholder {
+    color: #9ca3af;
+}
+
+.campo-senha .olho {
+    position: absolute;
+
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 32px !important;
+    height: 32px;
+
+    padding: 0 !important;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent !important;
+    border: none !important;
+
+    color: #2563eb;
+
+    cursor: pointer;
+    z-index: 2;
+}
+
+.campo-senha .olho:hover {
+    background: transparent !important;
+    color: #174dcc;
+}

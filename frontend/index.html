@@ -29,25 +29,26 @@
                 <div class="input-group">
                     <label for="email">E-mail</label>
 
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Digite seu e-mail"
-                        required
-                    >
+                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
                 </div>
 
                 <div class="input-group">
                     <label for="senha">Senha</label>
 
-                    <input
-                        type="password"
-                        id="senha"
-                        name="senha"
-                        placeholder="Digite sua senha"
-                        required
-                    >
+                    <div class="campo-senha">
+
+                        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+                        <button type="button" id="mostrarSenha" class="olho" aria-label="Mostrar senha">
+                            <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+
+                    </div>
                 </div>
 
                 <button type="submit">
@@ -63,6 +64,8 @@
         </section>
 
     </main>
+
+    <script src="/static/js/app.js"></script>
 
 </body>
 
