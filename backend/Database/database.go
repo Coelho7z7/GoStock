@@ -11,12 +11,18 @@ var DB *sql.DB
 func Conectar() error {
 	var err error
 
-	DB, err = sql.Open("sqlite", "data/gostock.db")
+	DB, err = sql.Open("sqlite", "backend/data/gostock.db")
 	if err != nil {
 		return err
 	}
+	DB.SetMaxOpenConns(1)
 
-	return DB.Ping()
+	if err := DB.Ping(); err != nil {
+		return err
+	}
+
+	_, err = DB.Exec("PRAGMA foreign_keys = ON")
+	return err
 }
 
 func CriarTabelas() error {
@@ -45,9 +51,33 @@ func CriarTabelas() error {
 		FOREIGN KEY (produto_id) REFERENCES produtos(id),
 		FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
+
+    CREATE TABLE IF NOT EXISTS vendas (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       produto_id INTEGER NOT NULL,
+       usuario_id INTEGER NOT NULL,
+       quantidade INTEGER NOT NULL,
+       valor_unitario REAL NOT NULL,
+       valor_total REAL NOT NULL,
+       data DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (produto_id) REFERENCES produtos(id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
+
+	CREATE TABLE IF NOT EXISTS sessoes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    token_hash TEXT NOT NULL UNIQUE,
+    expira_em DATETIME NOT NULL,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);
 	`
 
 	_, err := DB.Exec(query)
 
 	return err
+
 }

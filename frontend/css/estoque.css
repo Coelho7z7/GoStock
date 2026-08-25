@@ -15,7 +15,7 @@ body {
     display: flex;
 }
 
-
+/* SIDEBAR */
 
 .sidebar {
     width: 240px;
@@ -64,7 +64,7 @@ body {
     color: white;
 }
 
-
+/* CONTEÚDO */
 
 .main-content {
     flex: 1;
@@ -97,16 +97,13 @@ body {
     margin-bottom: 25px;
 }
 
-
 .content table {
     width: 100%;
-
     border-collapse: collapse;
 
     background: white;
 
     border-radius: 12px;
-
     overflow: hidden;
 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -149,13 +146,11 @@ body {
     border-bottom: none;
 }
 
-
+/* FORMULÁRIO DE ESTOQUE */
 
 .content form {
     display: flex;
-
     align-items: center;
-
     gap: 8px;
 }
 
@@ -165,7 +160,6 @@ body {
     padding: 10px 12px;
 
     border: 1px solid #d1d5db;
-
     border-radius: 8px;
 
     font-size: 14px;
@@ -185,20 +179,16 @@ body {
     color: #9ca3af;
 }
 
-
 .content button {
     padding: 10px 16px;
 
     border: none;
-
     border-radius: 8px;
 
     background: #2563eb;
-
     color: white;
 
     font-size: 14px;
-
     font-weight: 600;
 
     cursor: pointer;
@@ -214,13 +204,9 @@ body {
     transform: scale(0.97);
 }
 
-
-
 .estoque-quantidade {
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
 
     min-width: 45px;
@@ -229,31 +215,24 @@ body {
 
     border-radius: 20px;
 
-    font-size: 13px;
+    background: #eff6ff;
+    color: #2563eb;
 
+    font-size: 13px;
     font-weight: 700;
 }
 
-
-
 .estoque-quantidade.normal {
     background: #eff6ff;
-
     color: #2563eb;
 }
 
-
-
 .estoque-quantidade.baixo {
     background: #fef3c7;
-
     color: #d97706;
 }
 
-
-
 .estoque-quantidade.zerado {
     background: #fee2e2;
-
     color: #dc2626;
 }
