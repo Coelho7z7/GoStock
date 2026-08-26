@@ -97,6 +97,92 @@ body {
     margin-bottom: 25px;
 }
 
+.cadastro-container {
+    max-width: 560px;
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.cadastro-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.cadastro-form label {
+    margin-top: 10px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cadastro-form input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.cadastro-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.cadastro-form button {
+    align-self: flex-start;
+    margin-top: 18px;
+}
+
+.formulario-erro {
+    margin-bottom: 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.formulario-sucesso {
+    margin-bottom: 12px;
+    color: #15803d;
+    font-size: 14px;
+}
+
+.tabela-produtos {
+    overflow-x: auto;
+}
+
+.produto-edicao-input {
+    width: 100%;
+    min-width: 150px;
+    padding: 9px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.preco-input {
+    min-width: 110px;
+}
+
+.acoes-produto {
+    white-space: nowrap;
+}
+
+.acoes-produto button {
+    margin-right: 6px;
+}
+
+.botao-remover {
+    background: #dc2626 !important;
+}
+
+.botao-remover:hover {
+    background: #b91c1c !important;
+}
+
 .content table {
     width: 100%;
     border-collapse: collapse;

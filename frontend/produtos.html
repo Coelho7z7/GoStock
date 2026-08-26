@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoStock - Cadastrar produto</title>
+
+    <link rel="stylesheet" href="/css/estoque.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+            <h1 class="logo">Go<span>Stock</span></h1>
+
+            <nav>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/estoque">Estoque</a>
+                <a href="/saidas">Saídas</a>
+                <a href="/movimentacoes">Movimentações</a>
+                <a href="/produtos">Cadastrar produto</a>
+                <a href="/alterar-produto">Alterar produto</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <h2>Cadastrar produto</h2>
+            </header>
+
+            <section class="content">
+                <div class="cadastro-container">
+                    <h3>Novo produto</h3>
+
+                    {{ if .Erro }}
+                    <p class="formulario-erro" role="alert">{{ .Erro }}</p>
+                    {{ end }}
+
+                    <form class="cadastro-form" action="/produtos" method="POST">
+                        <label for="nome">Nome do produto</label>
+                        <input id="nome" type="text" name="nome" value="{{ .Nome }}" placeholder="Ex.: Coca-Cola" required>
+
+                        <label for="quantidade">Quantidade inicial</label>
+                        <input id="quantidade" type="number" name="quantidade" value="{{ .Quantidade }}" min="0" required>
+
+                        <label for="preco">Preço unitário</label>
+                        <input id="preco" type="number" name="preco" value="{{ .Preco }}" min="0" step="0.01" placeholder="0,00" required>
+
+                        <button type="submit">Cadastrar produto</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -95,6 +95,7 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 	rows, err := database.DB.Query(`
 		SELECT id, nome, preco, quantidade
 		FROM produtos
+		WHERE ativo = 1
 		ORDER BY id DESC
 	`)
 	if err != nil {
@@ -122,6 +123,66 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 	return produtos, nil
 }
 
+func AtualizarProdutoWeb(produtoID int, nome string, preco float64, usuarioID int) error {
+	nome = strings.TrimSpace(nome)
+	if !utils.ValidarNome(nome) {
+		return fmt.Errorf("o nome do produto é obrigatório")
+	}
+	if !utils.ValidarPreco(preco) {
+		return fmt.Errorf("o preço não pode ser negativo")
+	}
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	resultado, err := tx.Exec(`
+		UPDATE produtos
+		SET nome = ?, preco = ?
+		WHERE id = ? AND ativo = 1
+	`, nome, preco, produtoID)
+	if err != nil {
+		return err
+	}
+
+	linhas, err := resultado.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if linhas == 0 {
+		return fmt.Errorf("produto não encontrado")
+	}
+
+	if err := registrarMovimentacaoTx(tx, produtoID, usuarioID, "ATUALIZACAO", 0); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func RemoverProdutoWeb(produtoID int) error {
+	resultado, err := database.DB.Exec(`
+		UPDATE produtos
+		SET ativo = 0
+		WHERE id = ? AND ativo = 1
+	`, produtoID)
+	if err != nil {
+		return err
+	}
+
+	linhas, err := resultado.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if linhas == 0 {
+		return fmt.Errorf("produto não encontrado")
+	}
+
+	return nil
+}
+
 func statusDoEstoque(quantidade int) string {
 	switch {
 	case quantidade == 0:
@@ -147,7 +208,7 @@ func AtualizarProduto(reader *bufio.Reader, usuarioID int) {
 	err = database.DB.QueryRow(`
 		SELECT id, nome, preco
 		FROM produtos
-		WHERE id = ?
+		WHERE id = ? AND ativo = 1
 	`, id).Scan(&produtoID, &nomeAtual, &precoAtual)
 
 	if err != nil {

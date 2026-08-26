@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	database "gostock/backend/Database"
@@ -55,7 +56,19 @@ func main() {
 			http.NotFound(w, r)
 			return
 		}
-		http.ServeFile(w, r, "frontend/index.html")
+
+		tmpl, err := template.ParseFiles("frontend/index.html")
+		if err != nil {
+			http.Error(w, "Erro ao carregar tela de login", http.StatusInternalServerError)
+			return
+		}
+
+		if err := tmpl.Execute(w, struct {
+			Email string
+			Erro  string
+		}{}); err != nil {
+			http.Error(w, "Erro ao renderizar tela de login", http.StatusInternalServerError)
+		}
 	})
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("frontend"))))
@@ -124,16 +137,183 @@ func main() {
 			http.Error(w, "Erro ao carregar estoque", http.StatusInternalServerError)
 			return
 		}
-		if err := tmpl.Execute(w, struct{ Produtos []models.Produto }{produtos}); err != nil {
+		mensagens := map[string]string{
+			"entrada":    "Estoque adicionado com sucesso.",
+			"saida":      "Saída registrada com sucesso.",
+			"cadastrado": "Produto cadastrado com sucesso.",
+		}
+		if err := tmpl.Execute(w, struct {
+			Produtos []models.Produto
+			Mensagem string
+		}{produtos, mensagens[r.URL.Query().Get("sucesso")]}); err != nil {
 			http.Error(w, "Erro ao renderizar estoque", http.StatusInternalServerError)
 		}
 	})
 
 	http.HandleFunc("/produtos", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/estoque", http.StatusSeeOther)
+		usuarioID, ok := usuarioDaSessao(r)
+		if !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		dados := struct {
+			Nome       string
+			Quantidade int
+			Preco      string
+			Erro       string
+		}{}
+
+		if r.Method == http.MethodPost {
+			dados.Nome = strings.TrimSpace(r.FormValue("nome"))
+			quantidadeTexto := strings.TrimSpace(r.FormValue("quantidade"))
+			var quantidadeErr error
+			dados.Quantidade, quantidadeErr = strconv.Atoi(quantidadeTexto)
+			dados.Preco = strings.TrimSpace(r.FormValue("preco"))
+
+			preco, precoErr := strconv.ParseFloat(dados.Preco, 64)
+			if quantidadeErr != nil {
+				dados.Erro = "Informe uma quantidade válida."
+			} else if precoErr != nil {
+				dados.Erro = "Informe um preço válido."
+			} else if err := services.CadastrarProdutoWeb(dados.Nome, dados.Quantidade, preco, usuarioID); err != nil {
+				dados.Erro = err.Error()
+			} else {
+				http.Redirect(w, r, "/estoque?sucesso=cadastrado", http.StatusSeeOther)
+				return
+			}
+		} else if r.Method != http.MethodGet {
+			w.Header().Set("Allow", "GET, POST")
+			http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+			return
+		}
+
+		tmpl, err := template.ParseFiles("frontend/produtos.html")
+		if err != nil {
+			http.Error(w, "Erro ao carregar cadastro de produto", http.StatusInternalServerError)
+			return
+		}
+
+		if dados.Erro != "" {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		if err := tmpl.Execute(w, dados); err != nil {
+			http.Error(w, "Erro ao renderizar cadastro de produto", http.StatusInternalServerError)
+		}
+	})
+
+	http.HandleFunc("/alterar-produto", func(w http.ResponseWriter, r *http.Request) {
+		usuarioID, ok := usuarioDaSessao(r)
+		if !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		mensagens := map[string]string{
+			"atualizado": "Produto atualizado com sucesso.",
+			"removido":   "Produto removido com sucesso.",
+		}
+		dados := struct {
+			Produtos []models.Produto
+			Mensagem string
+			Erro     string
+		}{Mensagem: mensagens[r.URL.Query().Get("sucesso")]}
+
+		if r.Method == http.MethodPost {
+			produtoID, idErr := strconv.Atoi(r.FormValue("produto_id"))
+			dados.Erro = "Produto inválido."
+			if idErr == nil && r.FormValue("acao") == "remover" {
+				opErr := services.RemoverProdutoWeb(produtoID)
+				if opErr == nil {
+					http.Redirect(w, r, "/alterar-produto?sucesso=removido", http.StatusSeeOther)
+					return
+				}
+				dados.Erro = opErr.Error()
+			} else if idErr == nil && r.FormValue("acao") == "atualizar" {
+				nome := strings.TrimSpace(r.FormValue("nome"))
+				preco, precoErr := strconv.ParseFloat(strings.TrimSpace(r.FormValue("preco")), 64)
+				if precoErr != nil {
+					dados.Erro = "Informe um preço válido."
+				} else {
+					opErr := services.AtualizarProdutoWeb(produtoID, nome, preco, usuarioID)
+					if opErr == nil {
+						http.Redirect(w, r, "/alterar-produto?sucesso=atualizado", http.StatusSeeOther)
+						return
+					}
+					dados.Erro = opErr.Error()
+				}
+			}
+		} else if r.Method != http.MethodGet {
+			w.Header().Set("Allow", "GET, POST")
+			http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+			return
+		}
+
+		dados.Produtos, _ = services.BuscarTodosProdutos()
+		tmpl, err := template.ParseFiles("frontend/alterar_produto.html")
+		if err != nil {
+			http.Error(w, "Erro ao carregar alteração de produto", http.StatusInternalServerError)
+			return
+		}
+		if dados.Erro != "" {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+		if err := tmpl.Execute(w, dados); err != nil {
+			http.Error(w, "Erro ao renderizar alteração de produto", http.StatusInternalServerError)
+		}
 	})
 	http.HandleFunc("/vendas", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/estoque", http.StatusSeeOther)
+	})
+
+	http.HandleFunc("/saidas", func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := usuarioDaSessao(r); !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		produtos, err := services.BuscarTodosProdutos()
+		if err != nil {
+			http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
+			return
+		}
+
+		tmpl, err := template.ParseFiles("frontend/saidas.html")
+		if err != nil {
+			http.Error(w, "Erro ao carregar saídas", http.StatusInternalServerError)
+			return
+		}
+
+		if err := tmpl.Execute(w, struct {
+			Produtos []models.Produto
+		}{produtos}); err != nil {
+			http.Error(w, "Erro ao renderizar saídas", http.StatusInternalServerError)
+		}
+	})
+
+	http.HandleFunc("/movimentacoes", func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := usuarioDaSessao(r); !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		movimentacoes, err := services.BuscarMovimentacoesWeb()
+		if err != nil {
+			http.Error(w, "Erro ao buscar movimentações", http.StatusInternalServerError)
+			return
+		}
+
+		tmpl, err := template.ParseFiles("frontend/movimentacoes.html")
+		if err != nil {
+			http.Error(w, "Erro ao carregar movimentações", http.StatusInternalServerError)
+			return
+		}
+
+		if err := tmpl.Execute(w, struct {
+			Movimentacoes []models.Movimentacao
+		}{movimentacoes}); err != nil {
+			http.Error(w, "Erro ao renderizar movimentações", http.StatusInternalServerError)
+		}
 	})
 
 	http.HandleFunc("/estoque/adicionar", func(w http.ResponseWriter, r *http.Request) {
@@ -157,10 +337,10 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		http.Redirect(w, r, "/estoque", http.StatusSeeOther)
+		http.Redirect(w, r, "/estoque?sucesso=entrada", http.StatusSeeOther)
 	})
 
-	http.HandleFunc("/estoque/vender", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/estoque/saida", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.Header().Set("Allow", http.MethodPost)
 			http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
@@ -177,11 +357,11 @@ func main() {
 			http.Error(w, "Dados inválidos", http.StatusBadRequest)
 			return
 		}
-		if err := services.RegistrarVendaWeb(produtoID, quantidade, usuarioID); err != nil {
+		if err := services.RegistrarSaidaWeb(produtoID, quantidade, usuarioID); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		http.Redirect(w, r, "/estoque", http.StatusSeeOther)
+		http.Redirect(w, r, "/estoque?sucesso=saida", http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
@@ -196,7 +376,19 @@ func main() {
 
 		usuario, sucesso := services.AutenticarUsuario(email, senha)
 		if !sucesso {
-			http.Error(w, "Email ou senha incorretos.", http.StatusUnauthorized)
+			tmpl, err := template.ParseFiles("frontend/index.html")
+			if err != nil {
+				http.Error(w, "Erro ao carregar tela de login", http.StatusInternalServerError)
+				return
+			}
+
+			w.WriteHeader(http.StatusUnauthorized)
+			if err := tmpl.Execute(w, struct {
+				Email string
+				Erro  string
+			}{email, "Email ou senha incorretos."}); err != nil {
+				http.Error(w, "Erro ao renderizar tela de login", http.StatusInternalServerError)
+			}
 			return
 		}
 
@@ -347,7 +539,7 @@ func carregarResumo() (ResumoData, error) {
 	if err != nil {
 		return resumo, err
 	}
-	err = database.DB.QueryRow(`SELECT COUNT(*) FROM movimentacoes WHERE tipo = 'SAIDA'`).Scan(&resumo.TotalVendas)
+	err = database.DB.QueryRow(`SELECT COALESCE(SUM(quantidade), 0) FROM movimentacoes WHERE tipo = 'SAIDA'`).Scan(&resumo.TotalVendas)
 	if err != nil {
 		return resumo, err
 	}
@@ -385,7 +577,7 @@ func MenuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
 			services.AdicionarEstoque(reader, usuario.ID)
 
 		case 7:
-			services.RegistrarVenda(reader, usuario.ID)
+			services.RegistrarSaida(reader, usuario.ID)
 
 		case 8:
 			services.ListarMovimentacoes()

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GoStock - Estoque</title>
+    <title>GoStock - Movimentações</title>
 
     <link rel="stylesheet" href="/css/estoque.css">
 </head>
@@ -34,77 +34,48 @@
         <main class="main-content">
 
             <header class="topbar">
-                <h2>Estoque</h2>
+                <h2>Movimentações</h2>
             </header>
 
             <section class="content">
 
-                <h3>Controle de estoque</h3>
-
-                {{ if .Mensagem }}
-                <p class="formulario-sucesso" role="status">{{ .Mensagem }}</p>
-                {{ end }}
+                <h3>Histórico de movimentações</h3>
 
                 <table>
-
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Usuário</th>
                             <th>Produto</th>
-                            <th>Estoque atual</th>
-                            <th>Ação</th>
+                            <th>Quantidade</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Tipo</th>
                         </tr>
                     </thead>
 
                     <tbody>
-
-                        {{ range .Produtos }}
-
+                        {{ range .Movimentacoes }}
                         <tr>
-                            <td>{{ .ID }}</td>
-                            <td>{{ .Nome }}</td>
-                            <td>
-                                <span class="estoque-quantidade {{ .StatusEstoque }}">
-                                    {{ .Quantidade }}
-                                </span>
-                            </td>
-
-                            <td>
-
-    <form action="/estoque/adicionar" method="POST">
-
-        <input
-            type="hidden"
-            name="produto_id"
-            value="{{ .ID }}"
-        >
-
-        <input
-            type="number"
-            name="quantidade"
-            min="1"
-            placeholder="Quantidade"
-            required
-        >
-
-        <button type="submit">
-            Adicionar
-        </button>
-
-    </form>
-
-</td>
+                            <td>{{ .Usuario }}</td>
+                            <td>{{ .Produto }}</td>
+                            <td>{{ .Quantidade }}</td>
+                            <td>{{ .DataFormatada }}</td>
+                            <td>{{ .HoraFormatada }}</td>
+                            <td>{{ .TipoFormatado }}</td>
                         </tr>
                         {{ else }}
                         <tr>
-                            <td colspan="4">Nenhum produto cadastrado.</td>
+                            <td colspan="6">Nenhuma movimentação registrada.</td>
                         </tr>
                         {{ end }}
                     </tbody>
                 </table>
 
             </section>
+
         </main>
+
     </div>
+
 </body>
 </html>

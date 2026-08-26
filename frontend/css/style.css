@@ -56,6 +56,113 @@ body {
     margin-bottom: 32px;
 }
 
+.login-alert {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(420px, calc(100% - 32px));
+    padding: 14px 18px 14px 14px;
+    overflow: hidden;
+    border: 1px solid #fecaca;
+    border-left: 5px solid #dc2626;
+    border-radius: 12px;
+    background: #fff7f7;
+    color: #7f1d1d;
+    box-shadow: 0 14px 35px rgba(127, 29, 29, 0.16);
+    animation: alerta-entrada 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.login-alert::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: #dc2626;
+    content: "";
+    transform-origin: left;
+    animation: alerta-progresso 4.5s linear both;
+}
+
+.login-alert-icon {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+    animation: alerta-icone 0.55s 0.18s ease both;
+}
+
+.login-alert-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.login-alert strong,
+.login-alert small {
+    display: block;
+}
+
+.login-alert strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.login-alert small {
+    margin-top: 3px;
+    color: #991b1b;
+    font-size: 13px;
+}
+
+@keyframes alerta-entrada {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -24px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes alerta-icone {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-18deg);
+    }
+    65% {
+        transform: scale(1.12) rotate(5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes alerta-progresso {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-alert,
+    .login-alert-icon,
+    .login-alert::after {
+        animation: none;
+    }
+}
+
 .input-group {
     margin-bottom: 20px;
 }

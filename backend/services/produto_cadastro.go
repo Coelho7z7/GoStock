@@ -3,10 +3,49 @@ package services
 import (
 	"bufio"
 	"fmt"
+	"strings"
 
 	database "gostock/backend/Database"
 	"gostock/backend/utils"
 )
+
+func CadastrarProdutoWeb(nome string, quantidade int, preco float64, usuarioID int) error {
+	nome = strings.TrimSpace(nome)
+	if !utils.ValidarNome(nome) {
+		return fmt.Errorf("o nome do produto é obrigatório")
+	}
+	if !utils.ValidarQuantidade(quantidade) {
+		return fmt.Errorf("a quantidade não pode ser negativa")
+	}
+	if !utils.ValidarPreco(preco) {
+		return fmt.Errorf("o preço não pode ser negativo")
+	}
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	resultado, err := tx.Exec(`
+		INSERT INTO produtos (nome, quantidade, preco)
+		VALUES (?, ?, ?)
+	`, nome, quantidade, preco)
+	if err != nil {
+		return err
+	}
+
+	produtoID, err := resultado.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	if err := registrarMovimentacaoTx(tx, int(produtoID), usuarioID, "ENTRADA", quantidade); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
 
 func CadastrarProduto(reader *bufio.Reader, usuarioID int) {
 	nome := utils.LerNomeValido(reader)

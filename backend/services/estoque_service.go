@@ -53,7 +53,7 @@ func AdicionarEstoqueWeb(produtoID int, quantidade int, usuarioID int) error {
 	result, err := tx.Exec(`
 		UPDATE produtos
 		SET quantidade = quantidade + ?
-		WHERE id = ?
+		WHERE id = ? AND ativo = 1
 	`, quantidade, produtoID)
 	if err != nil {
 		return err
@@ -74,7 +74,7 @@ func AdicionarEstoqueWeb(produtoID int, quantidade int, usuarioID int) error {
 	return tx.Commit()
 }
 
-func RegistrarVenda(reader *bufio.Reader, usuarioID int) {
+func RegistrarSaida(reader *bufio.Reader, usuarioID int) {
 	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
 	if err != nil {
 		fmt.Println("ID inválido.")
@@ -90,26 +90,27 @@ func RegistrarVenda(reader *bufio.Reader, usuarioID int) {
 	fmt.Println("Produto:", nome)
 	fmt.Println("Estoque atual:", quantidadeAtual)
 
-	quantidade := utils.LerQuantidadeValida(reader, "Quantidade vendida: ")
+	quantidade := utils.LerQuantidadeValida(reader, "Quantidade que saiu: ")
 	if quantidade <= 0 {
 		fmt.Println("A quantidade deve ser maior que zero.")
 		return
 	}
 
-	if err := RegistrarVendaWeb(produtoID, quantidade, usuarioID); err != nil {
+	if err := RegistrarSaidaWeb(produtoID, quantidade, usuarioID); err != nil {
 		if err.Error() == "estoque insuficiente" {
 			fmt.Println("Estoque insuficiente.")
 			fmt.Println("Estoque disponível:", quantidadeAtual)
 			return
 		}
-		fmt.Println("Erro ao atualizar estoque:", err)
+
+		fmt.Println("Erro ao registrar saída:", err)
 		return
 	}
 
-	fmt.Println("Venda registrada com sucesso!")
+	fmt.Println("Saída registrada com sucesso!")
 }
 
-func RegistrarVendaWeb(produtoID int, quantidade int, usuarioID int) error {
+func RegistrarSaidaWeb(produtoID int, quantidade int, usuarioID int) error {
 	if quantidade <= 0 {
 		return fmt.Errorf("a quantidade deve ser maior que zero")
 	}
@@ -120,14 +121,13 @@ func RegistrarVendaWeb(produtoID int, quantidade int, usuarioID int) error {
 	}
 	defer tx.Rollback()
 
-	var preco float64
 	var estoque int
 
 	err = tx.QueryRow(`
-		SELECT preco, quantidade
+		SELECT quantidade
 		FROM produtos
-		WHERE id = ?
-	`, produtoID).Scan(&preco, &estoque)
+		WHERE id = ? AND ativo = 1
+	`, produtoID).Scan(&estoque)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -136,25 +136,9 @@ func RegistrarVendaWeb(produtoID int, quantidade int, usuarioID int) error {
 
 		return err
 	}
+
 	if quantidade > estoque {
 		return fmt.Errorf("estoque insuficiente")
-	}
-
-	valorTotal := preco * float64(quantidade)
-
-	_, err = tx.Exec(`
-		INSERT INTO vendas (
-			produto_id,
-			usuario_id,
-			quantidade,
-			valor_unitario,
-			valor_total
-		)
-		VALUES (?, ?, ?, ?, ?)
-	`, produtoID, usuarioID, quantidade, preco, valorTotal)
-
-	if err != nil {
-		return err
 	}
 
 	_, err = tx.Exec(`
@@ -179,7 +163,6 @@ func RegistrarVendaWeb(produtoID int, quantidade int, usuarioID int) error {
 
 	return tx.Commit()
 }
-
 func buscarDadosEstoque(produtoID int) (int, string, int, error) {
 	var nome string
 	var quantidade int

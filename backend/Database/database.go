@@ -31,7 +31,8 @@ func CriarTabelas() error {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			nome TEXT NOT NULL,
 			preco REAL NOT NULL,
-			quantidade INTEGER NOT NULL
+			quantidade INTEGER NOT NULL,
+			ativo INTEGER NOT NULL DEFAULT 1
 		);
 		CREATE TABLE IF NOT EXISTS usuarios (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -77,6 +78,22 @@ func CriarTabelas() error {
 	`
 
 	_, err := DB.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	var colunaAtivo int
+	err = DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM pragma_table_info('produtos')
+		WHERE name = 'ativo'
+	`).Scan(&colunaAtivo)
+	if err != nil {
+		return err
+	}
+	if colunaAtivo == 0 {
+		_, err = DB.Exec(`ALTER TABLE produtos ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`)
+	}
 
 	return err
 
