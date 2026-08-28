@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoStock - Produtos</title>
+    <link rel="stylesheet" href="/css/estoque.css?v=2">
+</head>
+<body class="pagina-produtos">
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/produtos">Produtos</a>
+                <a href="/saidas">Saídas</a>
+                <a href="/movimentacoes">Movimentações</a>
+            </nav>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>Produtos</h2>
+            </header>
+
+            <section class="content">
+
+                    <nav class="abas-produtos" aria-label="Opções de produtos">
+                        <a class="aba-produto-ativa" href="/produtos">Novo produto</a>
+                        <a href="/alterar-produto">Alterar produto</a>
+                        <a href="/estoque">Estoque</a>
+                    </nav>
+
+                {{ if .Mensagem }}
+                <p class="formulario-sucesso" role="status">
+                    {{ .Mensagem }}
+                </p>
+                {{ end }}
+
+                {{ if .Erro }}
+                <p class="formulario-erro" role="alert">
+                    {{ .Erro }}
+                </p>
+                {{ end }}
+
+                <div class="cabecalho-produtos">
+                    <h3>Produtos cadastrados</h3>
+                    <button class="botao-novo-produto" type="button" id="abrir-cadastro-produto">
+                        Novo produto
+                    </button>
+                </div>
+
+                <div class="tabela-produtos">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {{ range .Produtos }}
+
+                            <tr>
+
+                                <td>
+                                    {{ .ID }}
+                                </td>
+
+                                <td>
+
+                                    <input
+                                        class="produto-edicao-input"
+                                        type="text"
+                                        name="nome"
+                                        value="{{ .Nome }}"
+                                        form="produto-form-{{ .ID }}"
+                                        required
+                                    >
+
+                                </td>
+
+                                <td>
+
+                                    <input
+                                        class="produto-edicao-input preco-input"
+                                        type="number"
+                                        name="preco"
+                                        value="{{ printf "%.2f" .Preco }}"
+                                        form="produto-form-{{ .ID }}"
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    >
+
+                                </td>
+
+                                <td>
+
+                                    <span class="estoque-quantidade {{ .StatusEstoque }}">
+                                        {{ .Quantidade }}
+                                    </span>
+
+                                </td>
+
+                                <td class="acoes-produto">
+
+    <!-- Formulário de edição -->
+    <form
+        id="produto-form-{{ .ID }}"
+        action="/alterar-produto"
+        method="POST"
+    >
+        <input
+            type="hidden"
+            name="produto_id"
+            value="{{ .ID }}"
+        >
+    </form>
+
+    <button
+        type="submit"
+        name="acao"
+        value="atualizar"
+        form="produto-form-{{ .ID }}"
+    >
+        Salvar
+    </button>
+
+    <!-- Entrada de estoque -->
+    <form
+        action="/estoque/adicionar"
+        method="POST"
+    >
+
+        <input
+            type="hidden"
+            name="produto_id"
+            value="{{ .ID }}"
+        >
+
+        <input
+            type="number"
+            name="quantidade"
+            min="1"
+            placeholder="Qtd."
+            required
+        >
+
+        <button type="submit">
+            + Estoque
+        </button>
+
+    </form>
+
+    <!-- Saída de estoque -->
+    <form
+        action="/estoque/saida"
+        method="POST"
+    >
+
+        <input
+            type="hidden"
+            name="produto_id"
+            value="{{ .ID }}"
+        >
+
+        <input
+            type="number"
+            name="quantidade"
+            min="1"
+            max="{{ .Quantidade }}"
+            placeholder="Qtd."
+            required
+        >
+
+        <button type="submit">
+            - Saída
+        </button>
+
+    </form>
+
+
+</td>
+
+                            </tr>
+
+                            {{ else }}
+
+                            <tr>
+                                <td colspan="5">
+                                    Nenhum produto cadastrado.
+                                </td>
+                            </tr>
+
+                            {{ end }}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="modal-cadastro" id="modal-cadastro-produto" hidden>
+                    <div class="modal-cadastro-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-novo-produto">
+                        <div class="modal-cadastro-cabecalho">
+                            <h3 id="titulo-novo-produto">Novo produto</h3>
+                            <button class="botao-fechar-modal" type="button" id="fechar-cadastro-produto" aria-label="Fechar">&times;</button>
+                        </div>
+
+                        <form class="cadastro-form" action="/produtos" method="POST">
+
+                        <label for="nome">
+                            Nome do produto
+                        </label>
+
+                        <input
+                            id="nome"
+                            type="text"
+                            name="nome"
+                            value="{{ .Nome }}"
+                            placeholder="Ex.: Coca-Cola"
+                            required
+                        >
+
+                        <label for="quantidade">
+                            Quantidade inicial
+                        </label>
+
+                        <input
+                            id="quantidade"
+                            type="number"
+                            name="quantidade"
+                            value="{{ .Quantidade }}"
+                            min="0"
+                            required
+                        >
+
+                        <label for="preco">
+                            Preço unitário
+                        </label>
+
+                        <input
+                            id="preco"
+                            type="number"
+                            name="preco"
+                            value="{{ .Preco }}"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                            required
+                        >
+
+                            <button type="submit">Cadastrar produto</button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=2"></script>
+
+</body>
+
+</html>

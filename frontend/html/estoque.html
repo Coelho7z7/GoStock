@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>GoStock - Estoque</title>
-
     <link rel="stylesheet" href="/css/estoque.css">
 </head>
-
 <body>
 
     <div class="dashboard">
@@ -22,11 +19,9 @@
 
             <nav>
                 <a href="/dashboard">Dashboard</a>
-                <a href="/estoque">Estoque</a>
+                <a href="/produtos">Produtos</a>
                 <a href="/saidas">Saídas</a>
                 <a href="/movimentacoes">Movimentações</a>
-                <a href="/produtos">Cadastrar produto</a>
-                <a href="/alterar-produto">Alterar produto</a>
             </nav>
 
         </aside>
@@ -38,6 +33,12 @@
             </header>
 
             <section class="content">
+
+                    <nav class="abas-produtos" aria-label="Opções de produtos">
+                        <a href="/produtos">Novo produto</a>
+                        <a href="/alterar-produto">Alterar produto</a>
+                        <a class="aba-produto-ativa" href="/estoque">Estoque</a>
+                    </nav>
 
                 <h3>Controle de estoque</h3>
 

@@ -3,11 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const mostrarSenha = document.getElementById("mostrarSenha");
     const iconeOlho = document.getElementById("iconeOlho");
 
-    if (!senha || !mostrarSenha || !iconeOlho) {
-        return;
-    }
-
-    mostrarSenha.addEventListener("click", function () {
+    if (senha && mostrarSenha && iconeOlho) {
+        mostrarSenha.addEventListener("click", function () {
         const senhaVisivel = senha.type === "text";
 
         senha.type = senhaVisivel ? "password" : "text";
@@ -32,5 +29,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
         mostrarSenha.setAttribute("aria-label", "Ocultar senha");
         mostrarSenha.setAttribute("title", "Ocultar senha");
+        });
+    }
+
+    const modalCadastro = document.getElementById("modal-cadastro-produto");
+    const abrirCadastro = document.getElementById("abrir-cadastro-produto");
+    const fecharCadastro = document.getElementById("fechar-cadastro-produto");
+
+    if (!modalCadastro || !abrirCadastro || !fecharCadastro) {
+        return;
+    }
+
+    const fecharModal = function () {
+        modalCadastro.hidden = true;
+    };
+
+    abrirCadastro.addEventListener("click", function () {
+        modalCadastro.hidden = false;
+        modalCadastro.querySelector("input")?.focus();
+    });
+
+    fecharCadastro.addEventListener("click", fecharModal);
+
+    modalCadastro.addEventListener("click", function (evento) {
+        if (evento.target === modalCadastro) {
+            fecharModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (evento) {
+        if (evento.key === "Escape" && !modalCadastro.hidden) {
+            fecharModal();
+        }
     });
 });
