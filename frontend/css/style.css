@@ -5,41 +5,67 @@
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #1f2937;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #1e3a5f 100%);
+    color: #0f172a;
+    min-height: 100vh;
 }
 
 .login-container {
     min-height: 100vh;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    top: -200px;
+    right: -200px;
+    z-index: 0;
 }
 
 .login-card {
     width: 100%;
-    max-width: 420px;
-
+    max-width: 460px;
     background: white;
+    padding: 48px 42px;
+    border-radius: 24px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    position: relative;
+    z-index: 10;
+    animation: cardEntrada 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-    padding: 40px;
-
-    border-radius: 16px;
-
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+@keyframes cardEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .logo {
     text-align: center;
-
-    font-size: 36px;
-    font-weight: 700;
-
-    margin-bottom: 8px;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .logo span {
@@ -48,12 +74,12 @@ body {
 
 .subtitle {
     text-align: center;
-
-    color: #6b7280;
-
+    color: #64748b;
     font-size: 14px;
-
+    font-weight: 500;
+    line-height: 1.6;
     margin-bottom: 32px;
+    letter-spacing: 0.3px;
 }
 
 .login-alert {
@@ -164,74 +190,97 @@ body {
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .input-group label {
     display: block;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #1e293b;
+    margin-bottom: 10px;
+    text-transform: uppercase;
 }
 
 .input-group input {
     width: 100%;
-
-    padding: 13px 14px;
-
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-
+    padding: 16px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
     font-size: 15px;
-
+    color: #0f172a;
+    background: #f8fafc;
     outline: none;
+    transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    font-weight: 500;
+}
 
-    transition: 0.2s;
+.input-group input::placeholder {
+    color: #94a3b8;
 }
 
 .input-group input:focus {
     border-color: #2563eb;
-
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background: white;
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.18);
+    transform: translateY(-2px);
 }
 
 button {
     width: 100%;
-
-    padding: 13px;
-
+    padding: 16px 20px;
     border: none;
-    border-radius: 8px;
-
-    background: #2563eb;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
-
-    font-size: 15px;
-    font-weight: 600;
-
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
     cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+}
 
-    transition: 0.2s;
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
 }
 
 button:hover {
-    background: #1d4ed8;
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(29, 78, 216, 0.36);
+}
+
+button:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 button:active {
-    transform: scale(0.98);
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
 }
 
 .footer-text {
     text-align: center;
-
-    margin-top: 28px;
-
-    color: #9ca3af;
-
-    font-size: 12px;
+    margin-top: 32px;
+    color: #94a3b8;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.7;
 }
 
 /* Campo da senha */
@@ -242,19 +291,22 @@ button:active {
 
 .campo-senha input {
     width: 100%;
-    padding: 13px 48px 13px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #ffffff;
+    padding: 16px 48px 16px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
     font-size: 15px;
-    color: #1f2937;
+    color: #0f172a;
     outline: none;
-    transition: 0.2s;
+    transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    font-weight: 500;
 }
 
 .campo-senha input:focus {
     border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background: white;
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.18);
+    transform: translateY(-2px);
 }
 
 .campo-senha input::placeholder {

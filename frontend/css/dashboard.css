@@ -6,32 +6,34 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #1f2937;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .dashboard {
     display: flex;
     min-height: 100vh;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .sidebar {
     width: 240px;
     min-height: 100vh;
-
-    background: #111827;
-
+    background: #0f172a;
+    color: #e2e8f0;
     padding: 30px 20px;
 }
 
 .logo {
-    color: white;
+    color: var(--sidebar-text);
     text-align: center;
     margin-bottom: 40px;
 }
 
 .logo span {
-    color: #2563eb;
+    color: var(--sidebar-accent);
 }
 
 nav {
@@ -41,37 +43,32 @@ nav {
 }
 
 nav a {
-    color: #d1d5db;
+    color: var(--sidebar-text);
     text-decoration: none;
-
     padding: 12px 15px;
-
     border-radius: 8px;
-
     transition: 0.2s;
 }
 
 nav a:hover {
-    background: #1f2937;
+    background: var(--sidebar-hover);
     color: white;
 }
 
 .main-content {
     flex: 1;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
 }
 
 .topbar {
     height: 70px;
-
-    background: white;
-
+    background: #ffffff;
+    border-bottom: 1px solid #dfe7f3;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0 30px;
-
-    border-bottom: 1px solid #e5e7eb;
+    color: #0f172a;
 }
 
 .topbar h2 {
@@ -80,14 +77,18 @@ nav a:hover {
 
 .user {
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .content {
     padding: 30px;
+    background: transparent;
+    color: #0f172a;
 }
 
 .content h3 {
     font-size: 20px;
+    color: var(--text-primary);
 }
 
 .cards {
@@ -98,54 +99,46 @@ nav a:hover {
 
 .card {
     flex: 1;
-
-    background: white;
-
+    background: #ffffff;
     padding: 25px;
-
     border-radius: 12px;
-
-    border: 1px solid #e5e7eb;
-
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
     transition: 0.2s;
 }
 
 .card:hover {
     transform: translateY(-3px);
-
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 20px var(--card-shadow);
 }
 
 .card-title {
     display: block;
-
-    color: #6b7280;
-
+    color: #64748b;
     font-size: 14px;
-
     margin-bottom: 10px;
 }
 
 .card strong {
     font-size: 28px;
+    color: var(--text-primary);
 }
 
 .card small {
     display: block;
-
     margin-top: 8px;
-
-    color: #9ca3af;
-
+    color: #94a3b8;
     font-size: 12px;
 }
 
 .products-section {
     margin-top: 30px;
-    background: white;
+    background: #ffffff;
     padding: 25px;
     border-radius: 14px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
 }
 
 .section-header {
@@ -157,11 +150,11 @@ nav a:hover {
 
 .section-header h3 {
     font-size: 18px;
-    color: #111827;
+    color: var(--text-primary);
 }
 
 .section-header a {
-    color: #2563eb;
+    color: var(--button-bg);
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
@@ -174,6 +167,7 @@ nav a:hover {
 table {
     width: 100%;
     border-collapse: collapse;
+    background: transparent;
 }
 
 thead {
@@ -182,27 +176,19 @@ thead {
 
 th {
     padding: 14px 16px;
-
     text-align: left;
-
     font-size: 12px;
     font-weight: 600;
-
-    color: #6b7280;
-
+    color: #475569;
     text-transform: uppercase;
-
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 td {
     padding: 17px 16px;
-
     font-size: 14px;
-
-    color: #374151;
-
-    border-bottom: 1px solid #f1f5f9;
+    color: #0f172a;
+    border-bottom: 1px solid #edf2f7;
 }
 
 tbody tr {

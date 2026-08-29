@@ -20,9 +20,13 @@
             <nav>
                 <a href="/dashboard">Dashboard</a>
                 <a href="/produtos">Produtos</a>
-                <a href="/saidas">Saídas</a>
+                <a href="/vendas">Vendas</a>
                 <a href="/movimentacoes">Movimentações</a>
             </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
 
         </aside>
 
@@ -120,84 +124,8 @@
                                 </td>
 
                                 <td class="acoes-produto">
-
-    <!-- Formulário de edição -->
-    <form
-        id="produto-form-{{ .ID }}"
-        action="/alterar-produto"
-        method="POST"
-    >
-        <input
-            type="hidden"
-            name="produto_id"
-            value="{{ .ID }}"
-        >
-    </form>
-
-    <button
-        type="submit"
-        name="acao"
-        value="atualizar"
-        form="produto-form-{{ .ID }}"
-    >
-        Salvar
-    </button>
-
-    <!-- Entrada de estoque -->
-    <form
-        action="/estoque/adicionar"
-        method="POST"
-    >
-
-        <input
-            type="hidden"
-            name="produto_id"
-            value="{{ .ID }}"
-        >
-
-        <input
-            type="number"
-            name="quantidade"
-            min="1"
-            placeholder="Qtd."
-            required
-        >
-
-        <button type="submit">
-            + Estoque
-        </button>
-
-    </form>
-
-    <!-- Saída de estoque -->
-    <form
-        action="/estoque/saida"
-        method="POST"
-    >
-
-        <input
-            type="hidden"
-            name="produto_id"
-            value="{{ .ID }}"
-        >
-
-        <input
-            type="number"
-            name="quantidade"
-            min="1"
-            max="{{ .Quantidade }}"
-            placeholder="Qtd."
-            required
-        >
-
-        <button type="submit">
-            - Saída
-        </button>
-
-    </form>
-
-
-</td>
+                                    <span class="texto-simples">Produto cadastrado</span>
+                                </td>
 
                             </tr>
 

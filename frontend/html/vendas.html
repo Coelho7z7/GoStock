@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoStock - Vendas</title>
+
+    <link rel="stylesheet" href="/css/estoque.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/produtos">Produtos</a>
+                <a href="/vendas">Vendas</a>
+                <a href="/movimentacoes">Movimentações</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>PDV - Vendas</h2>
+            </header>
+
+            <section class="content pdv-page">
+
+                {{ if .Mensagem }}
+                <p class="formulario-sucesso" role="status">
+                    {{ .Mensagem }}
+                </p>
+                {{ end }}
+
+                <form method="GET" action="/vendas" class="pdv-busca-form">
+                    <label for="busca">Busca de produtos</label>
+                    <div class="pdv-busca-wrap">
+                        <input
+                            id="busca"
+                            name="busca"
+                            type="text"
+                            value="{{ .Busca }}"
+                            placeholder="Digite o nome do produto"
+                            autocomplete="off"
+                            autofocus
+                        >
+                        <button type="submit">Buscar</button>
+                    </div>
+                </form>
+
+                <form method="POST" action="/vendas" class="pdv-form" id="pdv-form">
+                    <div class="pdv-card pdv-card-lista">
+                        <div class="pdv-card-header">
+                            <h3>Produtos</h3>
+                        </div>
+
+                        <table class="pdv-produtos-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Produto</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ range .Produtos }}
+                                <tr>
+                                    <td>{{ .ID }}</td>
+                                    <td>{{ .Nome }}</td>
+                                    <td>R$ {{ printf "%.2f" .Preco }}</td>
+                                    <td>
+                                        <span class="estoque-quantidade {{ .StatusEstoque }}">
+                                            {{ .Quantidade }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="produto_id" value="{{ .ID }}">
+                                        <input
+                                            type="number"
+                                            name="quantidade"
+                                            min="0"
+                                            max="{{ .Quantidade }}"
+                                            value=""
+                                            placeholder="Qtd"
+                                            class="pdv-quantidade"
+                                            data-preco="{{ .Preco }}"
+                                        >
+                                    </td>
+                                </tr>
+                                {{ else }}
+                                <tr>
+                                    <td colspan="5">Nenhum produto encontrado.</td>
+                                </tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+
+                        <div class="pdv-acao-produtos">
+                            <button type="button" class="btn-prosseguir" id="btn-prosseguir-pagamento" disabled>
+                                Prosseguir para pagamento
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="modal-pagamento" id="modal-pagamento" hidden>
+                    <div class="modal-pagamento-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-pagamento">
+                        <div class="modal-cadastro-cabecalho">
+                            <h3 id="titulo-pagamento">Pagamento</h3>
+                            <button class="botao-fechar-modal" type="button" id="fechar-pagamento" aria-label="Fechar">&times;</button>
+                        </div>
+
+                        <div class="pdv-form-pagamento">
+                            <div class="pdv-payment-field">
+                                <label for="forma-pagamento">Forma de pagamento</label>
+                                <select id="forma-pagamento" name="forma_pagamento">
+                                    <option value="dinheiro">Dinheiro</option>
+                                    <option value="cartao">Cartão</option>
+                                    <option value="pix">Pix</option>
+                                    <option value="debito">Débito</option>
+                                </select>
+                            </div>
+
+                            <div class="pdv-payment-field">
+                                <label>Valor da venda</label>
+                                <div class="pdv-valor-total" id="valor-total-venda">R$ 0,00</div>
+                            </div>
+
+                            <button type="button" class="btn-finalizar" id="btn-finalizar-venda">Finalizar Venda</button>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('pdv-form');
+                        const modalPagamento = document.getElementById('modal-pagamento');
+                        const fecharPagamento = document.getElementById('fechar-pagamento');
+                        const finalizarButton = document.getElementById('btn-finalizar-venda');
+                        const prosseguirButton = document.getElementById('btn-prosseguir-pagamento');
+                        const quantidadeInputs = Array.from(document.querySelectorAll('.pdv-quantidade'));
+                        const valorTotalVenda = document.getElementById('valor-total-venda');
+
+                        if (!form || !modalPagamento || !finalizarButton || !prosseguirButton || !valorTotalVenda) {
+                            return;
+                        }
+
+                        const formatarMoeda = function (valor) {
+                            return new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            }).format(valor || 0);
+                        };
+
+                        const atualizarValorVenda = function () {
+                            let total = 0;
+
+                            quantidadeInputs.forEach(function (input) {
+                                const quantidade = Number(input.value || 0);
+                                if (quantidade <= 0) {
+                                    return;
+                                }
+
+                                const preco = Number(input.dataset.preco || 0);
+                                total += quantidade * preco;
+                            });
+
+                            valorTotalVenda.textContent = formatarMoeda(total);
+                        };
+
+                        const abrirPagamento = function () {
+                            modalPagamento.hidden = false;
+                            atualizarValorVenda();
+                            valorTotalVenda.scrollIntoView({ block: 'nearest' });
+                        };
+
+                        const fecharPagamentoModal = function () {
+                            modalPagamento.hidden = true;
+                        };
+
+                        const atualizarEstadoPagamento = function () {
+                            const temItens = quantidadeInputs.some(function (input) {
+                                return Number(input.value || 0) > 0;
+                            });
+
+                            prosseguirButton.disabled = !temItens;
+                        };
+
+                        quantidadeInputs.forEach(function (input) {
+                            input.addEventListener('input', function () {
+                                atualizarEstadoPagamento();
+                                atualizarValorVenda();
+                            });
+                        });
+
+                        prosseguirButton.addEventListener('click', function () {
+                            if (prosseguirButton.disabled) {
+                                return;
+                            }
+
+                            abrirPagamento();
+                        });
+
+                        fecharPagamento?.addEventListener('click', fecharPagamentoModal);
+                        modalPagamento.addEventListener('click', function (event) {
+                            if (event.target === modalPagamento) {
+                                fecharPagamentoModal();
+                            }
+                        });
+
+                        document.addEventListener('keydown', function (event) {
+                            if (event.key === 'Escape' && !modalPagamento.hidden) {
+                                fecharPagamentoModal();
+                            }
+                        });
+
+                        finalizarButton.addEventListener('click', function () {
+                            form.submit();
+                        });
+
+                        form.addEventListener('keydown', function (event) {
+                            if (event.key === 'Enter' && ['INPUT', 'SELECT'].includes(event.target.tagName)) {
+                                const campo = event.target.name || '';
+                                if (campo === 'quantidade' || campo === 'valor_recebido' || campo === 'forma_pagamento') {
+                                    event.preventDefault();
+                                }
+                            }
+                        });
+
+                        atualizarEstadoPagamento();
+                        atualizarValorVenda();
+                    });
+                </script>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

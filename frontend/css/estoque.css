@@ -6,8 +6,8 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #1f2937;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
+    color: #0f172a;
 }
 
 .dashboard {
@@ -20,12 +20,9 @@ body {
 .sidebar {
     width: 240px;
     min-height: 100vh;
-
-    background: #111827;
-
+    background: #0f172a;
     padding: 30px 20px;
-
-    color: white;
+    color: #e2e8f0;
 }
 
 .logo {
@@ -60,8 +57,35 @@ body {
 }
 
 .sidebar nav a:hover {
-    background: #1f2937;
+    background: #1e293b;
     color: white;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.sidebar-logout {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-logout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
 }
 
 .abas-produtos {
@@ -97,19 +121,16 @@ body {
 
 .main-content {
     flex: 1;
+    background: transparent;
 }
 
 .topbar {
     height: 80px;
-
-    background: white;
-
+    background: #ffffff;
     display: flex;
     align-items: center;
-
     padding: 0 35px;
-
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #dfe7f3;
 }
 
 .topbar h2 {
@@ -118,6 +139,7 @@ body {
 
 .content {
     padding: 35px;
+    background: transparent;
 }
 
 .content h3 {
@@ -466,6 +488,188 @@ body {
 
 .content button:active {
     transform: scale(0.97);
+}
+
+.pdv-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.pdv-busca-form,
+.pdv-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pdv-busca-form label,
+.pdv-form-pagamento label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.pdv-busca-wrap {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pdv-busca-wrap input,
+.pdv-form-pagamento input,
+.pdv-form-pagamento select,
+.pdv-quantidade {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+.pdv-busca-wrap {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.pdv-busca-wrap input {
+    flex: 1; 
+    min-width: 200px; 
+}
+
+.pdv-busca-wrap button {
+    flex: 0 0 auto; 
+}
+.pdv-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 61, 104, 0.05);
+    overflow: hidden;
+}
+
+.pdv-acao-produtos {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 20px 20px;
+}
+
+.btn-prosseguir {
+    min-width: 220px;
+    background: #111827;
+}
+
+.btn-prosseguir:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #9ca3af;
+}
+
+.pdv-card-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #edf2f7;
+    background: #f8fafc;
+}
+
+.pdv-card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #111827;
+}
+
+.pdv-produtos-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pdv-produtos-table th,
+.pdv-produtos-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+    text-align: left;
+}
+
+.pdv-quantidade {
+    width: 90px;
+}
+
+.modal-pagamento[hidden] {
+    display: none;
+}
+
+.modal-pagamento {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(17, 24, 39, 0.55);
+    animation: aparecer-fundo 180ms ease-out;
+}
+
+.modal-pagamento-conteudo {
+    width: min(420px, 100%);
+    background: white;
+    border-radius: 12px;
+    padding: 24px 22px 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    animation: subir-modal 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pdv-form-pagamento {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+}
+
+.pdv-form-pagamento .btn-finalizar {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.pdv-payment-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pdv-payment-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.pdv-valor-total {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f3f4f6;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.pdv-form-pagamento select,
+.pdv-form-pagamento input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+}
+
+.pdv-form-pagamento button {
+    margin-top: 8px;
 }
 
 .estoque-quantidade {
