@@ -10,7 +10,7 @@ func ExibirMenu() {
 	fmt.Println("4 - Remover produto")
 	fmt.Println("5 - Atualizar produto")
 	fmt.Println("6 - Adicionar estoque")
-	fmt.Println("7 - Registrar venda")
+	fmt.Println("7 - Registrar saída de estoque")
 	fmt.Println("8 - Ver movimentações")
 	fmt.Println("9 - Sair")
 }

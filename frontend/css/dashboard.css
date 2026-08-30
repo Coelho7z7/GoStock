@@ -6,16 +6,15 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    transition: background 0.3s ease, color 0.3s ease;
+    background: #eef4ff;
+    color: #0f172a;
 }
 
 .dashboard {
     display: flex;
     min-height: 100vh;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: #eef4ff;
+    color: #0f172a;
 }
 
 .sidebar {
@@ -24,16 +23,18 @@ body {
     background: #0f172a;
     color: #e2e8f0;
     padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo {
-    color: var(--sidebar-text);
+    color: #e2e8f0;
     text-align: center;
     margin-bottom: 40px;
 }
 
 .logo span {
-    color: var(--sidebar-accent);
+    color: #2563eb;
 }
 
 nav {
@@ -43,7 +44,7 @@ nav {
 }
 
 nav a {
-    color: var(--sidebar-text);
+    color: #e2e8f0;
     text-decoration: none;
     padding: 12px 15px;
     border-radius: 8px;
@@ -51,8 +52,35 @@ nav a {
 }
 
 nav a:hover {
-    background: var(--sidebar-hover);
+    background: #1e293b;
     color: white;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.sidebar-logout {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-logout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
 }
 
 .main-content {
@@ -77,7 +105,7 @@ nav a:hover {
 
 .user {
     font-weight: 600;
-    color: var(--text-primary);
+    color: #0f172a;
 }
 
 .content {
@@ -88,7 +116,7 @@ nav a:hover {
 
 .content h3 {
     font-size: 20px;
-    color: var(--text-primary);
+    color: #0f172a;
 }
 
 .cards {
@@ -110,7 +138,7 @@ nav a:hover {
 
 .card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px var(--card-shadow);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
 }
 
 .card-title {
@@ -122,7 +150,7 @@ nav a:hover {
 
 .card strong {
     font-size: 28px;
-    color: var(--text-primary);
+    color: #0f172a;
 }
 
 .card small {
@@ -150,11 +178,11 @@ nav a:hover {
 
 .section-header h3 {
     font-size: 18px;
-    color: var(--text-primary);
+    color: #0f172a;
 }
 
 .section-header a {
-    color: var(--button-bg);
+    color: #2563eb;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;

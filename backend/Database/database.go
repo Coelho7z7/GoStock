@@ -60,6 +60,7 @@ func CriarTabelas() error {
        quantidade INTEGER NOT NULL,
        valor_unitario REAL NOT NULL,
        valor_total REAL NOT NULL,
+       forma_pagamento TEXT NOT NULL DEFAULT 'dinheiro',
        data DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (produto_id) REFERENCES produtos(id),
@@ -92,9 +93,23 @@ func CriarTabelas() error {
 		return err
 	}
 	if colunaAtivo == 0 {
-		_, err = DB.Exec(`ALTER TABLE produtos ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`)
+		if _, err = DB.Exec(`ALTER TABLE produtos ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`); err != nil {
+			return err
+		}
+	}
+
+	var colunaFormaPagamento int
+	err = DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM pragma_table_info('vendas')
+		WHERE name = 'forma_pagamento'
+	`).Scan(&colunaFormaPagamento)
+	if err != nil {
+		return err
+	}
+	if colunaFormaPagamento == 0 {
+		_, err = DB.Exec(`ALTER TABLE vendas ADD COLUMN forma_pagamento TEXT NOT NULL DEFAULT 'dinheiro'`)
 	}
 
 	return err
-
 }

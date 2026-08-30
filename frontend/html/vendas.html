@@ -7,7 +7,9 @@
 
     <title>GoStock - Vendas</title>
 
-    <link rel="stylesheet" href="/css/estoque.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/pdv.css">
+    <link rel="stylesheet" href="/css/estoque-badges.css">
 </head>
 
 <body>
@@ -100,6 +102,7 @@
                                             value=""
                                             placeholder="Qtd"
                                             class="pdv-quantidade"
+                                            data-produto-id="{{ .ID }}"
                                             data-preco="{{ .Preco }}"
                                         >
                                     </td>
@@ -112,6 +115,8 @@
                             </tbody>
                         </table>
 
+                        <p class="pdv-erro" id="pdv-erro" role="alert" hidden></p>
+
                         <div class="pdv-acao-produtos">
                             <button type="button" class="btn-prosseguir" id="btn-prosseguir-pagamento" disabled>
                                 Prosseguir para pagamento
@@ -119,35 +124,43 @@
                         </div>
                     </div>
 
-                </form>
-
-                <div class="modal-pagamento" id="modal-pagamento" hidden>
-                    <div class="modal-pagamento-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-pagamento">
-                        <div class="modal-cadastro-cabecalho">
-                            <h3 id="titulo-pagamento">Pagamento</h3>
-                            <button class="botao-fechar-modal" type="button" id="fechar-pagamento" aria-label="Fechar">&times;</button>
-                        </div>
-
-                        <div class="pdv-form-pagamento">
-                            <div class="pdv-payment-field">
-                                <label for="forma-pagamento">Forma de pagamento</label>
-                                <select id="forma-pagamento" name="forma_pagamento">
-                                    <option value="dinheiro">Dinheiro</option>
-                                    <option value="cartao">Cartão</option>
-                                    <option value="pix">Pix</option>
-                                    <option value="debito">Débito</option>
-                                </select>
+                    <!--
+                        O modal de pagamento fica DENTRO do <form id="pdv-form">
+                        de propósito: assim o campo "forma_pagamento" é
+                        associado ao formulário da venda (posicionamento
+                        "fixed" no CSS não muda por causa disso). Antes,
+                        esse modal era uma div separada, fora do form, e a
+                        forma de pagamento escolhida nunca chegava a ser
+                        enviada ao servidor.
+                    -->
+                    <div class="modal-pagamento" id="modal-pagamento" hidden>
+                        <div class="modal-pagamento-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-pagamento">
+                            <div class="modal-cadastro-cabecalho">
+                                <h3 id="titulo-pagamento">Pagamento</h3>
+                                <button class="botao-fechar-modal" type="button" id="fechar-pagamento" aria-label="Fechar">&times;</button>
                             </div>
 
-                            <div class="pdv-payment-field">
-                                <label>Valor da venda</label>
-                                <div class="pdv-valor-total" id="valor-total-venda">R$ 0,00</div>
-                            </div>
+                            <div class="pdv-form-pagamento">
+                                <div class="pdv-payment-field">
+                                    <label for="forma-pagamento">Forma de pagamento</label>
+                                    <select id="forma-pagamento" name="forma_pagamento">
+                                        <option value="dinheiro">Dinheiro</option>
+                                        <option value="cartao">Cartão</option>
+                                        <option value="pix">Pix</option>
+                                        <option value="debito">Débito</option>
+                                    </select>
+                                </div>
 
-                            <button type="button" class="btn-finalizar" id="btn-finalizar-venda">Finalizar Venda</button>
+                                <div class="pdv-payment-field">
+                                    <label>Valor da venda</label>
+                                    <div class="pdv-valor-total" id="valor-total-venda">R$ 0,00</div>
+                                </div>
+
+                                <button type="button" class="btn-finalizar" id="btn-finalizar-venda">Finalizar Venda</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
 
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
@@ -158,6 +171,8 @@
                         const prosseguirButton = document.getElementById('btn-prosseguir-pagamento');
                         const quantidadeInputs = Array.from(document.querySelectorAll('.pdv-quantidade'));
                         const valorTotalVenda = document.getElementById('valor-total-venda');
+                        const formaPagamentoSelect = document.getElementById('forma-pagamento');
+                        const erroBox = document.getElementById('pdv-erro');
 
                         if (!form || !modalPagamento || !finalizarButton || !prosseguirButton || !valorTotalVenda) {
                             return;
@@ -170,20 +185,42 @@
                             }).format(valor || 0);
                         };
 
+                        const itensSelecionados = function () {
+                            return quantidadeInputs
+                                .map(function (input) {
+                                    return {
+                                        id: Number(input.dataset.produtoId || 0),
+                                        quantidade: Number(input.value || 0),
+                                        preco: Number(input.dataset.preco || 0)
+                                    };
+                                })
+                                .filter(function (item) {
+                                    return item.id > 0 && item.quantidade > 0;
+                                });
+                        };
+
                         const atualizarValorVenda = function () {
-                            let total = 0;
-
-                            quantidadeInputs.forEach(function (input) {
-                                const quantidade = Number(input.value || 0);
-                                if (quantidade <= 0) {
-                                    return;
-                                }
-
-                                const preco = Number(input.dataset.preco || 0);
-                                total += quantidade * preco;
-                            });
+                            const total = itensSelecionados().reduce(function (soma, item) {
+                                return soma + item.quantidade * item.preco;
+                            }, 0);
 
                             valorTotalVenda.textContent = formatarMoeda(total);
+                        };
+
+                        const mostrarErro = function (mensagem) {
+                            if (!erroBox) {
+                                return;
+                            }
+                            erroBox.textContent = mensagem;
+                            erroBox.hidden = false;
+                        };
+
+                        const esconderErro = function () {
+                            if (!erroBox) {
+                                return;
+                            }
+                            erroBox.hidden = true;
+                            erroBox.textContent = '';
                         };
 
                         const abrirPagamento = function () {
@@ -197,11 +234,7 @@
                         };
 
                         const atualizarEstadoPagamento = function () {
-                            const temItens = quantidadeInputs.some(function (input) {
-                                return Number(input.value || 0) > 0;
-                            });
-
-                            prosseguirButton.disabled = !temItens;
+                            prosseguirButton.disabled = itensSelecionados().length === 0;
                         };
 
                         quantidadeInputs.forEach(function (input) {
@@ -232,8 +265,46 @@
                             }
                         });
 
+                        // A finalização é feita via fetch para /api/vendas,
+                        // que já existia no backend mas nunca era chamado
+                        // pelo front — a venda era enviada por um
+                        // form.submit() comum que não incluía a forma de
+                        // pagamento (o <select> ficava fora do <form>).
                         finalizarButton.addEventListener('click', function () {
-                            form.submit();
+                            const itens = itensSelecionados();
+
+                            if (itens.length === 0) {
+                                mostrarErro('Selecione pelo menos um produto com quantidade maior que zero.');
+                                return;
+                            }
+
+                            esconderErro();
+                            finalizarButton.disabled = true;
+                            finalizarButton.textContent = 'Finalizando...';
+
+                            fetch('/api/vendas', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    items: itens.map(function (item) {
+                                        return { id: item.id, quantidade: item.quantidade };
+                                    }),
+                                    formaPagamento: formaPagamentoSelect ? formaPagamentoSelect.value : 'dinheiro'
+                                })
+                            })
+                                .then(function (resposta) {
+                                    if (!resposta.ok) {
+                                        return resposta.text().then(function (texto) {
+                                            throw new Error(texto || 'Não foi possível registrar a venda.');
+                                        });
+                                    }
+                                    window.location.href = '/vendas?sucesso=venda';
+                                })
+                                .catch(function (erro) {
+                                    mostrarErro(erro.message);
+                                    finalizarButton.disabled = false;
+                                    finalizarButton.textContent = 'Finalizar Venda';
+                                });
                         });
 
                         form.addEventListener('keydown', function (event) {
@@ -255,6 +326,8 @@
         </main>
 
     </div>
+
+    <script src="/js/app.js?v=2"></script>
 
 </body>
 </html>

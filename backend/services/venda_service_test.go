@@ -23,3 +23,21 @@ func TestCalcularValorTotalItensVenda(t *testing.T) {
 		t.Fatalf("valor esperado 63.5, recebido %.2f", valor)
 	}
 }
+
+func TestNormalizarFormaPagamento(t *testing.T) {
+	casos := map[string]string{
+		"pix":      "pix",
+		"cartao":   "cartao",
+		"debito":   "debito",
+		"dinheiro": "dinheiro",
+		"":         "dinheiro",
+		"bitcoin":  "dinheiro",
+		"PIX":      "dinheiro",
+	}
+
+	for entrada, esperado := range casos {
+		if resultado := normalizarFormaPagamento(entrada); resultado != esperado {
+			t.Fatalf("normalizarFormaPagamento(%q) = %q, esperado %q", entrada, resultado, esperado)
+		}
+	}
+}

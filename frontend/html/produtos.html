@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Produtos</title>
-    <link rel="stylesheet" href="/css/estoque.css?v=2">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/produtos.css">
+    <link rel="stylesheet" href="/css/estoque-badges.css">
 </head>
 <body class="pagina-produtos">
 
@@ -88,31 +90,11 @@
                                 </td>
 
                                 <td>
-
-                                    <input
-                                        class="produto-edicao-input"
-                                        type="text"
-                                        name="nome"
-                                        value="{{ .Nome }}"
-                                        form="produto-form-{{ .ID }}"
-                                        required
-                                    >
-
+                                    {{ .Nome }}
                                 </td>
 
                                 <td>
-
-                                    <input
-                                        class="produto-edicao-input preco-input"
-                                        type="number"
-                                        name="preco"
-                                        value="{{ printf "%.2f" .Preco }}"
-                                        form="produto-form-{{ .ID }}"
-                                        min="0"
-                                        step="0.01"
-                                        required
-                                    >
-
+                                    R$ {{ printf "%.2f" .Preco }}
                                 </td>
 
                                 <td>
@@ -124,7 +106,7 @@
                                 </td>
 
                                 <td class="acoes-produto">
-                                    <span class="texto-simples">Produto cadastrado</span>
+                                    <a class="link-editar-produto" href="/alterar-produto">Editar</a>
                                 </td>
 
                             </tr>

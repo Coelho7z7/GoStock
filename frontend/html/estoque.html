@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Estoque</title>
-    <link rel="stylesheet" href="/css/estoque.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/estoque-badges.css">
 </head>
 <body>
 
@@ -50,6 +51,10 @@
                 <p class="formulario-sucesso" role="status">{{ .Mensagem }}</p>
                 {{ end }}
 
+                {{ if .Erro }}
+                <p class="formulario-erro" role="alert">{{ .Erro }}</p>
+                {{ end }}
+
                 <table>
 
                     <thead>
@@ -57,6 +62,7 @@
                             <th>ID</th>
                             <th>Produto</th>
                             <th>Estoque atual</th>
+                            <th>Movimentar</th>
                         </tr>
                     </thead>
 
@@ -72,10 +78,24 @@
                                     {{ .Quantidade }}
                                 </span>
                             </td>
+                            <td class="acoes-produto">
+                                <form id="estoque-form-{{ .ID }}" action="/estoque" method="POST"></form>
+                                <input type="hidden" name="produto_id" value="{{ .ID }}" form="estoque-form-{{ .ID }}">
+                                <input
+                                    type="number"
+                                    name="quantidade"
+                                    min="1"
+                                    placeholder="Qtd."
+                                    form="estoque-form-{{ .ID }}"
+                                    required
+                                >
+                                <button type="submit" name="acao" value="entrada" form="estoque-form-{{ .ID }}">Entrada</button>
+                                <button class="botao-remover" type="submit" name="acao" value="saida" form="estoque-form-{{ .ID }}">Saída</button>
+                            </td>
                         </tr>
                         {{ else }}
                         <tr>
-                            <td colspan="3">Nenhum produto cadastrado.</td>
+                            <td colspan="4">Nenhum produto cadastrado.</td>
                         </tr>
                         {{ end }}
                     </tbody>

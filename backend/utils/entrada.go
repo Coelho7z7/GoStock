@@ -35,7 +35,7 @@ func LerNomeValido(reader *bufio.Reader) string {
 		if ValidarNome(nome) {
 			return nome
 		}
-		fmt.Println("O nom não pode ser vázio.")
+		fmt.Println("O nome não pode ser vazio.")
 	}
 }
 

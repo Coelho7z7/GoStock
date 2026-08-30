@@ -5,17 +5,6 @@ import (
 	"gostock/backend/models"
 )
 
-func ExistemUsuarios() bool {
-	var quantidade int
-
-	err := database.DB.QueryRow(`SELECT COUNT(*) FROM usuarios`).Scan(&quantidade)
-	if err != nil {
-		return false
-	}
-
-	return quantidade > 0
-}
-
 func BuscarUsuarioPorID(id int) (*models.Usuario, error) {
 	var usuario models.Usuario
 

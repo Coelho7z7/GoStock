@@ -1,0 +1,181 @@
+/* CABEÇALHO E MODAL DE CADASTRO DE PRODUTO */
+
+.cabecalho-produtos {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #dbe4f0;
+}
+
+.cabecalho-produtos h3 {
+    margin-bottom: 0;
+    color: #172b4d;
+    letter-spacing: 0.01em;
+}
+
+.botao-novo-produto {
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.2);
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
+}
+
+.botao-novo-produto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 18px rgba(37, 99, 235, 0.28);
+}
+
+.modal-cadastro[hidden] {
+    display: none;
+}
+
+.modal-cadastro {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(17, 24, 39, 0.55);
+    animation: aparecer-fundo 180ms ease-out;
+}
+
+.modal-cadastro-conteudo {
+    width: min(560px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    animation: subir-modal 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cadastro-container {
+    max-width: 560px;
+    padding: 28px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.cadastro-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.cadastro-form label {
+    margin-top: 10px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cadastro-form input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.cadastro-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.cadastro-form button {
+    align-self: flex-start;
+    margin-top: 18px;
+}
+
+.modal-cadastro .cadastro-form {
+    align-items: stretch;
+}
+
+/* TABELA E EDIÇÃO DE PRODUTOS */
+
+.tabela-produtos {
+    overflow-x: auto;
+    background: white;
+    border: 1px solid #e1e8f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 61, 104, 0.06);
+}
+
+.produto-edicao-input {
+    width: 100%;
+    min-width: 150px;
+    padding: 9px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.preco-input {
+    min-width: 110px;
+}
+
+.link-editar-produto {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.link-editar-produto:hover {
+    background: #1d4ed8;
+}
+
+/* Efeito de revelar linhas em cascata, só na tela de produtos */
+
+.pagina-produtos .content {
+    background: linear-gradient(135deg, #f4f7fb 0%, #eef3f9 100%);
+}
+
+.pagina-produtos .content tbody tr:nth-child(2) {
+    animation-delay: 45ms;
+}
+
+.pagina-produtos .content tbody tr:nth-child(3) {
+    animation-delay: 90ms;
+}
+
+.pagina-produtos .content tbody tr:nth-child(4) {
+    animation-delay: 135ms;
+}
+
+@media (max-width: 700px) {
+    .pagina-produtos .content {
+        padding: 22px 16px;
+    }
+
+    .cabecalho-produtos {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .botao-novo-produto {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pagina-produtos *,
+    .pagina-produtos *::before,
+    .pagina-produtos *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -13,6 +13,24 @@ type ItemVenda struct {
 	PrecoUnitario float64
 }
 
+// formasPagamentoValidas lista as formas de pagamento aceitas pelo PDV.
+var formasPagamentoValidas = map[string]bool{
+	"dinheiro": true,
+	"cartao":   true,
+	"pix":      true,
+	"debito":   true,
+}
+
+// normalizarFormaPagamento garante que sempre seja gravado um valor
+// conhecido, usando "dinheiro" como padrão quando o valor vier vazio
+// ou fora da lista esperada.
+func normalizarFormaPagamento(formaPagamento string) string {
+	if formasPagamentoValidas[formaPagamento] {
+		return formaPagamento
+	}
+	return "dinheiro"
+}
+
 func calcularValorTotalVenda(quantidade int, precoUnitario float64) float64 {
 	return float64(quantidade) * precoUnitario
 }
@@ -25,19 +43,15 @@ func calcularValorTotalItensVenda(itens []ItemVenda) float64 {
 	return total
 }
 
-func RegistrarVendaWeb(produtoID int, quantidade int, usuarioID int) error {
-	if quantidade <= 0 {
-		return fmt.Errorf("a quantidade deve ser maior que zero")
-	}
-
-	itens := []ItemVenda{{ProdutoID: produtoID, Quantidade: quantidade}}
-	return RegistrarVendaCompletaWeb(itens, usuarioID)
-}
-
-func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int) error {
+// RegistrarVendaCompletaWeb registra uma venda com um ou mais itens,
+// debitando o estoque, gravando a venda e a movimentação de saída de
+// cada produto dentro de uma única transação.
+func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int, formaPagamento string) error {
 	if len(itens) == 0 {
 		return fmt.Errorf("a venda deve conter pelo menos um item")
 	}
+
+	formaPagamento = normalizarFormaPagamento(formaPagamento)
 
 	tx, err := database.DB.Begin()
 	if err != nil {
@@ -85,9 +99,9 @@ func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int) error {
 		}
 
 		_, err = tx.Exec(`
-			INSERT INTO vendas (produto_id, usuario_id, quantidade, valor_unitario, valor_total)
-			VALUES (?, ?, ?, ?, ?)
-		`, item.ProdutoID, usuarioID, item.Quantidade, preco, calcularValorTotalVenda(item.Quantidade, preco))
+			INSERT INTO vendas (produto_id, usuario_id, quantidade, valor_unitario, valor_total, forma_pagamento)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`, item.ProdutoID, usuarioID, item.Quantidade, preco, calcularValorTotalVenda(item.Quantidade, preco), formaPagamento)
 		if err != nil {
 			return err
 		}

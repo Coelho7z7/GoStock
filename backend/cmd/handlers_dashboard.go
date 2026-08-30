@@ -1,0 +1,86 @@
+package main
+
+import (
+	"html/template"
+	"net/http"
+
+	database "gostock/backend/Database"
+	"gostock/backend/models"
+	"gostock/backend/services"
+)
+
+type DashboardData struct {
+	Usuario  *models.Usuario
+	Produtos []models.Produto
+	Resumo   ResumoData
+}
+
+type ResumoData struct {
+	TotalEstoque       int
+	TotalVendas        int
+	TotalMovimentacoes int
+}
+
+// handlerDashboard monta a visão geral do sistema.
+func handlerDashboard(w http.ResponseWriter, r *http.Request) {
+	usuarioID, ok := usuarioDaSessao(r)
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	usuario, err := services.BuscarUsuarioPorID(usuarioID)
+	if err != nil {
+		http.Error(w, "Usuário não encontrado", http.StatusInternalServerError)
+		return
+	}
+
+	produtos, err := services.BuscarTodosProdutos()
+	if err != nil {
+		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
+		return
+	}
+
+	resumo, err := carregarResumo()
+	if err != nil {
+		http.Error(w, "Erro ao carregar resumo", http.StatusInternalServerError)
+		return
+	}
+
+	dados := DashboardData{
+		Usuario:  usuario,
+		Produtos: produtos,
+		Resumo:   resumo,
+	}
+
+	tmpl, err := template.ParseFiles("frontend/html/dashboard.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.Execute(w, dados); err != nil {
+		http.Error(w, "Erro ao renderizar página", http.StatusInternalServerError)
+		return
+	}
+}
+
+// carregarResumo calcula os números exibidos nos cartões do dashboard.
+//
+// TotalVendas soma as unidades vendidas a partir da tabela "vendas"
+// (vendas de fato, com preço e forma de pagamento) — e não da tabela
+// "movimentacoes", que também registra saídas manuais de estoque
+// (ex.: produto danificado) que não são vendas.
+func carregarResumo() (ResumoData, error) {
+	var resumo ResumoData
+	err := database.DB.QueryRow(`SELECT COALESCE(SUM(quantidade), 0) FROM produtos`).Scan(&resumo.TotalEstoque)
+	if err != nil {
+		return resumo, err
+	}
+	err = database.DB.QueryRow(`SELECT COALESCE(SUM(quantidade), 0) FROM vendas`).Scan(&resumo.TotalVendas)
+	if err != nil {
+		return resumo, err
+	}
+	err = database.DB.QueryRow(`SELECT COUNT(*) FROM movimentacoes`).Scan(&resumo.TotalMovimentacoes)
+	return resumo, err
+}

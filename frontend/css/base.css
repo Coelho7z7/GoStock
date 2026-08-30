@@ -1,0 +1,316 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
+    color: #0f172a;
+}
+
+.dashboard {
+    min-height: 100vh;
+    display: flex;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #0f172a;
+    padding: 30px 20px;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 40px;
+}
+
+.logo span {
+    color: #2563eb;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar nav a {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.sidebar-logout {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-logout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
+}
+
+/* NAVEGAÇÃO EM ABAS (produtos / estoque / alterar produto) */
+
+.abas-produtos {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    gap: 4px;
+    margin-bottom: 34px;
+    padding: 5px;
+    background: #e8eef7;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+}
+
+.abas-produtos a {
+    color: #4b5563;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.abas-produtos a:hover,
+.abas-produtos .aba-produto-ativa {
+    color: #174ea6;
+    background: white;
+    box-shadow: 0 2px 8px rgba(31, 61, 104, 0.1);
+}
+
+/* CONTEÚDO */
+
+.main-content {
+    flex: 1;
+    background: transparent;
+}
+
+.topbar {
+    height: 80px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 35px;
+    border-bottom: 1px solid #dfe7f3;
+}
+
+.topbar h2 {
+    font-size: 24px;
+}
+
+.content {
+    padding: 35px;
+    background: transparent;
+}
+
+.content h3 {
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+.formulario-erro {
+    margin-bottom: 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.formulario-sucesso {
+    margin-bottom: 12px;
+    color: #15803d;
+    font-size: 14px;
+}
+
+/* TABELAS GENÉRICAS (usadas em produtos, estoque, movimentações, etc.) */
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.content thead {
+    background: #f8fafc;
+}
+
+.content th {
+    padding: 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.content td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+}
+
+.content tbody tr {
+    animation: revelar-linha 360ms ease both;
+    transition: background 180ms ease, transform 180ms ease;
+}
+
+.content tbody tr:hover {
+    background: #f5f8fc;
+}
+
+.content tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ANIMAÇÕES COMPARTILHADAS */
+
+@keyframes aparecer-fundo {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes subir-modal {
+    from { opacity: 0; transform: translateY(14px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes revelar-linha {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* CABEÇALHO DE MODAIS (novo produto / pagamento no PDV) */
+
+.modal-cadastro-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.modal-cadastro-cabecalho h3 {
+    margin-bottom: 0;
+}
+
+.botao-fechar-modal {
+    padding: 4px 10px !important;
+    background: transparent !important;
+    color: #6b7280 !important;
+    font-size: 26px !important;
+    line-height: 1;
+}
+
+.botao-fechar-modal:hover {
+    color: #111827 !important;
+    background: #f3f4f6 !important;
+}
+
+/* FORMULÁRIO GENÉRICO DENTRO DE .content (busca, entrada/saída de estoque) */
+
+.content form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.content input[type="number"] {
+    width: 120px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.content input[type="number"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.content input[type="number"]::placeholder {
+    color: #9ca3af;
+}
+
+.content button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.content button:hover {
+    background: #1d4ed8;
+}
+
+.content button:active {
+    transform: scale(0.97);
+}
+
+.botao-remover {
+    background: #dc2626 !important;
+}
+
+.botao-remover:hover {
+    background: #b91c1c !important;
+}
+
+.acoes-produto {
+    white-space: nowrap;
+}
+
+.acoes-produto button {
+    margin-right: 6px;
+}
+
+@media (max-width: 700px) {
+    .abas-produtos {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .abas-produtos a {
+        white-space: nowrap;
+    }
+}
