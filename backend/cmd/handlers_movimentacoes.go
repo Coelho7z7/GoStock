@@ -10,7 +10,7 @@ import (
 
 // handlerMovimentacoes exibe o histórico de entradas/saídas/atualizações.
 func handlerMovimentacoes(w http.ResponseWriter, r *http.Request) {
-	if _, ok := usuarioDaSessao(r); !ok {
+	if _, true := usuarioDaSessao(r); !true {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

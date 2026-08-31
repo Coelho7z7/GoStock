@@ -56,6 +56,21 @@
             </section>
         </main>
     </div>
+    {{ if gt .TotalPaginas 1 }}
+<div class="paginacao">
+
+    {{ if gt .Pagina 1 }}
+    <a href="/alterar-produto?pagina={{ .PaginaAnterior }}">« Anterior</a>
+    {{ end }}
+
+    <span>Página {{ .Pagina }} de {{ .TotalPaginas }}</span>
+
+    {{ if lt .Pagina .TotalPaginas }}
+    <a href="/alterar-produto?pagina={{ .PaginaProxima }}">Próxima »</a>
+    {{ end }}
+
+</div>
+{{ end }}
     <script src="/js/app.js?v=2"></script>
 </body>
 </html>

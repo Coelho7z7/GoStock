@@ -176,26 +176,6 @@ func buscarDadosEstoque(produtoID int) (int, string, int, error) {
 	return produtoID, nome, quantidade, err
 }
 
-func adicionarQuantidadeEstoque(produtoID int, quantidade int) error {
-	_, err := database.DB.Exec(`
-		UPDATE produtos
-		SET quantidade = quantidade + ?
-		WHERE id = ?
-	`, quantidade, produtoID)
-
-	return err
-}
-
-func removerQuantidadeEstoque(produtoID int, quantidade int) error {
-	_, err := database.DB.Exec(`
-		UPDATE produtos
-		SET quantidade = quantidade - ?
-		WHERE id = ?
-	`, quantidade, produtoID)
-
-	return err
-}
-
 func registrarMovimentacaoTx(tx *sql.Tx, produtoID int, usuarioID int, tipo string, quantidade int) error {
 	_, err := tx.Exec(`
 		INSERT INTO movimentacoes

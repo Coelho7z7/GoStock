@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,17 +10,24 @@ import (
 	"gostock/backend/models"
 	"gostock/backend/services"
 )
+
 func handlerEstoque(w http.ResponseWriter, r *http.Request) {
-	usuarioID, ok := usuarioDaSessao(r)
-	if !ok {
+	usuarioID, true := usuarioDaSessao(r)
+	if !true {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
+	const produtosPorPagina = 10
+
 	dados := struct {
-		Produtos []models.Produto
-		Mensagem string
-		Erro     string
+		Produtos       []models.Produto
+		Mensagem       string
+		Erro           string
+		PaginaAnterior int
+		PaginaProxima  int
+		TotalPaginas   int
+		Pagina         int
 	}{}
 
 	mensagens := map[string]string{
@@ -60,8 +68,56 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 		return
 	}
+	pagina, _ := strconv.Atoi(r.URL.Query().Get("pagina"))
+	if pagina < 1 {
+		pagina = 1
+	}
 
-	produtos, err := services.BuscarTodosProdutos()
+	produtos, total, err := services.ProdutosPaginados(
+		"",
+		pagina,
+		produtosPorPagina,
+	)
+	if err != nil {
+		log.Println("erro em ProdutosPaginados:", err)
+		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
+		return
+	}
+
+	dados.Produtos = produtos
+	dados.Pagina = pagina
+
+	dados.TotalPaginas = (total + produtosPorPagina - 1) / produtosPorPagina
+	if dados.TotalPaginas < 1 {
+		dados.TotalPaginas = 1
+	}
+
+	dados.PaginaAnterior = pagina - 1
+	dados.PaginaProxima = pagina + 1
+
+	tmpl, err := template.ParseFiles("frontend/html/produtos.html")
+	if err != nil {
+		http.Error(
+			w,
+			"Erro ao carregar produtos",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	if dados.Erro != "" {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	if err := tmpl.Execute(w, dados); err != nil {
+		http.Error(
+			w,
+			"Erro ao renderizar produtos",
+			http.StatusInternalServerError,
+		)
+	}
+
+	produtos, err = services.BuscarTodosProdutos()
 	if err != nil {
 		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
 		return
@@ -69,7 +125,7 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 	dados.Produtos = produtos
 	dados.Mensagem = mensagens[r.URL.Query().Get("sucesso")]
 
-	tmpl, err := template.ParseFiles("frontend/html/estoque.html")
+	tmpl, err = template.ParseFiles("frontend/html/estoque.html")
 	if err != nil {
 		http.Error(w, "Erro ao carregar estoque", http.StatusInternalServerError)
 		return
@@ -80,6 +136,11 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := tmpl.Execute(w, dados); err != nil {
-		http.Error(w, "Erro ao renderizar estoque", http.StatusInternalServerError)
+		println("O Erro é: ", err.Error())
+		http.Error(
+			w,
+			"Erro ao renderizar estoque de produto:",
+			http.StatusInternalServerError,
+		)
 	}
 }

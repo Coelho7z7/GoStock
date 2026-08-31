@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 
 	database "gostock/backend/Database"
@@ -23,8 +24,8 @@ type ResumoData struct {
 
 // handlerDashboard monta a visão geral do sistema.
 func handlerDashboard(w http.ResponseWriter, r *http.Request) {
-	usuarioID, ok := usuarioDaSessao(r)
-	if !ok {
+	usuarioID, true := usuarioDaSessao(r)
+	if !true {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -37,6 +38,7 @@ func handlerDashboard(w http.ResponseWriter, r *http.Request) {
 
 	produtos, err := services.BuscarTodosProdutos()
 	if err != nil {
+		log.Println("erro em BuscarTodosProdutos (dashboard):", err) // linha temporária
 		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
 		return
 	}
@@ -62,7 +64,9 @@ func handlerDashboard(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.Execute(w, dados); err != nil {
 		http.Error(w, "Erro ao renderizar página", http.StatusInternalServerError)
 		return
+
 	}
+
 }
 
 // carregarResumo calcula os números exibidos nos cartões do dashboard.

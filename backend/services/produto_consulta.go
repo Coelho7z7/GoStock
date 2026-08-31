@@ -97,6 +97,7 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 		FROM produtos
 		WHERE ativo = 1
 		ORDER BY id DESC
+		LIMIT 10
 	`)
 	if err != nil {
 		return nil, err
@@ -108,7 +109,12 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 	for rows.Next() {
 		var produto models.Produto
 
-		if err := rows.Scan(&produto.ID, &produto.Nome, &produto.Preco, &produto.Quantidade); err != nil {
+		if err := rows.Scan(
+			&produto.ID,
+			&produto.Nome,
+			&produto.Preco,
+			&produto.Quantidade,
+		); err != nil {
 			return nil, err
 		}
 
@@ -122,7 +128,6 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 
 	return produtos, nil
 }
-
 func AtualizarProdutoWeb(produtoID int, nome string, preco float64, usuarioID int) error {
 	nome = strings.TrimSpace(nome)
 	if !utils.ValidarNome(nome) {
@@ -239,4 +244,60 @@ func AtualizarProduto(reader *bufio.Reader, usuarioID int) {
 	}
 
 	fmt.Println("Produto atualizado com sucesso!")
+}
+
+// ProdutosPaginados busca uma página de produtos ativos, opcionalmente
+// filtrando por nome (busca parcial). pagina começa em 1.
+func ProdutosPaginados(busca string, pagina int, porPagina int) ([]models.Produto, int, error) {
+	if pagina < 1 {
+		pagina = 1
+	}
+	if porPagina < 1 {
+		porPagina = 10
+	}
+
+	busca = strings.TrimSpace(busca)
+	filtroNome := "%" + busca + "%"
+
+	var total int
+	if err := database.DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM produtos
+		WHERE ativo = 1 AND nome LIKE ?
+	`, filtroNome).Scan(&total); err != nil {
+		return nil, 0, err
+	}
+
+	offset := (pagina - 1) * porPagina
+
+	rows, err := database.DB.Query(`
+		SELECT id, nome, preco, quantidade
+		FROM produtos
+		WHERE ativo = 1 AND nome LIKE ?
+		ORDER BY id DESC
+		LIMIT ? OFFSET ?
+	`, filtroNome, porPagina, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var produtos []models.Produto
+
+	for rows.Next() {
+		var produto models.Produto
+
+		if err := rows.Scan(&produto.ID, &produto.Nome, &produto.Preco, &produto.Quantidade); err != nil {
+			return nil, 0, err
+		}
+
+		produto.StatusEstoque = statusDoEstoque(produto.Quantidade)
+		produtos = append(produtos, produto)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	return produtos, total, nil
 }

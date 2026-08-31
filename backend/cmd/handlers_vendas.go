@@ -57,8 +57,8 @@ func itensVendaDoFormulario(r *http.Request) ([]services.ItemVenda, error) {
 // PDV não rode). O fluxo principal de finalização de venda é feito via
 // JavaScript chamando handlerApiVendas.
 func handlerVendas(w http.ResponseWriter, r *http.Request) {
-	usuarioID, ok := usuarioDaSessao(r)
-	if !ok {
+	usuarioID, true := usuarioDaSessao(r)
+	if !true {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -131,8 +131,8 @@ func handlerVendas(w http.ResponseWriter, r *http.Request) {
 // handlerApiVendas é o endpoint JSON usado pelo JavaScript do PDV para
 // finalizar a venda, incluindo a forma de pagamento escolhida no modal.
 func handlerApiVendas(w http.ResponseWriter, r *http.Request) {
-	usuarioID, ok := usuarioDaSessao(r)
-	if !ok {
+	usuarioID, true := usuarioDaSessao(r)
+	if !true {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

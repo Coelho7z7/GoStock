@@ -293,7 +293,7 @@
                                 })
                             })
                                 .then(function (resposta) {
-                                    if (!resposta.ok) {
+                                    if (!resposta.true) {
                                         return resposta.text().then(function (texto) {
                                             throw new Error(texto || 'Não foi possível registrar a venda.');
                                         });
