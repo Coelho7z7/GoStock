@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Estoque</title>
     <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/estoque-badges.css">
 </head>
+
 <body>
 
     <div class="dashboard">
@@ -39,20 +39,24 @@
 
             <section class="content">
 
-                    <nav class="abas-produtos" aria-label="Opções de produtos">
-                        <a href="/produtos">Novo produto</a>
-                        <a href="/alterar-produto">Alterar produto</a>
-                        <a class="aba-produto-ativa" href="/estoque">Estoque</a>
-                    </nav>
+                <nav class="abas-produtos" aria-label="Opções de produtos">
+                    <a href="/produtos">Novo produto</a>
+                    <a href="/alterar-produto">Alterar produto</a>
+                    <a class="aba-produto-ativa" href="/estoque">Estoque</a>
+                </nav>
 
                 <h3>Controle de estoque</h3>
 
                 {{ if .Mensagem }}
-                <p class="formulario-sucesso" role="status">{{ .Mensagem }}</p>
+                <p class="formulario-sucesso" role="status">
+                    {{ .Mensagem }}
+                </p>
                 {{ end }}
 
                 {{ if .Erro }}
-                <p class="formulario-erro" role="alert">{{ .Erro }}</p>
+                <p class="formulario-erro" role="alert">
+                    {{ .Erro }}
+                </p>
                 {{ end }}
 
                 <table>
@@ -71,56 +75,110 @@
                         {{ range .Produtos }}
 
                         <tr>
-                            <td>{{ .ID }}</td>
-                            <td>{{ .Nome }}</td>
+
+                            <td>
+                                {{ .ID }}
+                            </td>
+
+                            <td>
+                                {{ .Nome }}
+                            </td>
+
                             <td>
                                 <span class="estoque-quantidade {{ .StatusEstoque }}">
                                     {{ .Quantidade }}
                                 </span>
                             </td>
+
                             <td class="acoes-produto">
-                                <form id="estoque-form-{{ .ID }}" action="/estoque" method="POST"></form>
-                                <input type="hidden" name="produto_id" value="{{ .ID }}" form="estoque-form-{{ .ID }}">
+
+                                <form
+                                    id="estoque-form-{{ .ID }}"
+                                    action="/estoque"
+                                    method="POST">
+                                </form>
+
+                                <input
+                                    type="hidden"
+                                    name="produto_id"
+                                    value="{{ .ID }}"
+                                    form="estoque-form-{{ .ID }}">
+
                                 <input
                                     type="number"
                                     name="quantidade"
                                     min="1"
                                     placeholder="Qtd."
                                     form="estoque-form-{{ .ID }}"
-                                    required
-                                >
-                                <button type="submit" name="acao" value="entrada" form="estoque-form-{{ .ID }}">Entrada</button>
-                                <button class="botao-remover" type="submit" name="acao" value="saida" form="estoque-form-{{ .ID }}">Saída</button>
+                                    required>
+
+                                <button
+                                    type="submit"
+                                    name="acao"
+                                    value="entrada"
+                                    form="estoque-form-{{ .ID }}">
+                                    Entrada
+                                </button>
+
+                                <button
+                                    class="botao-remover"
+                                    type="submit"
+                                    name="acao"
+                                    value="saida"
+                                    form="estoque-form-{{ .ID }}">
+                                    Saída
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        {{ else }}
+
+                        <tr>
+                            <td colspan="4">
+                                Nenhum produto cadastrado.
                             </td>
                         </tr>
-                        {{ else }}
-                        <tr>
-                            <td colspan="4">Nenhum produto cadastrado.</td>
-                        </tr>
+
                         {{ end }}
+
                     </tbody>
+
                 </table>
 
+                {{ if gt .TotalPaginas 1 }}
+
+                <div class="paginacao">
+
+                    {{ if gt .Pagina 1 }}
+                    <a href="/estoque?pagina={{ .PaginaAnterior }}">
+                        « Anterior
+                    </a>
+                    {{ end }}
+
+                    <span>
+                        Página {{ .Pagina }} de {{ .TotalPaginas }}
+                    </span>
+
+                    {{ if lt .Pagina .TotalPaginas }}
+                    <a href="/estoque?pagina={{ .PaginaProxima }}">
+                        Próxima »
+                    </a>
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
             </section>
+
         </main>
-    </div>
-      {{ if gt .TotalPaginas 1 }}
-    <div class="paginacao">
-
-        {{ if gt .Pagina 1 }}
-        <a href="/estoque?pagina={{ .PaginaAnterior }}">« Anterior</a>
-        {{ end }}
-
-        <span>Página {{ .Pagina }} de {{ .TotalPaginas }}</span>
-
-        {{ if lt .Pagina .TotalPaginas }}
-        <a href="/estoque?pagina={{ .PaginaProxima }}">Próxima »</a>
-        {{ end }}
 
     </div>
-    {{ end }}
 
     <script src="/js/app.js?v=2"></script>
+
 </body>
 
 </html>

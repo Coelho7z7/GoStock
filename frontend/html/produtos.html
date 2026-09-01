@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Produtos</title>
     <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/produtos.css">
-    <link rel="stylesheet" href="/css/estoque-badges.css">
 </head>
 
 <body class="pagina-produtos">
@@ -60,10 +58,16 @@
                 {{ end }}
 
                 <div class="cabecalho-produtos">
+
                     <h3>Produtos cadastrados</h3>
-                    <button class="botao-novo-produto" type="button" id="abrir-cadastro-produto">
+
+                    <button
+                        class="botao-novo-produto"
+                        type="button"
+                        id="abrir-cadastro-produto">
                         Novo produto
                     </button>
+
                 </div>
 
                 <div class="tabela-produtos">
@@ -99,15 +103,19 @@
                                 </td>
 
                                 <td>
-
                                     <span class="estoque-quantidade {{ .StatusEstoque }}">
                                         {{ .Quantidade }}
                                     </span>
-
                                 </td>
 
                                 <td class="acoes-produto">
-                                    <a class="link-editar-produto" href="/alterar-produto">Editar</a>
+
+                                    <a
+                                        class="link-editar-produto"
+                                        href="/alterar-produto">
+                                        Editar
+                                    </a>
+
                                 </td>
 
                             </tr>
@@ -128,43 +136,112 @@
 
                 </div>
 
-                <div class="modal-cadastro" id="modal-cadastro-produto" hidden>
-                    <div class="modal-cadastro-conteudo" role="dialog" aria-modal="true"
+                {{ if gt .TotalPaginas 1 }}
+
+                <div class="paginacao">
+
+                    {{ if gt .Pagina 1 }}
+
+                    <a href="/produtos?pagina={{ .PaginaAnterior }}">
+                        « Anterior
+                    </a>
+
+                    {{ end }}
+
+                    <span>
+                        Página {{ .Pagina }} de {{ .TotalPaginas }}
+                    </span>
+
+                    {{ if lt .Pagina .TotalPaginas }}
+
+                    <a href="/produtos?pagina={{ .PaginaProxima }}">
+                        Próxima »
+                    </a>
+
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
+                <div
+                    class="modal-cadastro"
+                    id="modal-cadastro-produto"
+                    hidden>
+
+                    <div
+                        class="modal-cadastro-conteudo"
+                        role="dialog"
+                        aria-modal="true"
                         aria-labelledby="titulo-novo-produto">
+
                         <div class="modal-cadastro-cabecalho">
-                            <h3 id="titulo-novo-produto">Novo produto</h3>
-                            <button class="botao-fechar-modal" type="button" id="fechar-cadastro-produto"
-                                aria-label="Fechar">&times;</button>
+
+                            <h3 id="titulo-novo-produto">
+                                Novo produto
+                            </h3>
+
+                            <button
+                                class="botao-fechar-modal"
+                                type="button"
+                                id="fechar-cadastro-produto"
+                                aria-label="Fechar">
+                                &times;
+                            </button>
+
                         </div>
 
-                        <form class="cadastro-form" action="/produtos" method="POST">
+                        <form
+                            class="cadastro-form"
+                            action="/produtos"
+                            method="POST">
 
                             <label for="nome">
                                 Nome do produto
                             </label>
 
-                            <input id="nome" type="text" name="nome" value="{{ .Nome }}" placeholder="Ex.: Coca-Cola"
+                            <input
+                                id="nome"
+                                type="text"
+                                name="nome"
+                                value="{{ .Nome }}"
+                                placeholder="Ex.: Coca-Cola"
                                 required>
 
                             <label for="quantidade">
                                 Quantidade inicial
                             </label>
 
-                            <input id="quantidade" type="number" name="quantidade" value="{{ .Quantidade }}" min="0"
+                            <input
+                                id="quantidade"
+                                type="number"
+                                name="quantidade"
+                                value="{{ .Quantidade }}"
+                                min="0"
                                 required>
 
                             <label for="preco">
                                 Preço unitário
                             </label>
 
-                            <input id="preco" type="number" name="preco" value="{{ .Preco }}" min="0" step="0.01"
-                                placeholder="0,00" required>
+                            <input
+                                id="preco"
+                                type="number"
+                                name="preco"
+                                value="{{ .Preco }}"
+                                min="0"
+                                step="0.01"
+                                placeholder="0,00"
+                                required>
 
-                            <button type="submit">Cadastrar produto</button>
+                            <button type="submit">
+                                Cadastrar produto
+                            </button>
 
                         </form>
 
                     </div>
+
                 </div>
 
             </section>
@@ -172,22 +249,6 @@
         </main>
 
     </div>
-
-    {{ if gt .TotalPaginas 1 }}
-    <div class="paginacao">
-
-        {{ if gt .Pagina 1 }}
-        <a href="/produtos?pagina={{ .PaginaAnterior }}">« Anterior</a>
-        {{ end }}
-
-        <span>Página {{ .Pagina }} de {{ .TotalPaginas }}</span>
-
-        {{ if lt .Pagina .TotalPaginas }}
-        <a href="/produtos?pagina={{ .PaginaProxima }}">Próxima »</a>
-        {{ end }}
-
-    </div>
-    {{ end }}
 
     <script src="/js/app.js?v=2"></script>
 

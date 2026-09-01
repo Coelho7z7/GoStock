@@ -35,6 +35,7 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 		"saida":      "Saída registrada com sucesso.",
 		"cadastrado": "Produto cadastrado com sucesso.",
 	}
+	
 
 	if r.Method == http.MethodPost {
 		produtoID, idErr := strconv.Atoi(r.FormValue("produto_id"))
@@ -108,15 +109,6 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 	if dados.Erro != "" {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-
-	if err := tmpl.Execute(w, dados); err != nil {
-		http.Error(
-			w,
-			"Erro ao renderizar produtos",
-			http.StatusInternalServerError,
-		)
-	}
-
 	produtos, err = services.BuscarTodosProdutos()
 	if err != nil {
 		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)

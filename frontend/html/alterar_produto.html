@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Alterar produto</title>
     <link rel="stylesheet" href="/css/base.css">
-    <link rel="stylesheet" href="/css/produtos.css">
 </head>
-<body>
+
+<body class="pagina-produtos">
+
     <div class="dashboard">
+
         <aside class="sidebar">
-            <h1 class="logo">Go<span>Stock</span></h1>
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
             <nav>
                 <a href="/dashboard">Dashboard</a>
                 <a href="/produtos">Produtos</a>
@@ -21,56 +28,175 @@
             <div class="sidebar-footer">
                 <a href="/logout" class="sidebar-logout">Sair</a>
             </div>
+
         </aside>
+
         <main class="main-content">
-            <header class="topbar"><h2>Alterar produto</h2></header>
+
+            <header class="topbar">
+                <h2>Alterar produto</h2>
+            </header>
+
             <section class="content">
+
                 <nav class="abas-produtos" aria-label="Opções de produtos">
                     <a href="/produtos">Novo produto</a>
                     <a class="aba-produto-ativa" href="/alterar-produto">Alterar produto</a>
                     <a href="/estoque">Estoque</a>
                 </nav>
+
                 <h3>Atualizar ou remover produtos</h3>
-                {{ if .Mensagem }}<p class="formulario-sucesso" role="status">{{ .Mensagem }}</p>{{ end }}
-                {{ if .Erro }}<p class="formulario-erro" role="alert">{{ .Erro }}</p>{{ end }}
+
+                {{ if .Mensagem }}
+                <p class="formulario-sucesso" role="status">
+                    {{ .Mensagem }}
+                </p>
+                {{ end }}
+
+                {{ if .Erro }}
+                <p class="formulario-erro" role="alert">
+                    {{ .Erro }}
+                </p>
+                {{ end }}
+
                 <div class="tabela-produtos">
+
                     <table>
-                        <thead><tr><th>ID</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
-                        <tbody>
-                            {{ range .Produtos }}
+
+                        <thead>
                             <tr>
-                                <td>{{ .ID }}<input type="hidden" name="produto_id" value="{{ .ID }}" form="produto-form-{{ .ID }}"></td>
-                                <td><input class="produto-edicao-input" type="text" name="nome" value="{{ .Nome }}" form="produto-form-{{ .ID }}" required></td>
-                                <td><input class="produto-edicao-input preco-input" type="number" name="preco" value="{{ printf "%.2f" .Preco }}" form="produto-form-{{ .ID }}" min="0" step="0.01" required></td>
-                                <td>{{ .Quantidade }}</td>
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {{ range .Produtos }}
+
+                            <tr>
+
+                                <td>
+                                    {{ .ID }}
+
+                                    <input
+                                        type="hidden"
+                                        name="produto_id"
+                                        value="{{ .ID }}"
+                                        form="produto-form-{{ .ID }}"
+                                    >
+                                </td>
+
+                                <td>
+                                    <input
+                                        class="produto-edicao-input"
+                                        type="text"
+                                        name="nome"
+                                        value="{{ .Nome }}"
+                                        form="produto-form-{{ .ID }}"
+                                        required
+                                    >
+                                </td>
+
+                                <td>
+                                    <input
+                                        class="produto-edicao-input preco-input"
+                                        type="number"
+                                        name="preco"
+                                        value="{{ printf "%.2f" .Preco }}"
+                                        form="produto-form-{{ .ID }}"
+                                        min="0"
+                                        step="0.01"
+                                        required
+                                    >
+                                </td>
+
+                                <td>
+                                    {{ .Quantidade }}
+                                </td>
+
                                 <td class="acoes-produto">
-                                    <form id="produto-form-{{ .ID }}" action="/alterar-produto" method="POST"></form>
-                                    <button type="submit" name="acao" value="atualizar" form="produto-form-{{ .ID }}">Salvar</button>
-                                    <button class="botao-remover" type="submit" name="acao" value="remover" form="produto-form-{{ .ID }}" formnovalidate onclick="return confirm('Remover este produto?');">Remover</button>
+
+                                    <form
+                                        id="produto-form-{{ .ID }}"
+                                        action="/alterar-produto"
+                                        method="POST">
+                                    </form>
+
+                                    <button
+                                        type="submit"
+                                        name="acao"
+                                        value="atualizar"
+                                        form="produto-form-{{ .ID }}">
+                                        Salvar
+                                    </button>
+
+                                    <button
+                                        class="botao-remover"
+                                        type="submit"
+                                        name="acao"
+                                        value="remover"
+                                        form="produto-form-{{ .ID }}"
+                                        formnovalidate
+                                        onclick="return confirm('Remover este produto?');">
+                                        Remover
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                            {{ else }}
+
+                            <tr>
+                                <td colspan="5">
+                                    Nenhum produto cadastrado.
                                 </td>
                             </tr>
-                            {{ else }}<tr><td colspan="5">Nenhum produto cadastrado.</td></tr>{{ end }}
+
+                            {{ end }}
+
                         </tbody>
+
                     </table>
+
                 </div>
+
+                {{ if gt .TotalPaginas 1 }}
+
+                <div class="paginacao">
+
+                    {{ if gt .Pagina 1 }}
+                    <a href="/alterar-produto?pagina={{ .PaginaAnterior }}">
+                        « Anterior
+                    </a>
+                    {{ end }}
+
+                    <span>
+                        Página {{ .Pagina }} de {{ .TotalPaginas }}
+                    </span>
+
+                    {{ if lt .Pagina .TotalPaginas }}
+                    <a href="/alterar-produto?pagina={{ .PaginaProxima }}">
+                        Próxima »
+                    </a>
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
             </section>
+
         </main>
+
     </div>
-    {{ if gt .TotalPaginas 1 }}
-<div class="paginacao">
 
-    {{ if gt .Pagina 1 }}
-    <a href="/alterar-produto?pagina={{ .PaginaAnterior }}">« Anterior</a>
-    {{ end }}
-
-    <span>Página {{ .Pagina }} de {{ .TotalPaginas }}</span>
-
-    {{ if lt .Pagina .TotalPaginas }}
-    <a href="/alterar-produto?pagina={{ .PaginaProxima }}">Próxima »</a>
-    {{ end }}
-
-</div>
-{{ end }}
     <script src="/js/app.js?v=2"></script>
+
 </body>
+
 </html>
