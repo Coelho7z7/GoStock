@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"net/http"
 	"strings"
 
@@ -21,6 +22,14 @@ func exigirAdmin(w http.ResponseWriter, r *http.Request) bool {
 	if usuarioEhAdmin(r) {
 		return true
 	}
-	http.Error(w, "Acesso permitido apenas para administradores", http.StatusForbidden)
+	tmpl, err := template.ParseFiles("frontend/html/acesso_negado.html")
+	if err != nil {
+		http.Error(w, "Acesso negado", http.StatusForbidden)
+		return false
+	}
+	w.WriteHeader(http.StatusForbidden)
+	if err := tmpl.Execute(w, nil); err != nil {
+		return false
+	}
 	return false
 }

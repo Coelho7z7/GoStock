@@ -460,7 +460,7 @@ form button[type="submit"] {
     .login-card {
         padding: 36px 24px;
     }
-
+}
 
 @media (max-width: 420px) {
     .login-hero {
@@ -492,12 +492,6 @@ form button[type="submit"] {
         right: 12px;
         bottom: 12px;
         width: calc(100vw - 24px);
-    }
-}
-    .login-alert {
-        right: 16px;
-        bottom: 16px;
-        width: calc(100vw - 32px);
     }
 }
 

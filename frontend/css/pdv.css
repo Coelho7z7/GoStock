@@ -557,7 +557,20 @@ body:has(.modal-nota:not([hidden])) {
         padding: 12px 14px;
     }
 
+    .pdv-card-lista {
+        overflow-x: auto;
+    }
+
     .pdv-produtos-table {
+        display: block;
+        min-width: 570px;
+        overflow-x: auto;
+    }
+
+    .pdv-produtos-table thead,
+    .pdv-produtos-table tbody {
+        display: table;
+        width: 100%;
         min-width: 570px;
     }
 
