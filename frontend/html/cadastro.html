@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoStock - Criar conta</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <main class="login-page cadastro-page">
+        <section class="login-form-side">
+            <div class="login-card">
+                <h1 class="welcome-title">Criar conta</h1>
+                <p class="subtitle">Cadastre seu acesso ao GoStock</p>
+                {{ if .Erro }}<p class="login-alert-inline" role="alert">{{ .Erro }}</p>{{ end }}
+                <form action="/cadastro" method="POST">
+                    <div class="input-group">
+                        <label for="nome">Nome</label>
+                        <input id="nome" name="nome" type="text" placeholder="Seu nome" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="email">E-mail</label>
+                        <input id="email" name="email" type="email" placeholder="seuemail@gmail.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="senha">Senha</label>
+                        <input id="senha" name="senha" type="password" placeholder="Mínimo de 6 caracteres" required>
+                    </div>
+                    <button type="submit">Criar conta</button>
+                </form>
+                <p class="footer-text"><a href="/">Voltar para o login</a></p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

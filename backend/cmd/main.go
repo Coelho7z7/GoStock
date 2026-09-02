@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"os"
@@ -33,16 +32,16 @@ func main() {
 
 	registrarRotas()
 
-	go func() {
-		fmt.Println("Servidor web disponível em http://localhost:8080")
-		if err := http.ListenAndServe(":8080", nil); err != nil {
-			fmt.Println("Erro no servidor web:", err)
-			os.Exit(1)
-		}
-	}()
+	porta := os.Getenv("PORT")
+	if porta == "" {
+		porta = "8080"
+	}
 
-	reader := bufio.NewReader(os.Stdin)
-	executarCLI(reader)
+	fmt.Println("Servidor web disponível na porta", porta)
+	if err := http.ListenAndServe(":"+porta, nil); err != nil {
+		fmt.Println("Erro no servidor web:", err)
+		os.Exit(1)
+	}
 }
 
 // registrarRotas conecta cada rota HTTP ao seu handler correspondente
@@ -54,6 +53,7 @@ func registrarRotas() {
 
 	http.HandleFunc("/", handlerIndex)
 	http.HandleFunc("/login", handlerLogin)
+	http.HandleFunc("/cadastro", handlerCadastro)
 	http.HandleFunc("/logout", handlerLogout)
 
 	http.HandleFunc("/dashboard", handlerDashboard)

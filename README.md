@@ -39,17 +39,25 @@ Estas credenciais existem apenas para desenvolvimento local:
 ## Como executar
 
 ```bash
-# Clone o repositório
-git clone https://github.com/coelho7z7/GoStock.git
-
-# Entre na pasta do projeto
-cd GoStock
-
-# Rode o projeto
-go run main.go
+# Na raiz do projeto, inicie o servidor HTTP
+go run ./backend/cmd
 ```
 
-> Ajuste o comando de execução conforme o nome real do arquivo principal e eventuais variáveis de ambiente do projeto.
+Depois, acesse `http://localhost:8080` no navegador. Para usar outra porta local, defina a variável `PORT` antes de iniciar o servidor.
+
+No Railway, a aplicação usa automaticamente a porta fornecida pela variável `PORT` do ambiente.
+
+### Rotas principais
+
+* `/` — Login
+* `/login` — Autenticação
+* `/cadastro` — Criação de conta
+* `/dashboard` — Dashboard
+* `/produtos` — Cadastro e listagem de produtos
+* `/alterar-produto` — Alteração de produtos
+* `/estoque` — Entradas e saídas de estoque
+* `/vendas` — PDV e vendas
+* `/movimentacoes` — Histórico de movimentações
 
 ## Autor
 
