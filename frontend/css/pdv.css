@@ -370,6 +370,22 @@ body:has(.modal-nota:not([hidden])) {
     font-size: 12px;
 }
 
+.carrinho-remover {
+    width: 26px;
+    height: 26px;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 6px;
+    color: #c4a0ff;
+    background: rgba(124, 58, 237, 0.16) !important;
+    cursor: pointer;
+}
+
+.carrinho-remover:hover {
+    color: #fff;
+    background: #7c3aed !important;
+}
+
 .pdv-carrinho-total,
 .nota-total {
     display: flex;
@@ -523,6 +539,56 @@ body:has(.modal-nota:not([hidden])) {
 
     .pdv-carrinho {
         position: static;
+    }
+}
+
+@media (max-width: 560px) {
+    .pdv-busca-wrap {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .pdv-busca-wrap input,
+    .pdv-busca-wrap button {
+        width: 100%;
+    }
+
+    .pdv-card-header {
+        padding: 12px 14px;
+    }
+
+    .pdv-produtos-table {
+        min-width: 570px;
+    }
+
+    .pdv-acao-produtos {
+        padding: 12px 14px 14px;
+    }
+
+    .btn-prosseguir {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .modal-pagamento,
+    .modal-nota {
+        padding: 14px;
+    }
+
+    .modal-nota-cabecalho,
+    .nota-resumo,
+    .nota-itens-wrap {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .nota-acoes {
+        flex-direction: column;
+        padding: 0 18px 18px;
+    }
+
+    .nota-acoes button {
+        width: 100%;
     }
 }
 

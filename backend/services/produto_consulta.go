@@ -97,7 +97,6 @@ func BuscarTodosProdutos() ([]models.Produto, error) {
 		FROM produtos
 		WHERE ativo = 1
 		ORDER BY id DESC
-		LIMIT 10
 	`)
 	if err != nil {
 		return nil, err
@@ -249,6 +248,10 @@ func AtualizarProduto(reader *bufio.Reader, usuarioID int) {
 // ProdutosPaginados busca uma página de produtos ativos, opcionalmente
 // filtrando por nome (busca parcial). pagina começa em 1.
 func ProdutosPaginados(busca string, pagina int, porPagina int) ([]models.Produto, int, error) {
+	return ProdutosPaginadosOrdenados(busca, pagina, porPagina, "recentes")
+}
+
+func ProdutosPaginadosOrdenados(busca string, pagina int, porPagina int, ordem string) ([]models.Produto, int, error) {
 	if pagina < 1 {
 		pagina = 1
 	}
@@ -270,11 +273,20 @@ func ProdutosPaginados(busca string, pagina int, porPagina int) ([]models.Produt
 
 	offset := (pagina - 1) * porPagina
 
+	ordenacao := "id DESC"
+	switch ordem {
+	case "nome":
+		ordenacao = "nome COLLATE NOCASE ASC"
+	case "preco":
+		ordenacao = "preco ASC"
+	case "estoque":
+		ordenacao = "quantidade ASC"
+	}
 	rows, err := database.DB.Query(`
 		SELECT id, nome, preco, quantidade
 		FROM produtos
 		WHERE ativo = 1 AND nome LIKE ?
-		ORDER BY id DESC
+		ORDER BY `+ordenacao+`
 		LIMIT ? OFFSET ?
 	`, filtroNome, porPagina, offset)
 	if err != nil {

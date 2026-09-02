@@ -38,7 +38,8 @@ func CriarTabelas() error {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		nome TEXT NOT NULL,
 		email TEXT UNIQUE NOT NULL,
-		senha TEXT NOT NULL
+		senha TEXT NOT NULL,
+		role TEXT NOT NULL DEFAULT 'basico'
 		);
 
 	CREATE TABLE IF NOT EXISTS movimentacoes (
@@ -94,6 +95,21 @@ func CriarTabelas() error {
 	}
 	if colunaAtivo == 0 {
 		if _, err = DB.Exec(`ALTER TABLE produtos ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`); err != nil {
+			return err
+		}
+	}
+
+	var colunaRole int
+	err = DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM pragma_table_info('usuarios')
+		WHERE name = 'role'
+	`).Scan(&colunaRole)
+	if err != nil {
+		return err
+	}
+	if colunaRole == 0 {
+		if _, err = DB.Exec(`ALTER TABLE usuarios ADD COLUMN role TEXT NOT NULL DEFAULT 'basico'`); err != nil {
 			return err
 		}
 	}

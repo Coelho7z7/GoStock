@@ -29,6 +29,13 @@ O GoStock é organizado em módulos:
 * SQLite
 * Navegador web atualizado para acessar a interface
 
+## Usuários de teste
+
+Estas credenciais existem apenas para desenvolvimento local:
+
+* **Administrador:** `admin@gmail.com` / `Admin123` — role `admin`
+* **Usuário:** `usuario@gmail.com` / `usuario123` — role `Usuario`
+
 ## Como executar
 
 ```bash

@@ -300,7 +300,7 @@
                                     const input = quantidadeInputs.find(function (campo) {
                                         return Number(campo.dataset.produtoId) === item.id;
                                     });
-                                    return '<div class="carrinho-item"><div><strong>' + (input?.dataset.nome || 'Produto #' + item.id) + '</strong><span>' + item.quantidade + ' x ' + formatarMoeda(item.preco) + '</span></div><strong>' + formatarMoeda(item.quantidade * item.preco) + '</strong></div>';
+                                    return '<div class="carrinho-item"><div><strong>' + (input?.dataset.nome || 'Produto #' + item.id) + '</strong><span>' + item.quantidade + ' x ' + formatarMoeda(item.preco) + '</span></div><strong>' + formatarMoeda(item.quantidade * item.preco) + '</strong><button type="button" class="carrinho-remover" data-produto-id="' + item.id + '" aria-label="Remover item">×</button></div>';
                                 }).join('') : '<p class="pdv-carrinho-vazio">Selecione quantidades para adicionar produtos.</p>';
                             }
                         };
@@ -353,6 +353,31 @@
                                 }
                             });
                         });
+
+                        carrinhoItens?.addEventListener('click', function (event) {
+                            const button = event.target.closest('.carrinho-remover');
+                            if (!button) return;
+                            const input = quantidadeInputs.find(function (campo) {
+                                return Number(campo.dataset.produtoId) === Number(button.dataset.produtoId);
+                            });
+                            if (input) {
+                                input.value = '';
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        });
+
+                        const filtrarProdutos = function () {
+                            const busca = (document.getElementById('busca')?.value || '').trim().toLowerCase();
+                            produtoRows.forEach(function (row) {
+                                const texto = row.textContent.toLowerCase();
+                                row.hidden = busca !== '' && texto.indexOf(busca) === -1;
+                            });
+                            if (busca === '') {
+                                atualizarPaginaProdutos();
+                            }
+                        };
+
+                        document.getElementById('busca')?.addEventListener('input', filtrarProdutos);
 
                         atualizarPaginaProdutos();
 

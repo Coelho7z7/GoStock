@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 
 	database "gostock/backend/Database"
 	"gostock/backend/models"
@@ -14,7 +18,14 @@ type DashboardData struct {
 	Usuario    *models.Usuario
 	Produtos   []models.Produto
 	Atividades []models.Movimentacao
+	Grafico    []GraficoDia
 	Resumo     ResumoData
+}
+
+type GraficoDia struct {
+	Data       string
+	Valor      float64
+	Percentual int
 }
 
 type ResumoData struct {
@@ -56,18 +67,31 @@ func handlerDashboard(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Erro ao carregar atividades", http.StatusInternalServerError)
 		return
 	}
-	if len(atividades) > 8 {
-		atividades = atividades[:8]
+	if len(atividades) > 5 {
+		atividades = atividades[:5]
+	}
+
+	grafico, err := carregarGraficoFaturamento()
+	if err != nil {
+		http.Error(w, "Erro ao carregar gráfico", http.StatusInternalServerError)
+		return
 	}
 
 	dados := DashboardData{
 		Usuario:    usuario,
 		Produtos:   produtos,
 		Atividades: atividades,
+		Grafico:    grafico,
 		Resumo:     resumo,
 	}
 
-	tmpl, err := template.ParseFiles("frontend/html/dashboard.html")
+	tmpl, err := template.New("dashboard.html").Funcs(template.FuncMap{
+		"moedaBR": func(valor float64) string {
+			texto := strconv.FormatFloat(valor, 'f', 2, 64)
+			partes := strings.Split(texto, ".")
+			return fmt.Sprintf("%s,%s", partes[0], partes[1])
+		},
+	}).ParseFiles("frontend/html/dashboard.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -79,6 +103,54 @@ func handlerDashboard(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+}
+
+func carregarGraficoFaturamento() ([]GraficoDia, error) {
+	valores := make(map[string]float64)
+	rows, err := database.DB.Query(`
+		SELECT date(data), COALESCE(SUM(valor_total), 0)
+		FROM vendas
+		WHERE date(data) >= date('now', '-6 days')
+		GROUP BY date(data)
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var data string
+		var valor float64
+		if err := rows.Scan(&data, &valor); err != nil {
+			return nil, err
+		}
+		valores[data] = valor
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	maximo := 0.0
+	for valor := range valores {
+		if valores[valor] > maximo {
+			maximo = valores[valor]
+		}
+	}
+	resultado := make([]GraficoDia, 0, 7)
+	agora := time.Now()
+	for indice := 6; indice >= 0; indice-- {
+		data := agora.AddDate(0, 0, -indice)
+		chave := data.Format("2006-01-02")
+		valor := valores[chave]
+		percentual := 0
+		if maximo > 0 {
+			percentual = int(valor / maximo * 100)
+		}
+		if valor > 0 && percentual < 8 {
+			percentual = 8
+		}
+		resultado = append(resultado, GraficoDia{Data: data.Format("02/01"), Valor: valor, Percentual: percentual})
+	}
+	return resultado, nil
 }
 
 // carregarResumo calcula os números exibidos nos cartões do dashboard.

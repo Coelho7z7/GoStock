@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -8,6 +7,7 @@ import (
 	"os"
 
 	database "gostock/backend/Database"
+	"gostock/backend/services"
 )
 
 func main() {
@@ -24,6 +24,10 @@ func main() {
 
 	if err := database.CriarTabelas(); err != nil {
 		fmt.Println("Erro ao preparar as tabelas do banco de dados:", err)
+		os.Exit(1)
+	}
+	if err := services.SeedUsuariosPadrao(); err != nil {
+		fmt.Println("Erro ao criar usuários padrão:", err)
 		os.Exit(1)
 	}
 

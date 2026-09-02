@@ -16,7 +16,7 @@ func AutenticarUsuario(email string, senha string) (*models.Usuario, bool) {
 	email = strings.ToLower(strings.TrimSpace(email))
 
 	query := `
-		SELECT id, nome, senha
+		SELECT id, nome, senha, role
 		FROM usuarios
 		WHERE email = ?
 	`
@@ -28,6 +28,7 @@ func AutenticarUsuario(email string, senha string) (*models.Usuario, bool) {
 		&usuario.ID,
 		&usuario.Nome,
 		&senhaHash,
+		&usuario.Role,
 	)
 
 	if err != nil {

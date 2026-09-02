@@ -461,6 +461,39 @@ form button[type="submit"] {
         padding: 36px 24px;
     }
 
+
+@media (max-width: 420px) {
+    .login-hero {
+        padding: 26px 18px 32px;
+    }
+
+    .login-form-side {
+        padding: 18px;
+    }
+
+    .login-logo {
+        font-size: 18px;
+        margin-bottom: 34px;
+    }
+
+    .login-logo-image {
+        width: 48px;
+    }
+
+    .login-hero h1 {
+        font-size: 34px;
+    }
+
+    .login-card {
+        padding: 28px 18px;
+    }
+
+    .login-alert {
+        right: 12px;
+        bottom: 12px;
+        width: calc(100vw - 24px);
+    }
+}
     .login-alert {
         right: 16px;
         bottom: 16px;

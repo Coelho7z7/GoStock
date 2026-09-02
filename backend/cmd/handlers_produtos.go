@@ -27,6 +27,8 @@ func handlerProdutos(w http.ResponseWriter, r *http.Request) {
 		Nome           string
 		Quantidade     int
 		Preco          string
+		Busca          string
+		Ordem          string
 		Mensagem       string
 		Erro           string
 		Pagina         int
@@ -86,10 +88,16 @@ func handlerProdutos(w http.ResponseWriter, r *http.Request) {
 		pagina = 1
 	}
 
-	produtos, total, err := services.ProdutosPaginados(
-		"",
+	dados.Busca = strings.TrimSpace(r.URL.Query().Get("busca"))
+	dados.Ordem = r.URL.Query().Get("ordem")
+	if dados.Ordem == "" {
+		dados.Ordem = "recentes"
+	}
+	produtos, total, err := services.ProdutosPaginadosOrdenados(
+		dados.Busca,
 		pagina,
 		produtosPorPagina,
+		dados.Ordem,
 	)
 	if err != nil {
 		log.Println("erro em ProdutosPaginados:", err)

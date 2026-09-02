@@ -46,6 +46,17 @@
                     <a href="/estoque">Estoque</a>
                 </nav>
 
+                <form class="filtro-produtos" method="GET" action="/produtos">
+                    <input type="search" name="busca" value="{{ .Busca }}" placeholder="Buscar produto ou ID">
+                    <select name="ordem" aria-label="Ordenar produtos">
+                        <option value="recentes" {{ if eq .Ordem "recentes" }}selected{{ end }}>Mais recentes</option>
+                        <option value="nome" {{ if eq .Ordem "nome" }}selected{{ end }}>Nome</option>
+                        <option value="preco" {{ if eq .Ordem "preco" }}selected{{ end }}>Preço</option>
+                        <option value="estoque" {{ if eq .Ordem "estoque" }}selected{{ end }}>Estoque</option>
+                    </select>
+                    <button type="submit">Filtrar</button>
+                </form>
+
                 {{ if .Mensagem }}
                 <p class="formulario-sucesso" role="status">
                     {{ .Mensagem }}

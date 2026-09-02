@@ -52,13 +52,15 @@ func usuarioDaSessao(r *http.Request) (int, bool) {
 	tokenHash := hex.EncodeToString(hash[:])
 
 	var usuarioID int
+	var role string
 	var expiraEm time.Time
 
 	err = database.DB.QueryRow(`
-		SELECT usuario_id, expira_em
-		FROM sessoes
+		SELECT s.usuario_id, s.expira_em, u.role
+		FROM sessoes s
+		JOIN usuarios u ON u.id = s.usuario_id
 		WHERE token_hash = ?
-	`, tokenHash).Scan(&usuarioID, &expiraEm)
+	`, tokenHash).Scan(&usuarioID, &expiraEm, &role)
 
 	if err != nil {
 		return 0, false

@@ -62,7 +62,7 @@
          <div class="card metric-card metric-card-faturamento">
      <span class="card-icon" aria-hidden="true">R$</span>
      <span class="card-title">Faturamento</span>
-     <strong>R$ {{ printf "%.2f" .Resumo.Faturamento }}</strong>
+    <strong>R$ {{ moedaBR .Resumo.Faturamento }}</strong>
      <small>Valor total das vendas</small>
 </div>
 
@@ -95,6 +95,24 @@
         </div>
 
     </div>
+    <div class="dashboard-grid">
+    <div class="products-section grafico-section">
+        <div class="section-header">
+            <div>
+                <h3>Faturamento dos últimos 7 dias</h3>
+                <small>Vendas registradas no período</small>
+            </div>
+        </div>
+        <div class="grafico-barras" aria-label="Faturamento dos últimos 7 dias">
+            {{ range .Grafico }}
+            <div class="grafico-coluna" title="R$ {{ printf "%.2f" .Valor }}">
+                <div class="grafico-barra" style="height: {{ .Percentual }}%"></div>
+                <span>{{ .Data }}</span>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
     <div class="products-section atividade-section">
 
     <div class="section-header">
@@ -119,7 +137,7 @@
                 {{ range .Atividades }}
                 <tr>
                     <td><span class="atividade-tipo atividade-{{ .Tipo }}">{{ if eq .Tipo "ENTRADA" }}Adicionado{{ else if eq .Tipo "SAIDA" }}Saída{{ else }}Atualizado{{ end }}</span></td>
-                    <td>{{ .Produto }}</td>
+                    <td class="atividade-produto">{{ .Produto }}</td>
                     <td>{{ if eq .Tipo "ATUALIZACAO" }}-{{ else }}{{ .Quantidade }}{{ end }}</td>
                     <td>{{ .DataFormatada }} às {{ .HoraFormatada }}</td>
                 </tr>
