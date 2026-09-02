@@ -20,7 +20,7 @@ func handlerProdutos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	const produtosPorPagina = 10
+	const produtosPorPagina = 5
 
 	dados := struct {
 		Produtos       []models.Produto
@@ -140,7 +140,7 @@ func handlerAlterarProduto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	const produtosPorPagina = 10
+	const produtosPorPagina = 5
 
 	mensagens := map[string]string{
 		"atualizado": "Produto atualizado com sucesso.",

@@ -13,6 +13,20 @@ type ItemVenda struct {
 	PrecoUnitario float64
 }
 
+type ItemVendaRegistrada struct {
+	Nome       string  `json:"nome"`
+	Quantidade int     `json:"quantidade"`
+	Preco      float64 `json:"preco"`
+	Subtotal   float64 `json:"subtotal"`
+}
+
+type VendaRegistrada struct {
+	Numero         int                   `json:"numero"`
+	FormaPagamento string                `json:"formaPagamento"`
+	Total          float64               `json:"total"`
+	Itens          []ItemVendaRegistrada `json:"itens"`
+}
+
 // formasPagamentoValidas lista as formas de pagamento aceitas pelo PDV.
 var formasPagamentoValidas = map[string]bool{
 	"dinheiro": true,
@@ -47,15 +61,23 @@ func calcularValorTotalItensVenda(itens []ItemVenda) float64 {
 // debitando o estoque, gravando a venda e a movimentação de saída de
 // cada produto dentro de uma única transação.
 func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int, formaPagamento string) error {
+	_, err := RegistrarVendaCompletaWebDetalhes(itens, usuarioID, formaPagamento)
+	return err
+}
+
+func RegistrarVendaCompletaWebDetalhes(itens []ItemVenda, usuarioID int, formaPagamento string) (VendaRegistrada, error) {
+	var venda VendaRegistrada
+
 	if len(itens) == 0 {
-		return fmt.Errorf("a venda deve conter pelo menos um item")
+		return venda, fmt.Errorf("a venda deve conter pelo menos um item")
 	}
 
 	formaPagamento = normalizarFormaPagamento(formaPagamento)
+	venda.FormaPagamento = formaPagamento
 
 	tx, err := database.DB.Begin()
 	if err != nil {
-		return err
+		return venda, err
 	}
 	defer tx.Rollback()
 
@@ -63,7 +85,7 @@ func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int, formaPagamento 
 
 	for _, item := range itens {
 		if item.Quantidade <= 0 {
-			return fmt.Errorf("a quantidade deve ser maior que zero")
+			return venda, fmt.Errorf("a quantidade deve ser maior que zero")
 		}
 
 		var produtoIDAtual int
@@ -78,13 +100,13 @@ func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int, formaPagamento 
 		`, item.ProdutoID).Scan(&produtoIDAtual, &nome, &preco, &estoque)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				return fmt.Errorf("produto não encontrado: %d", item.ProdutoID)
+				return venda, fmt.Errorf("produto não encontrado: %d", item.ProdutoID)
 			}
-			return err
+			return venda, err
 		}
 
 		if item.Quantidade > estoque {
-			return fmt.Errorf("estoque insuficiente para %s", nome)
+			return venda, fmt.Errorf("estoque insuficiente para %s", nome)
 		}
 
 		valorTotal += calcularValorTotalVenda(item.Quantidade, preco)
@@ -95,25 +117,37 @@ func RegistrarVendaCompletaWeb(itens []ItemVenda, usuarioID int, formaPagamento 
 			WHERE id = ?
 		`, item.Quantidade, item.ProdutoID)
 		if err != nil {
-			return err
+			return venda, err
 		}
 
-		_, err = tx.Exec(`
+		resultado, err := tx.Exec(`
 			INSERT INTO vendas (produto_id, usuario_id, quantidade, valor_unitario, valor_total, forma_pagamento)
 			VALUES (?, ?, ?, ?, ?, ?)
 		`, item.ProdutoID, usuarioID, item.Quantidade, preco, calcularValorTotalVenda(item.Quantidade, preco), formaPagamento)
 		if err != nil {
-			return err
+			return venda, err
 		}
+		if venda.Numero == 0 {
+			id, idErr := resultado.LastInsertId()
+			if idErr != nil {
+				return venda, idErr
+			}
+			venda.Numero = int(id)
+		}
+		venda.Itens = append(venda.Itens, ItemVendaRegistrada{
+			Nome: nome, Quantidade: item.Quantidade, Preco: preco,
+			Subtotal: calcularValorTotalVenda(item.Quantidade, preco),
+		})
 
 		if err := registrarMovimentacaoTx(tx, item.ProdutoID, usuarioID, "SAIDA", item.Quantidade); err != nil {
-			return err
+			return venda, err
 		}
 	}
 
 	if valorTotal <= 0 {
-		return fmt.Errorf("valor da venda deve ser maior que zero")
+		return venda, fmt.Errorf("valor da venda deve ser maior que zero")
 	}
 
-	return tx.Commit()
+	venda.Total = valorTotal
+	return venda, tx.Commit()
 }

@@ -101,8 +101,11 @@ func handlerVendas(w http.ResponseWriter, r *http.Request) {
 	busca := strings.TrimSpace(strings.ToLower(r.URL.Query().Get("busca")))
 	if busca != "" {
 		produtosFiltrados := make([]models.Produto, 0, len(produtos))
+		idBusca, idErr := strconv.Atoi(busca)
 		for _, produto := range produtos {
-			if strings.Contains(strings.ToLower(produto.Nome), busca) {
+			porID := idErr == nil && produto.ID == idBusca
+			porNome := strings.Contains(strings.ToLower(produto.Nome), busca)
+			if porID || porNome {
 				produtosFiltrados = append(produtosFiltrados, produto)
 			}
 		}
@@ -171,15 +174,18 @@ func handlerApiVendas(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := services.RegistrarVendaCompletaWeb(itens, usuarioID, payload.FormaPagamento); err != nil {
+	venda, err := services.RegistrarVendaCompletaWebDetalhes(itens, usuarioID, payload.FormaPagamento)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(map[string]string{
-		"mensagem": "Venda registrada com sucesso.",
-	}); err != nil {
+	resposta := struct {
+		Mensagem string                   `json:"mensagem"`
+		Venda    services.VendaRegistrada `json:"venda"`
+	}{Mensagem: "Venda registrada com sucesso.", Venda: venda}
+	if err := json.NewEncoder(w).Encode(resposta); err != nil {
 		http.Error(w, "Erro ao responder venda", http.StatusInternalServerError)
 	}
 }

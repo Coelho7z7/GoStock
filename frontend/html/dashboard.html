@@ -21,10 +21,11 @@
             </h1>
 
             <nav>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/produtos">Produtos</a>
-                <a href="/vendas">Vendas</a>
-                <a href="/movimentacoes">Movimentações</a>
+                <a class="aba-ativa" href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -36,7 +37,10 @@
         <main class="main-content">
 
             <header class="topbar">
-                <h2>Dashboard</h2>
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Visão geral da operação em tempo real</p>
+                </div>
 
                 <div class="user">
                     <span>{{ .Usuario.Nome }}</span>
@@ -45,40 +49,57 @@
 
                 <section class="content">
 
-    <h3>Visão geral</h3>
+    <div class="content-heading">
+        <div>
+            <span class="eyebrow">Resumo da operação</span>
+            <h3>Visão geral</h3>
+        </div>
+        <span class="dashboard-date">Atualizado agora</span>
+    </div>
 
     <div class="cards">
 
-       <div class="card">
+         <div class="card metric-card metric-card-faturamento">
+     <span class="card-icon" aria-hidden="true">R$</span>
+     <span class="card-title">Faturamento</span>
+     <strong>R$ {{ printf "%.2f" .Resumo.Faturamento }}</strong>
+     <small>Valor total das vendas</small>
+</div>
+
+         <div class="card">
+     <span class="card-icon" aria-hidden="true">◈</span>
     <span class="card-title">Produtos</span>
     <strong>{{ len .Produtos }}</strong>
     <small>Produtos cadastrados</small>
 </div>
 
         <div class="card">
+            <span class="card-icon" aria-hidden="true">▣</span>
             <span class="card-title">Estoque</span>
             <strong>{{ .Resumo.TotalEstoque }}</strong>
             <small>Itens em estoque</small>
         </div>
 
         <div class="card">
+            <span class="card-icon" aria-hidden="true">↗</span>
             <span class="card-title">Vendas</span>
             <strong>{{ .Resumo.TotalVendas }}</strong>
             <small>Vendas registradas</small>
         </div>
 
         <div class="card">
+            <span class="card-icon" aria-hidden="true">↕</span>
             <span class="card-title">Movimentações</span>
             <strong>{{ .Resumo.TotalMovimentacoes }}</strong>
             <small>Movimentações registradas</small>
         </div>
 
     </div>
-    <div class="products-section">
+    <div class="products-section atividade-section">
 
     <div class="section-header">
-        <h3>Produtos recentes</h3>
-        <a href="/estoque">Ver todos</a>
+        <h3>Atividade recente</h3>
+        <a href="/movimentacoes">Ver histórico</a>
     </div>
 
     <div class="table-container">
@@ -87,24 +108,24 @@
 
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Ação</th>
                     <th>Produto</th>
-                    <th>Preço</th>
-                    <th>Estoque</th>
+                    <th>Quantidade</th>
+                    <th>Quando</th>
                 </tr>
             </thead>
 
             <tbody>
-                {{ range .Produtos }}
+                {{ range .Atividades }}
                 <tr>
-                    <td>{{ .ID }}</td>
-                    <td>{{ .Nome }}</td>
-                    <td>R$ {{ printf "%.2f" .Preco }}</td>
-                    <td>{{ .Quantidade }}</td>
+                    <td><span class="atividade-tipo atividade-{{ .Tipo }}">{{ if eq .Tipo "ENTRADA" }}Adicionado{{ else if eq .Tipo "SAIDA" }}Saída{{ else }}Atualizado{{ end }}</span></td>
+                    <td>{{ .Produto }}</td>
+                    <td>{{ if eq .Tipo "ATUALIZACAO" }}-{{ else }}{{ .Quantidade }}{{ end }}</td>
+                    <td>{{ .DataFormatada }} às {{ .HoraFormatada }}</td>
                 </tr>
                 {{ else }}
                 <tr>
-                    <td colspan="4">Nenhum produto cadastrado.</td>
+                    <td colspan="4">Nenhuma atividade registrada.</td>
                 </tr>
                 {{ end }}
             </tbody>

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"html/template"
+	"log"
 	"net/http"
+	"strconv"
 
 	"gostock/backend/models"
 	"gostock/backend/services"
@@ -21,15 +24,52 @@ func handlerMovimentacoes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	const movimentacoesPorPagina = 5
+	pagina, _ := strconv.Atoi(r.URL.Query().Get("pagina"))
+	if pagina < 1 {
+		pagina = 1
+	}
+	totalPaginas := (len(movimentacoes) + movimentacoesPorPagina - 1) / movimentacoesPorPagina
+	if totalPaginas < 1 {
+		totalPaginas = 1
+	}
+	if pagina > totalPaginas {
+		pagina = totalPaginas
+	}
+	inicio := (pagina - 1) * movimentacoesPorPagina
+	fim := inicio + movimentacoesPorPagina
+	if fim > len(movimentacoes) {
+		fim = len(movimentacoes)
+	}
+	movimentacoes = movimentacoes[inicio:fim]
+
 	tmpl, err := template.ParseFiles("frontend/html/movimentacoes.html")
 	if err != nil {
 		http.Error(w, "Erro ao carregar movimentações", http.StatusInternalServerError)
 		return
 	}
 
-	if err := tmpl.Execute(w, struct {
-		Movimentacoes []models.Movimentacao
-	}{movimentacoes}); err != nil {
-		http.Error(w, "Erro ao renderizar movimentações", http.StatusInternalServerError)
+	dados := struct {
+		Movimentacoes  []models.Movimentacao
+		Pagina         int
+		TotalPaginas   int
+		PaginaAnterior int
+		PaginaProxima  int
+	}{
+		Movimentacoes:  movimentacoes,
+		Pagina:         pagina,
+		TotalPaginas:   totalPaginas,
+		PaginaAnterior: pagina - 1,
+		PaginaProxima:  pagina + 1,
 	}
+
+	var conteudo bytes.Buffer
+	if err := tmpl.Execute(&conteudo, dados); err != nil {
+		log.Println("erro ao renderizar movimentações:", err)
+		http.Error(w, "Erro ao renderizar movimentações", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_, _ = w.Write(conteudo.Bytes())
 }

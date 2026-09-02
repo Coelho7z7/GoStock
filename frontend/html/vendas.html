@@ -22,10 +22,11 @@
             </h1>
 
             <nav>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/produtos">Produtos</a>
-                <a href="/vendas">Vendas</a>
-                <a href="/movimentacoes">Movimentações</a>
+                <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a class="aba-ativa" href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
             </nav>
 
             <div class="sidebar-footer">
@@ -56,7 +57,7 @@
                             name="busca"
                             type="text"
                             value="{{ .Busca }}"
-                            placeholder="Digite o nome do produto"
+                            placeholder="Digite o nome ou ID do produto"
                             autocomplete="off"
                             autofocus
                         >
@@ -65,7 +66,8 @@
                 </form>
 
                 <form method="POST" action="/vendas" class="pdv-form" id="pdv-form">
-                    <div class="pdv-card pdv-card-lista">
+                    <div class="pdv-layout">
+                        <div class="pdv-card pdv-card-lista">
                         <div class="pdv-card-header">
                             <h3>Produtos</h3>
                         </div>
@@ -82,7 +84,7 @@
                             </thead>
                             <tbody>
                                 {{ range .Produtos }}
-                                <tr>
+                                <tr class="pdv-produto-row">
                                     <td>{{ .ID }}</td>
                                     <td>{{ .Nome }}</td>
                                     <td>R$ {{ printf "%.2f" .Preco }}</td>
@@ -93,17 +95,21 @@
                                     </td>
                                     <td>
                                         <input type="hidden" name="produto_id" value="{{ .ID }}">
-                                        <input
-                                            type="number"
-                                            name="quantidade"
-                                            min="0"
-                                            max="{{ .Quantidade }}"
-                                            value=""
-                                            placeholder="Qtd"
-                                            class="pdv-quantidade"
-                                            data-produto-id="{{ .ID }}"
-                                            data-preco="{{ .Preco }}"
-                                        >
+                                        <div class="pdv-quantidade-controle">
+                                            <input
+                                                type="number"
+                                                name="quantidade"
+                                                min="0"
+                                                max="{{ .Quantidade }}"
+                                                value=""
+                                                placeholder="Qtd"
+                                                class="pdv-quantidade"
+                                                data-produto-id="{{ .ID }}"
+                                                data-nome="{{ .Nome }}"
+                                                data-preco="{{ .Preco }}"
+                                            >
+                                            <button type="button" class="pdv-adicionar" aria-label="Adicionar {{ .Nome }}">+</button>
+                                        </div>
                                     </td>
                                 </tr>
                                 {{ else }}
@@ -114,13 +120,29 @@
                             </tbody>
                         </table>
 
+                        <div class="pdv-paginacao" id="pdv-paginacao" aria-label="Paginação de produtos"></div>
+
                         <p class="pdv-erro" id="pdv-erro" role="alert" hidden></p>
 
-                        <div class="pdv-acao-produtos">
-                            <button type="button" class="btn-prosseguir" id="btn-prosseguir-pagamento" disabled>
-                                Prosseguir para pagamento
-                            </button>
+                            <div class="pdv-acao-produtos">
+                                <button type="button" class="btn-prosseguir" id="btn-prosseguir-pagamento" disabled>
+                                    Prosseguir para pagamento
+                                </button>
+                            </div>
                         </div>
+
+                        <aside class="pdv-card pdv-carrinho" aria-labelledby="titulo-carrinho">
+                            <div class="pdv-card-header">
+                                <h3 id="titulo-carrinho">Carrinho <span id="carrinho-contador">0 itens</span></h3>
+                            </div>
+                            <div class="pdv-carrinho-conteudo" id="carrinho-itens">
+                                <p class="pdv-carrinho-vazio">Selecione quantidades para adicionar produtos.</p>
+                            </div>
+                            <div class="pdv-carrinho-total">
+                                <span>Total</span>
+                                <strong id="carrinho-total">R$ 0,00</strong>
+                            </div>
+                        </aside>
                     </div>
 
                     <!--
@@ -161,6 +183,33 @@
                     </div>
                 </form>
 
+                <div class="modal-nota" id="modal-nota" hidden>
+                    <div class="modal-nota-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-nota">
+                        <div class="modal-nota-cabecalho">
+                            <div>
+                                <span class="nota-kicker">Venda concluída</span>
+                                <h3 id="titulo-nota">Nota da venda</h3>
+                            </div>
+                            <button type="button" class="botao-fechar-modal" id="fechar-nota" aria-label="Fechar">&times;</button>
+                        </div>
+                        <div class="nota-resumo">
+                            <div><span>Número</span><strong id="nota-numero">-</strong></div>
+                            <div><span>Pagamento</span><strong id="nota-pagamento">-</strong></div>
+                        </div>
+                        <div class="nota-itens-wrap">
+                            <table class="nota-itens">
+                                <thead><tr><th>Item</th><th>Qtd.</th><th>Valor</th></tr></thead>
+                                <tbody id="nota-itens"></tbody>
+                            </table>
+                        </div>
+                        <div class="nota-total"><span>Total</span><strong id="nota-total">R$ 0,00</strong></div>
+                        <div class="nota-acoes">
+                            <button type="button" class="btn-imprimir" id="imprimir-nota">Imprimir nota</button>
+                            <button type="button" class="btn-nova-venda" id="nova-venda">Nova venda</button>
+                        </div>
+                    </div>
+                </div>
+
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const form = document.getElementById('pdv-form');
@@ -172,6 +221,18 @@
                         const valorTotalVenda = document.getElementById('valor-total-venda');
                         const formaPagamentoSelect = document.getElementById('forma-pagamento');
                         const erroBox = document.getElementById('pdv-erro');
+                        const carrinhoItens = document.getElementById('carrinho-itens');
+                        const carrinhoContador = document.getElementById('carrinho-contador');
+                        const carrinhoTotal = document.getElementById('carrinho-total');
+                        const modalNota = document.getElementById('modal-nota');
+                        const notaItens = document.getElementById('nota-itens');
+                        const notaPagamento = document.getElementById('nota-pagamento');
+                        const notaNumero = document.getElementById('nota-numero');
+                        const notaTotal = document.getElementById('nota-total');
+                        const produtoRows = Array.from(document.querySelectorAll('.pdv-produto-row'));
+                        const paginacao = document.getElementById('pdv-paginacao');
+                        const produtosPorPagina = 5;
+                        let paginaAtual = 1;
 
                         if (!form || !modalPagamento || !finalizarButton || !prosseguirButton || !valorTotalVenda) {
                             return;
@@ -198,12 +259,50 @@
                                 });
                         };
 
+                        const atualizarPaginaProdutos = function () {
+                            const totalPaginas = Math.max(1, Math.ceil(produtoRows.length / produtosPorPagina));
+                            paginaAtual = Math.min(paginaAtual, totalPaginas);
+                            produtoRows.forEach(function (row, index) {
+                                row.hidden = Math.floor(index / produtosPorPagina) + 1 !== paginaAtual;
+                            });
+                            if (!paginacao || totalPaginas <= 1) {
+                                if (paginacao) paginacao.innerHTML = '';
+                                return;
+                            }
+                            paginacao.innerHTML = '<button type="button" class="pdv-pagina-btn" data-pagina="' + (paginaAtual - 1) + '"' + (paginaAtual === 1 ? ' disabled' : '') + '>Anterior</button>' +
+                                '<span>Página ' + paginaAtual + ' de ' + totalPaginas + '</span>' +
+                                '<button type="button" class="pdv-pagina-btn" data-pagina="' + (paginaAtual + 1) + '"' + (paginaAtual === totalPaginas ? ' disabled' : '') + '>Próxima</button>';
+                            paginacao.querySelectorAll('[data-pagina]').forEach(function (button) {
+                                button.addEventListener('click', function () {
+                                    paginaAtual = Number(button.dataset.pagina);
+                                    atualizarPaginaProdutos();
+                                });
+                            });
+                        };
+
                         const atualizarValorVenda = function () {
-                            const total = itensSelecionados().reduce(function (soma, item) {
+                            const itens = itensSelecionados();
+                            const total = itens.reduce(function (soma, item) {
                                 return soma + item.quantidade * item.preco;
                             }, 0);
 
                             valorTotalVenda.textContent = formatarMoeda(total);
+                            if (carrinhoTotal) {
+                                carrinhoTotal.textContent = formatarMoeda(total);
+                            }
+                            if (carrinhoContador) {
+                                carrinhoContador.textContent = itens.reduce(function (totalItens, item) {
+                                    return totalItens + item.quantidade;
+                                }, 0) + ' itens';
+                            }
+                            if (carrinhoItens) {
+                                carrinhoItens.innerHTML = itens.length ? itens.map(function (item) {
+                                    const input = quantidadeInputs.find(function (campo) {
+                                        return Number(campo.dataset.produtoId) === item.id;
+                                    });
+                                    return '<div class="carrinho-item"><div><strong>' + (input?.dataset.nome || 'Produto #' + item.id) + '</strong><span>' + item.quantidade + ' x ' + formatarMoeda(item.preco) + '</span></div><strong>' + formatarMoeda(item.quantidade * item.preco) + '</strong></div>';
+                                }).join('') : '<p class="pdv-carrinho-vazio">Selecione quantidades para adicionar produtos.</p>';
+                            }
                         };
 
                         const mostrarErro = function (mensagem) {
@@ -242,6 +341,20 @@
                                 atualizarValorVenda();
                             });
                         });
+
+                        document.querySelectorAll('.pdv-adicionar').forEach(function (button) {
+                            button.addEventListener('click', function () {
+                                const input = button.parentElement.querySelector('.pdv-quantidade');
+                                const limite = Number(input.max || 0);
+                                const quantidadeAtual = Number(input.value || 0);
+                                if (quantidadeAtual < limite) {
+                                    input.value = quantidadeAtual + 1;
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            });
+                        });
+
+                        atualizarPaginaProdutos();
 
                         prosseguirButton.addEventListener('click', function () {
                             if (prosseguirButton.disabled) {
@@ -292,18 +405,41 @@
                                 })
                             })
                                 .then(function (resposta) {
-                                    if (!resposta.true) {
+                                    if (!resposta.ok) {
                                         return resposta.text().then(function (texto) {
                                             throw new Error(texto || 'Não foi possível registrar a venda.');
                                         });
                                     }
-                                    window.location.href = '/vendas?sucesso=venda';
+                                    return resposta.json();
+                                })
+                                .then(function (dados) {
+                                    const venda = dados.venda;
+                                    notaNumero.textContent = venda.numero;
+                                    notaPagamento.textContent = {
+                                        dinheiro: 'Dinheiro', cartao: 'Cartão', pix: 'Pix', debito: 'Débito'
+                                    }[venda.formaPagamento] || venda.formaPagamento;
+                                    notaTotal.textContent = formatarMoeda(venda.total);
+                                    notaItens.innerHTML = venda.itens.map(function (item) {
+                                        return '<tr><td>' + item.nome + '</td><td>' + item.quantidade + '</td><td>' + formatarMoeda(item.subtotal) + '</td></tr>';
+                                    }).join('');
+                                    modalPagamento.hidden = true;
+                                    modalNota.hidden = false;
                                 })
                                 .catch(function (erro) {
                                     mostrarErro(erro.message);
                                     finalizarButton.disabled = false;
                                     finalizarButton.textContent = 'Finalizar Venda';
                                 });
+                        });
+
+                        document.getElementById('fechar-nota')?.addEventListener('click', function () {
+                            modalNota.hidden = true;
+                        });
+                        document.getElementById('nova-venda')?.addEventListener('click', function () {
+                            window.location.href = '/vendas';
+                        });
+                        document.getElementById('imprimir-nota')?.addEventListener('click', function () {
+                            window.print();
                         });
 
                         form.addEventListener('keydown', function (event) {

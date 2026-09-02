@@ -15,6 +15,10 @@ html, body {
     height: 100%;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 .login-page {
     display: flex;
     min-height: 100vh;
@@ -22,7 +26,9 @@ html, body {
 
 .login-hero {
     flex: 1;
-    padding: 60px;
+    min-width: 0;
+    padding: 60px clamp(32px, 6vw, 96px);
+    background: #0a0e1a;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -40,16 +46,11 @@ html, body {
     margin-bottom: 60px;
 }
 
-.login-logo-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #2563eb, #60a5fa);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: white;
+.login-logo-image {
+    display: block;
+    width: 56px;
+    height: auto;
+    object-fit: contain;
 }
 
 .login-hero h1 {
@@ -100,6 +101,16 @@ html, body {
     padding: 56px 48px;
     animation: entrarSuave 0.7s ease 0.2s forwards;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.login-form-side {
+    flex: 0 1 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 40px;
+    background: #060810;
 }
 
 
@@ -226,6 +237,44 @@ form button[type="submit"]:hover {
     margin-top: 22px;
 }
 
+.login-alert {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: min(360px, calc(100vw - 48px));
+    padding: 14px 16px;
+    color: #fecaca;
+    background: #3b1218;
+    border: 1px solid #7f1d1d;
+    border-radius: 10px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+}
+
+.login-alert-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.login-alert strong,
+.login-alert small {
+    display: block;
+}
+
+.login-alert strong {
+    margin-bottom: 3px;
+    font-size: 14px;
+}
+
+.login-alert small {
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
 .login-hero > * {
     opacity: 0;
     animation: entrarSuave 0.6s ease forwards;
@@ -250,23 +299,13 @@ form button[type="submit"]:hover {
     }
 }
 
-.login-hero {
-    padding: 80px 60px;
-}
-
 .login-logo {
     font-size: 20px;
     margin-bottom: 70px;
 }
 
-.login-logo-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 16px;
-}
-
 .login-hero h1 {
-    font-size: 68px;
+    font-size: clamp(42px, 5vw, 68px);
     max-width: 640px;
     margin-bottom: 24px;
 }
@@ -363,10 +402,69 @@ form button[type="submit"] {
 
 
 
-.login-form-side {
-    background: #060810; /* apaga essa linha */
+@media (max-width: 900px) {
+    .login-page {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .login-hero {
+        width: 100%;
+        min-height: 52vh;
+        padding: 48px 32px;
+    }
+
+    .login-form-side {
+        width: 100%;
+        flex: 0 0 auto;
+        padding: 32px;
+    }
+
+    .login-logo {
+        margin-bottom: 44px;
+    }
+
+    .login-hero h1 {
+        font-size: clamp(38px, 8vw, 56px);
+    }
 }
-.login-logo-icon {
-    background: linear-gradient(135deg, #00ADD8, #00758F);
+
+@media (max-width: 560px) {
+    .login-hero {
+        min-height: auto;
+        padding: 32px 24px 40px;
+    }
+
+    .login-form-side {
+        padding: 24px;
+    }
+
+    .login-hero h1 {
+        font-size: 40px;
+    }
+
+    .login-hero p {
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+
+    .login-badges {
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        flex: 1 1 90px;
+        padding: 14px 16px;
+    }
+
+    .login-card {
+        padding: 36px 24px;
+    }
+
+    .login-alert {
+        right: 16px;
+        bottom: 16px;
+        width: calc(100vw - 32px);
+    }
 }
 

@@ -11,14 +11,16 @@ import (
 )
 
 type DashboardData struct {
-	Usuario  *models.Usuario
-	Produtos []models.Produto
-	Resumo   ResumoData
+	Usuario    *models.Usuario
+	Produtos   []models.Produto
+	Atividades []models.Movimentacao
+	Resumo     ResumoData
 }
 
 type ResumoData struct {
 	TotalEstoque       int
 	TotalVendas        int
+	Faturamento        float64
 	TotalMovimentacoes int
 }
 
@@ -49,10 +51,20 @@ func handlerDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	atividades, err := services.BuscarMovimentacoesWeb()
+	if err != nil {
+		http.Error(w, "Erro ao carregar atividades", http.StatusInternalServerError)
+		return
+	}
+	if len(atividades) > 8 {
+		atividades = atividades[:8]
+	}
+
 	dados := DashboardData{
-		Usuario:  usuario,
-		Produtos: produtos,
-		Resumo:   resumo,
+		Usuario:    usuario,
+		Produtos:   produtos,
+		Atividades: atividades,
+		Resumo:     resumo,
 	}
 
 	tmpl, err := template.ParseFiles("frontend/html/dashboard.html")
@@ -82,6 +94,10 @@ func carregarResumo() (ResumoData, error) {
 		return resumo, err
 	}
 	err = database.DB.QueryRow(`SELECT COALESCE(SUM(quantidade), 0) FROM vendas`).Scan(&resumo.TotalVendas)
+	if err != nil {
+		return resumo, err
+	}
+	err = database.DB.QueryRow(`SELECT COALESCE(SUM(valor_total), 0) FROM vendas`).Scan(&resumo.Faturamento)
 	if err != nil {
 		return resumo, err
 	}

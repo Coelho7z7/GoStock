@@ -18,7 +18,7 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	const produtosPorPagina = 10
+	const produtosPorPagina = 5
 
 	dados := struct {
 		Produtos       []models.Produto
@@ -35,7 +35,6 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 		"saida":      "Saída registrada com sucesso.",
 		"cadastrado": "Produto cadastrado com sucesso.",
 	}
-	
 
 	if r.Method == http.MethodPost {
 		produtoID, idErr := strconv.Atoi(r.FormValue("produto_id"))
@@ -96,28 +95,9 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 	dados.PaginaAnterior = pagina - 1
 	dados.PaginaProxima = pagina + 1
 
-	tmpl, err := template.ParseFiles("frontend/html/produtos.html")
-	if err != nil {
-		http.Error(
-			w,
-			"Erro ao carregar produtos",
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	if dados.Erro != "" {
-		w.WriteHeader(http.StatusBadRequest)
-	}
-	produtos, err = services.BuscarTodosProdutos()
-	if err != nil {
-		http.Error(w, "Erro ao buscar produtos", http.StatusInternalServerError)
-		return
-	}
-	dados.Produtos = produtos
 	dados.Mensagem = mensagens[r.URL.Query().Get("sucesso")]
 
-	tmpl, err = template.ParseFiles("frontend/html/estoque.html")
+	tmpl, err := template.ParseFiles("frontend/html/estoque.html")
 	if err != nil {
 		http.Error(w, "Erro ao carregar estoque", http.StatusInternalServerError)
 		return
