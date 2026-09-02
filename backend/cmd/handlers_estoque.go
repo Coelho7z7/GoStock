@@ -37,6 +37,9 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
+		if !exigirAdmin(w, r) {
+			return
+		}
 		produtoID, idErr := strconv.Atoi(r.FormValue("produto_id"))
 		quantidade, qtdErr := strconv.Atoi(strings.TrimSpace(r.FormValue("quantidade")))
 		acao := r.FormValue("acao")

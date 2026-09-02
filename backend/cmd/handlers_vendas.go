@@ -64,6 +64,9 @@ func handlerVendas(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
+		if !exigirAdmin(w, r) {
+			return
+		}
 		itens, err := itensVendaDoFormulario(r)
 		if err != nil {
 			http.Error(w, "Dados do formulário inválidos", http.StatusBadRequest)
@@ -143,6 +146,9 @@ func handlerApiVendas(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+	if !exigirAdmin(w, r) {
 		return
 	}
 

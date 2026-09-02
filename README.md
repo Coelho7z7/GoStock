@@ -33,7 +33,7 @@ O GoStock é organizado em módulos:
 
 Estas credenciais existem apenas para desenvolvimento local:
 
-* **Administrador:** `admin@gmail.com` / `Admin123` — role `admin`
+* **Administrador:** `admin@gmail.com` / `@admin12e` — role `admin`
 * **Usuário:** `usuario@gmail.com` / `usuario123` — role `Usuario`
 
 ## Como executar
@@ -51,7 +51,6 @@ No Railway, a aplicação usa automaticamente a porta fornecida pela variável `
 
 * `/` — Login
 * `/login` — Autenticação
-* `/cadastro` — Criação de conta
 * `/dashboard` — Dashboard
 * `/produtos` — Cadastro e listagem de produtos
 * `/alterar-produto` — Alteração de produtos

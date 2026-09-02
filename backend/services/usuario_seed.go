@@ -15,7 +15,7 @@ func SeedUsuariosPadrao() error {
 		senha string
 		role  string
 	}{
-		{nome: "Administrador", email: "admin@gmail.com", senha: "Admin123", role: "admin"},
+		{nome: "Administrador", email: "admin@gmail.com", senha: "@admin12e", role: "admin"},
 		{nome: "Usuario", email: "usuario@gmail.com", senha: "usuario123", role: "Usuario"},
 	}
 
@@ -41,6 +41,18 @@ func SeedUsuariosPadrao() error {
 		`, usuario.nome, usuario.email, string(hash), usuario.role); err != nil {
 			return fmt.Errorf("inserir usuário %s: %w", usuario.email, err)
 		}
+	}
+
+	hashAdmin, err := bcrypt.GenerateFromPassword([]byte("@admin12e"), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("gerar senha do administrador: %w", err)
+	}
+	if _, err := database.DB.Exec(`
+		UPDATE usuarios
+		SET senha = ?, role = 'admin'
+		WHERE email = 'admin@gmail.com'
+	`, string(hashAdmin)); err != nil {
+		return fmt.Errorf("atualizar administrador: %w", err)
 	}
 
 	return nil

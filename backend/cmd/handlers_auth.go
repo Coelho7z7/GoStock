@@ -78,34 +78,6 @@ func handlerLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
-func handlerCadastro(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		tmpl, err := template.ParseFiles("frontend/html/cadastro.html")
-		if err != nil {
-			http.Error(w, "Erro ao carregar cadastro", http.StatusInternalServerError)
-			return
-		}
-		tmpl.Execute(w, nil)
-		return
-	}
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", "GET, POST")
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
-		return
-	}
-	if err := services.CadastrarUsuarioWeb(r.FormValue("nome"), r.FormValue("email"), r.FormValue("senha")); err != nil {
-		tmpl, loadErr := template.ParseFiles("frontend/html/cadastro.html")
-		if loadErr != nil {
-			http.Error(w, "Erro ao carregar cadastro", http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		tmpl.Execute(w, struct{ Erro string }{Erro: err.Error()})
-		return
-	}
-	http.Redirect(w, r, "/?cadastro=sucesso", http.StatusSeeOther)
-}
-
 // handlerLogout apaga a sessão atual e redireciona para o login.
 func handlerLogout(w http.ResponseWriter, r *http.Request) {
 	if cookie, err := r.Cookie("sessao"); err == nil {

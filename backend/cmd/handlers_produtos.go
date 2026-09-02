@@ -46,6 +46,9 @@ func handlerProdutos(w http.ResponseWriter, r *http.Request) {
 	}[r.URL.Query().Get("sucesso")]
 
 	if r.Method == http.MethodPost {
+		if !exigirAdmin(w, r) {
+			return
+		}
 		dados.Nome = strings.TrimSpace(r.FormValue("nome"))
 		quantidadeTexto := strings.TrimSpace(r.FormValue("quantidade"))
 		dados.Preco = strings.TrimSpace(r.FormValue("preco"))
@@ -168,6 +171,9 @@ func handlerAlterarProduto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
+		if !exigirAdmin(w, r) {
+			return
+		}
 		produtoID, idErr := strconv.Atoi(r.FormValue("produto_id"))
 
 		if idErr != nil {

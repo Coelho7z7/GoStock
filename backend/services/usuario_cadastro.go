@@ -56,30 +56,3 @@ func CadastrarUsuario(reader *bufio.Reader) {
 
 	fmt.Println("Usuário cadastrado com sucesso.")
 }
-
-func CadastrarUsuarioWeb(nome, email, senha string) error {
-	nome = strings.TrimSpace(nome)
-	email = strings.ToLower(strings.TrimSpace(email))
-	if !utils.ValidarNome(nome) {
-		return fmt.Errorf("o nome é obrigatório")
-	}
-	if !utils.ValidarEmail(email) {
-		return fmt.Errorf("use um endereço @gmail.com válido")
-	}
-	if !utils.ValidarSenha(senha) {
-		return fmt.Errorf("a senha deve ter no mínimo 6 caracteres e 1 caractere especial")
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(senha), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	_, err = database.DB.Exec(`
-		INSERT INTO usuarios (nome, email, senha, role)
-		VALUES (?, ?, ?, 'basico')
-	`, nome, email, string(hash))
-	if err != nil {
-		return fmt.Errorf("não foi possível criar a conta: email já cadastrado")
-	}
-	return nil
-}

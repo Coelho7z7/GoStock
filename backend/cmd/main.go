@@ -53,7 +53,6 @@ func registrarRotas() {
 
 	http.HandleFunc("/", handlerIndex)
 	http.HandleFunc("/login", handlerLogin)
-	http.HandleFunc("/cadastro", handlerCadastro)
 	http.HandleFunc("/logout", handlerLogout)
 
 	http.HandleFunc("/dashboard", handlerDashboard)
