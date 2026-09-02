@@ -50,6 +50,7 @@ func main() {
 func registrarRotas() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("frontend/css"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("frontend/js"))))
+	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 
 	http.HandleFunc("/", handlerIndex)
 	http.HandleFunc("/login", handlerLogin)
