@@ -114,6 +114,18 @@ func CriarTabelas() error {
 		}
 	}
 
+	// O CEO é uma identidade reservada: somente admin@gmail.com pode possuir esse cargo.
+	if _, err = DB.Exec(`
+		UPDATE usuarios
+		SET role = CASE
+			WHEN LOWER(TRIM(email)) = 'admin@gmail.com' THEN 'ceo'
+			WHEN LOWER(TRIM(role)) = 'ceo' THEN 'basico'
+			ELSE role
+		END
+	`); err != nil {
+		return err
+	}
+
 	var colunaFormaPagamento int
 	err = DB.QueryRow(`
 		SELECT COUNT(*)

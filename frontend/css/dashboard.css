@@ -1,3 +1,5 @@
+@import url("base-animacoes.css");
+
 * {
     margin: 0;
     padding: 0;
@@ -84,7 +86,7 @@ nav a.aba-ativa {
     color: #f8fbff;
     background: linear-gradient(135deg, rgba(47, 128, 237, 0.24), rgba(68, 185, 223, 0.1));
     border-color: rgba(68, 185, 223, 0.28);
-    box-shadow: inset 3px 0 0 #44b9df, 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: inset 3px 0 0 #44b9df, inset 0 0 24px rgba(68, 185, 223, .07);
 }
 
 nav a.aba-ativa .nav-icon {
@@ -214,11 +216,6 @@ nav a.aba-ativa .nav-icon {
     border-radius: 8px;
     font-size: 11px;
     font-weight: 800;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
 }
 
 .card-title {
@@ -466,7 +463,7 @@ nav a:hover {
 .card:hover {
     transform: translateY(-5px);
     border-color: rgba(68, 185, 223, 0.35);
-    box-shadow: 0 22px 42px rgba(0, 0, 0, 0.26);
+    box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .18), inset 0 0 30px rgba(68, 185, 223, .06);
 }
 
 .card-title,
@@ -792,4 +789,167 @@ tbody tr:hover {
     .dashboard-grid {
         gap: 22px;
     }
+}
+
+
+/* --- Microinterações e hierarquia visual --- */
+.user {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    color: #f8fbff;
+}
+
+.user-role {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+}
+
+.user-role-ceo {
+    color: #a9d8ff;
+    background: linear-gradient(135deg, rgba(37, 99, 235, .25), rgba(68, 185, 223, .15));
+    border-color: rgba(96, 165, 250, .32);
+    box-shadow: inset 0 0 18px rgba(37, 99, 235, .10);
+}
+
+.user-role-admin {
+    color: #d8c5ff;
+    background: rgba(124, 58, 237, .14);
+    border-color: rgba(167, 139, 250, .22);
+}
+
+.user-role-user {
+    color: #b7c5d9;
+    background: rgba(148, 163, 184, .10);
+}
+
+@keyframes dashboard-page-in {
+    from { opacity: 0; transform: translateY(12px); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes sidebar-in {
+    from { opacity: 0; transform: translateX(-18px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(16px) scale(.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes section-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bar-grow {
+    from { transform: scaleY(0); transform-origin: bottom; }
+    to { transform: scaleY(1); transform-origin: bottom; }
+}
+
+.dashboard .sidebar {
+    animation: sidebar-in 460ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.dashboard .main-content {
+    animation: dashboard-page-in 520ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.dashboard .cards .card {
+    opacity: 0;
+    animation: card-in 520ms cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.dashboard .cards .card:nth-child(1) { animation-delay: 90ms; }
+.dashboard .cards .card:nth-child(2) { animation-delay: 140ms; }
+.dashboard .cards .card:nth-child(3) { animation-delay: 190ms; }
+.dashboard .cards .card:nth-child(4) { animation-delay: 240ms; }
+.dashboard .cards .card:nth-child(5) { animation-delay: 290ms; }
+
+.dashboard .grafico-section,
+.dashboard .atividade-section {
+    animation: section-in 520ms cubic-bezier(.16, 1, .3, 1) 350ms both;
+}
+
+.dashboard .grafico-barra {
+    transform-origin: bottom;
+    animation: bar-grow 700ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.dashboard .grafico-coluna:nth-child(1) .grafico-barra { animation-delay: 430ms; }
+.dashboard .grafico-coluna:nth-child(2) .grafico-barra { animation-delay: 480ms; }
+.dashboard .grafico-coluna:nth-child(3) .grafico-barra { animation-delay: 530ms; }
+.dashboard .grafico-coluna:nth-child(4) .grafico-barra { animation-delay: 580ms; }
+.dashboard .grafico-coluna:nth-child(5) .grafico-barra { animation-delay: 630ms; }
+.dashboard .grafico-coluna:nth-child(6) .grafico-barra { animation-delay: 680ms; }
+.dashboard .grafico-coluna:nth-child(7) .grafico-barra { animation-delay: 730ms; }
+
+.dashboard .cards .card {
+    overflow: hidden;
+}
+
+.dashboard .cards .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.05) 50%, transparent 80%);
+    transform: translateX(-100%);
+    transition: opacity 180ms ease;
+}
+
+.dashboard .cards .card:hover::after {
+    opacity: 1;
+    animation: card-sheen 750ms ease both;
+}
+
+@keyframes card-sheen {
+    to { transform: translateX(100%); }
+}
+
+.dashboard .dashboard-grid .atividade-section tbody tr {
+    transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.dashboard .dashboard-grid .atividade-section tbody tr:hover {
+    transform: translateX(3px);
+    background: #1a2a43;
+    box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .12), inset 0 0 18px rgba(68, 185, 223, .05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard .sidebar,
+    .dashboard .main-content,
+    .dashboard .cards .card,
+    .dashboard .grafico-section,
+    .dashboard .atividade-section,
+    .dashboard .grafico-barra {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+    }
+
+    .dashboard .cards .card::after {
+        animation: none !important;
+    }
+}
+
+.dashboard .cards .card:hover {
+    box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .22), inset 0 0 34px rgba(68, 185, 223, .08);
 }

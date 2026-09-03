@@ -7,7 +7,7 @@
 
     <title>GoStock - Dashboard</title>
 
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard.css?v=5">
 </head>
 
 <body>
@@ -26,6 +26,7 @@
                 <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
                 <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
                 <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if or (eq .Usuario.Role "admin") (eq .Usuario.Role "ceo") }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
             </nav>
 
             <div class="sidebar-footer">
@@ -43,7 +44,14 @@
                 </div>
 
                 <div class="user">
-                    <span>{{ .Usuario.Nome }}</span>
+                    <span class="user-name">{{ .Usuario.Nome }}</span>
+                    {{ if eq .Usuario.Role "ceo" }}
+                    <span class="user-role user-role-ceo">CEO</span>
+                    {{ else if eq .Usuario.Role "admin" }}
+                    <span class="user-role user-role-admin">Administrador</span>
+                    {{ else }}
+                    <span class="user-role user-role-user">Usuário</span>
+                    {{ end }}
                 </div>
             </header>
 

@@ -55,12 +55,14 @@ func handlerMovimentacoes(w http.ResponseWriter, r *http.Request) {
 		TotalPaginas   int
 		PaginaAnterior int
 		PaginaProxima  int
+		EhAdmin        bool
 	}{
 		Movimentacoes:  movimentacoes,
 		Pagina:         pagina,
 		TotalPaginas:   totalPaginas,
 		PaginaAnterior: pagina - 1,
 		PaginaProxima:  pagina + 1,
+		EhAdmin:        usuarioEhAdmin(r),
 	}
 
 	var conteudo bytes.Buffer

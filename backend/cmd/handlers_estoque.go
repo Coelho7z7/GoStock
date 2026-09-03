@@ -28,7 +28,8 @@ func handlerEstoque(w http.ResponseWriter, r *http.Request) {
 		PaginaProxima  int
 		TotalPaginas   int
 		Pagina         int
-	}{}
+		EhAdmin        bool
+	}{EhAdmin: usuarioEhAdmin(r)}
 
 	mensagens := map[string]string{
 		"entrada":    "Estoque adicionado com sucesso.",

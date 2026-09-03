@@ -1,0 +1,131 @@
+/* Cabeçalho de modais (novo produto / pagamento no PDV), formulário
+   genérico dentro de .content e indicadores de nível de estoque. */
+
+/* CABEÇALHO DE MODAIS (novo produto / pagamento no PDV) */
+
+.modal-cadastro-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.modal-cadastro-cabecalho h3 {
+    margin-bottom: 0;
+}
+
+.botao-fechar-modal {
+    padding: 4px 10px !important;
+    background: transparent !important;
+    color: #6b7280 !important;
+    font-size: 26px !important;
+    line-height: 1;
+}
+
+.botao-fechar-modal:hover {
+    color: #111827 !important;
+    background: #f3f4f6 !important;
+}
+
+/* FORMULÁRIO GENÉRICO DENTRO DE .content (busca, entrada/saída de estoque) */
+
+.content form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.content input[type="number"] {
+    width: 120px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.content input[type="number"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.content input[type="number"]::placeholder {
+    color: #9ca3af;
+}
+
+.content button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.content button:hover {
+    background: #1d4ed8;
+}
+
+.content button:active {
+    transform: scale(0.97);
+}
+
+.botao-remover {
+    background: #dc2626 !important;
+}
+
+.botao-remover:hover {
+    background: #b91c1c !important;
+}
+
+.acoes-produto {
+    white-space: nowrap;
+}
+
+.acoes-produto button {
+    margin-right: 6px;
+}
+
+@media (max-width: 700px) {
+    .abas-produtos {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .abas-produtos a {
+        white-space: nowrap;
+    }
+}
+
+.estoque-quantidade {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 45px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.estoque-quantidade.normal {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.estoque-quantidade.baixo {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.estoque-quantidade.zerado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+

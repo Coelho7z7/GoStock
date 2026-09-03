@@ -66,4 +66,6 @@ func registrarRotas() {
 	http.HandleFunc("/api/vendas", handlerApiVendas)
 
 	http.HandleFunc("/movimentacoes", handlerMovimentacoes)
+
+	http.HandleFunc("/usuarios", handlerUsuarios)
 }

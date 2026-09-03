@@ -15,7 +15,12 @@ func usuarioEhAdmin(r *http.Request) bool {
 	}
 
 	usuario, err := services.BuscarUsuarioPorID(usuarioID)
-	return err == nil && strings.EqualFold(strings.TrimSpace(usuario.Role), "admin")
+	if err != nil {
+		return false
+	}
+
+	role := strings.ToLower(strings.TrimSpace(usuario.Role))
+	return role == "admin" || role == "ceo"
 }
 
 func exigirAdmin(w http.ResponseWriter, r *http.Request) bool {

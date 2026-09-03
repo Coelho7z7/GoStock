@@ -129,7 +129,8 @@ func handlerVendas(w http.ResponseWriter, r *http.Request) {
 		Produtos []models.Produto
 		Mensagem string
 		Busca    string
-	}{Produtos: produtos, Mensagem: mensagem, Busca: busca}); err != nil {
+		EhAdmin  bool
+	}{Produtos: produtos, Mensagem: mensagem, Busca: busca, EhAdmin: usuarioEhAdmin(r)}); err != nil {
 		http.Error(w, "Erro ao renderizar PDV", http.StatusInternalServerError)
 	}
 }

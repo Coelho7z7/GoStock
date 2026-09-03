@@ -35,7 +35,8 @@ func handlerProdutos(w http.ResponseWriter, r *http.Request) {
 		TotalPaginas   int
 		PaginaAnterior int
 		PaginaProxima  int
-	}{}
+		EhAdmin        bool
+	}{EhAdmin: usuarioEhAdmin(r)}
 
 	dados.Mensagem = map[string]string{
 		"cadastrado": "Produto cadastrado com sucesso.",
@@ -166,8 +167,10 @@ func handlerAlterarProduto(w http.ResponseWriter, r *http.Request) {
 		TotalPaginas   int
 		PaginaAnterior int
 		PaginaProxima  int
+		EhAdmin        bool
 	}{
 		Mensagem: mensagens[r.URL.Query().Get("sucesso")],
+		EhAdmin:  usuarioEhAdmin(r),
 	}
 
 	if r.Method == http.MethodPost {

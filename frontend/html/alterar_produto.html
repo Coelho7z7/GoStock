@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Alterar produto</title>
-    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/base.css?v=5">
 </head>
 
 <body class="pagina-produtos">
@@ -24,6 +24,7 @@
                 <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
                 <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
                 <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if .EhAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
             </nav>
 
             <div class="sidebar-footer">
@@ -108,6 +109,19 @@
                                         data-preco="{{ printf "%.2f" .Preco }}">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
                                     </button>
+
+                                    <form class="form-remover-produto" action="/alterar-produto" method="POST">
+                                        <input type="hidden" name="produto_id" value="{{ .ID }}">
+                                        <input type="hidden" name="acao" value="remover">
+                                        <button
+                                            class="botao-editar-produto botao-remover-produto"
+                                            type="submit"
+                                            title="Remover produto"
+                                            aria-label="Remover {{ .Nome }}"
+                                            data-confirmar="Remover o produto {{ .Nome }}?">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+                                        </button>
+                                    </form>
 
                                 </td>
 
@@ -206,6 +220,15 @@
             });
             document.addEventListener('keydown', function (event) {
                 if (event.key === 'Escape' && !modal.hidden) fecharModal();
+            });
+
+            document.querySelectorAll('.form-remover-produto').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    const botao = form.querySelector('.botao-remover-produto');
+                    if (!confirm(botao.dataset.confirmar)) {
+                        event.preventDefault();
+                    }
+                });
             });
         });
     </script>
