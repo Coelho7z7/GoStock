@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoStock - Alterar produto</title>
+    <link rel="stylesheet" href="/css/base.css?v=5">
+</head>
+
+<body class="pagina-produtos">
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a class="aba-ativa" href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if .EhAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>Alterar produto</h2>
+            </header>
+
+            <section class="content">
+
+                <nav class="abas-produtos" aria-label="Opções de produtos">
+                    <a href="/produtos">Novo produto</a>
+                    <a class="aba-produto-ativa" href="/alterar-produto">Alterar produto</a>
+                    <a href="/estoque">Estoque</a>
+                </nav>
+
+                <h3>Produtos cadastrados</h3>
+
+                {{ if .Mensagem }}
+                <p class="formulario-sucesso" role="status">
+                    {{ .Mensagem }}
+                </p>
+                {{ end }}
+
+                {{ if .Erro }}
+                <p class="formulario-erro" role="alert">
+                    {{ .Erro }}
+                </p>
+                {{ end }}
+
+                <div class="tabela-produtos">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {{ range .Produtos }}
+
+                            <tr>
+
+                                <td>
+                                    #{{ .ID }}
+                                </td>
+
+                                <td>
+                                    {{ .Nome }}
+                                </td>
+
+                                <td>
+                                    R$ {{ printf "%.2f" .Preco }}
+                                </td>
+
+                                <td>
+                                    {{ .Quantidade }}
+                                </td>
+
+                                <td class="acoes-produto">
+
+                                    <button
+                                        class="botao-editar-produto"
+                                        type="button"
+                                        title="Editar produto"
+                                        aria-label="Editar {{ .Nome }}"
+                                        data-id="{{ .ID }}"
+                                        data-nome="{{ .Nome }}"
+                                        data-preco="{{ printf "%.2f" .Preco }}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+                                    </button>
+
+                                    <form class="form-remover-produto" action="/alterar-produto" method="POST">
+                                        <input type="hidden" name="produto_id" value="{{ .ID }}">
+                                        <input type="hidden" name="acao" value="remover">
+                                        <button
+                                            class="botao-editar-produto botao-remover-produto"
+                                            type="submit"
+                                            title="Remover produto"
+                                            aria-label="Remover {{ .Nome }}"
+                                            data-confirmar="Remover o produto {{ .Nome }}?">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+                                        </button>
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                            {{ else }}
+
+                            <tr>
+                                <td colspan="5">
+                                    Nenhum produto cadastrado.
+                                </td>
+                            </tr>
+
+                            {{ end }}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="modal-edicao" id="modal-edicao" hidden>
+                    <div class="modal-edicao-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-edicao">
+                        <div class="modal-cadastro-cabecalho">
+                            <div>
+                                <span class="edicao-kicker">Catálogo</span>
+                                <h3 id="titulo-edicao">Editar produto</h3>
+                            </div>
+                            <button class="botao-fechar-modal" type="button" id="fechar-edicao" aria-label="Fechar">&times;</button>
+                        </div>
+                        <form class="cadastro-form" action="/alterar-produto" method="POST">
+                            <input type="hidden" name="produto_id" id="edicao-id">
+                            <input type="hidden" name="acao" value="atualizar">
+                            <label for="edicao-nome">Nome do produto</label>
+                            <input type="text" name="nome" id="edicao-nome" required>
+                            <label for="edicao-preco">Preço unitário</label>
+                            <input type="number" name="preco" id="edicao-preco" min="0" step="0.01" required>
+                            <button class="botao-salvar" type="submit">Salvar alterações</button>
+                        </form>
+                    </div>
+                </div>
+
+                {{ if gt .TotalPaginas 1 }}
+
+                <div class="paginacao">
+
+                    {{ if gt .Pagina 1 }}
+                    <a href="/alterar-produto?pagina={{ .PaginaAnterior }}">
+                        « Anterior
+                    </a>
+                    {{ end }}
+
+                    <span>
+                        Página {{ .Pagina }} de {{ .TotalPaginas }}
+                    </span>
+
+                    {{ if lt .Pagina .TotalPaginas }}
+                    <a href="/alterar-produto?pagina={{ .PaginaProxima }}">
+                        Próxima »
+                    </a>
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('modal-edicao');
+            const fechar = document.getElementById('fechar-edicao');
+            const id = document.getElementById('edicao-id');
+            const nome = document.getElementById('edicao-nome');
+            const preco = document.getElementById('edicao-preco');
+
+            document.querySelectorAll('.botao-editar-produto').forEach(function (botao) {
+                botao.addEventListener('click', function () {
+                    id.value = botao.dataset.id;
+                    nome.value = botao.dataset.nome;
+                    preco.value = botao.dataset.preco;
+                    modal.hidden = false;
+                    nome.focus();
+                });
+            });
+
+            const fecharModal = function () { modal.hidden = true; };
+            fechar.addEventListener('click', fecharModal);
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) fecharModal();
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && !modal.hidden) fecharModal();
+            });
+
+            document.querySelectorAll('.form-remover-produto').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    const botao = form.querySelector('.botao-remover-produto');
+                    if (!confirm(botao.dataset.confirmar)) {
+                        event.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoStock - Dashboard</title>
+
+    <link rel="stylesheet" href="/css/dashboard.css?v=5">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a class="aba-ativa" href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if or (eq .Usuario.Role "admin") (eq .Usuario.Role "ceo") }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>Visão geral da operação em tempo real</p>
+                </div>
+
+                <div class="user">
+                    <span class="user-name">{{ .Usuario.Nome }}</span>
+                    {{ if eq .Usuario.Role "ceo" }}
+                    <span class="user-role user-role-ceo">CEO</span>
+                    {{ else if eq .Usuario.Role "admin" }}
+                    <span class="user-role user-role-admin">Administrador</span>
+                    {{ else }}
+                    <span class="user-role user-role-user">Usuário</span>
+                    {{ end }}
+                </div>
+            </header>
+
+                <section class="content">
+
+    <div class="content-heading">
+        <div>
+            <span class="eyebrow">Resumo da operação</span>
+            <h3>Visão geral</h3>
+        </div>
+        <span class="dashboard-date">Atualizado agora</span>
+    </div>
+
+    <div class="cards">
+
+         <div class="card metric-card metric-card-faturamento">
+     <span class="card-icon" aria-hidden="true">R$</span>
+     <span class="card-title">Faturamento</span>
+    <strong>R$ {{ moedaBR .Resumo.Faturamento }}</strong>
+     <small>Valor total das vendas</small>
+</div>
+
+         <div class="card">
+     <span class="card-icon" aria-hidden="true">◈</span>
+    <span class="card-title">Produtos</span>
+    <strong>{{ len .Produtos }}</strong>
+    <small>Produtos cadastrados</small>
+</div>
+
+        <div class="card">
+            <span class="card-icon" aria-hidden="true">▣</span>
+            <span class="card-title">Estoque</span>
+            <strong>{{ .Resumo.TotalEstoque }}</strong>
+            <small>Itens em estoque</small>
+        </div>
+
+        <div class="card">
+            <span class="card-icon" aria-hidden="true">↗</span>
+            <span class="card-title">Vendas</span>
+            <strong>{{ .Resumo.TotalVendas }}</strong>
+            <small>Vendas registradas</small>
+        </div>
+
+        <div class="card">
+            <span class="card-icon" aria-hidden="true">↕</span>
+            <span class="card-title">Movimentações</span>
+            <strong>{{ .Resumo.TotalMovimentacoes }}</strong>
+            <small>Movimentações registradas</small>
+        </div>
+
+    </div>
+    <div class="dashboard-grid">
+    <div class="products-section grafico-section">
+        <div class="section-header">
+            <div>
+                <h3>Faturamento dos últimos 7 dias</h3>
+                <small>Vendas registradas no período</small>
+            </div>
+        </div>
+        <div class="grafico-barras" aria-label="Faturamento dos últimos 7 dias">
+            {{ range .Grafico }}
+            <div class="grafico-coluna" title="R$ {{ printf "%.2f" .Valor }}">
+                <div class="grafico-barra" style="height: {{ .Percentual }}%"></div>
+                <span>{{ .Data }}</span>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+
+    <div class="products-section atividade-section">
+
+    <div class="section-header">
+        <h3>Atividade recente</h3>
+        <a href="/movimentacoes">Ver histórico</a>
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Ação</th>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Quando</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{ range .Atividades }}
+                <tr>
+                    <td><span class="atividade-tipo atividade-{{ .Tipo }}">{{ if eq .Tipo "ENTRADA" }}Adicionado{{ else if eq .Tipo "SAIDA" }}Saída{{ else }}Atualizado{{ end }}</span></td>
+                    <td class="atividade-produto">{{ .Produto }}</td>
+                    <td>{{ if eq .Tipo "ATUALIZACAO" }}-{{ else }}{{ .Quantidade }}{{ end }}</td>
+                    <td>{{ .DataFormatada }} às {{ .HoraFormatada }}</td>
+                </tr>
+                {{ else }}
+                <tr>
+                    <td colspan="4">Nenhuma atividade registrada.</td>
+                </tr>
+                {{ end }}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</div>
+
+</section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=2"></script>
+</body>
+</html>

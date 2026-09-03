@@ -1,0 +1,59 @@
+:root {
+    --page-background: radial-gradient(circle at 75% 0%, #172742 0%, #080d18 48%, #050812 100%);
+    --sidebar-background: linear-gradient(180deg, #0d1729 0%, #0b1220 100%);
+    --topbar-background: rgba(10, 17, 30, 0.82);
+    --surface: #111a2b;
+    --surface-soft: #151f32;
+    --input-background: #0b1322;
+    --row-hover: rgba(47, 128, 237, 0.08);
+    --line: rgba(148, 163, 184, 0.16);
+    --heading: #f8fbff;
+    --text: #e5edf8;
+    --muted: #8fa1b8;
+    --accent: #2f80ed;
+    --accent-strong: #1d65c1;
+    --accent-cyan: #44b9df;
+    --accent-soft: rgba(47, 128, 237, 0.16);
+    --accent-border: rgba(47, 128, 237, 0.3);
+    --accent-ring: rgba(47, 128, 237, 0.16);
+    --accent-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    --logo-background: rgba(68, 185, 223, 0.08);
+    --logo-border: rgba(68, 185, 223, 0.18);
+    --nav-active-background: linear-gradient(135deg, rgba(47, 128, 237, 0.24), rgba(68, 185, 223, 0.1));
+    --nav-active-border: rgba(68, 185, 223, 0.28);
+    --shadow-small: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+    --modal-shadow: 0 28px 80px rgba(0, 0, 0, 0.46);
+    --overlay: rgba(3, 9, 18, 0.72);
+    --success: #86efac;
+    --error: #fca5a5;
+    --danger-purple: #7c3aed;
+    --danger-purple-hover: #6d28d9;
+    --stock-normal-text: #7db7ff;
+    --stock-normal-background: rgba(47, 128, 237, 0.18);
+    --stock-low-text: #fbbf62;
+    --stock-low-background: rgba(217, 119, 6, 0.18);
+    --stock-empty-text: #fca5a5;
+    --stock-empty-background: rgba(220, 38, 38, 0.18);
+}
+
+body {
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    color: var(--text);
+    background: var(--page-background);
+}
+
+.logo span { color: var(--accent-cyan); }
+nav a { color: var(--muted); }
+nav a:hover, nav a.aba-ativa { color: var(--heading); background: var(--nav-active-background); border-color: var(--nav-active-border); }
+.topbar h2 { color: var(--heading); }
+.content h3, .cabecalho-produtos h3 { color: var(--heading); }
+.content th { color: var(--muted); }
+.content td { color: var(--text); }
+.content tbody tr:hover { background: var(--row-hover); }
+
+@media (max-width: 700px) {
+    .sidebar { position: static; width: 100%; min-height: auto; overflow: visible; }
+    .main-content { margin-left: 0; }
+    .dashboard { display: block; }
+}

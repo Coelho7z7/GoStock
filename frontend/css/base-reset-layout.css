@@ -1,0 +1,250 @@
+/* Reset global, estrutura base (.dashboard), sidebar, abas de navegação,
+   área de conteúdo, tabelas genéricas e animações compartilhadas. */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
+    color: #0f172a;
+}
+
+.dashboard {
+    min-height: 100vh;
+    display: flex;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 5;
+    overflow-y: auto;
+    background: #0f172a;
+    padding: 30px 20px;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    text-align: center;
+    font-size: 30px;
+    line-height: 1;
+    white-space: nowrap;
+    padding: 12px 10px;
+    background: rgba(68, 185, 223, 0.08);
+    border: 1px solid rgba(68, 185, 223, 0.18);
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+.logo span {
+    color: #2563eb;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar nav a {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: 0.2s;
+}
+
+.nav-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sidebar nav a:hover {
+    background: #1e293b;
+    color: white;
+}
+
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.sidebar-logout {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar-logout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
+}
+
+/* NAVEGAÇÃO EM ABAS (produtos / estoque / alterar produto) */
+
+.abas-produtos {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    gap: 4px;
+    margin-bottom: 34px;
+    padding: 5px;
+    background: #e8eef7;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+}
+
+.abas-produtos a {
+    color: #4b5563;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.abas-produtos a:hover,
+.abas-produtos .aba-produto-ativa {
+    color: #174ea6;
+    background: white;
+    box-shadow: 0 2px 8px rgba(31, 61, 104, 0.1);
+}
+
+.abas-produtos .aba-produto-ativa {
+    outline: 1px solid rgba(47, 128, 237, 0.24);
+}
+
+/* CONTEÚDO */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    margin-left: 240px;
+    background: transparent;
+}
+
+.topbar {
+    height: 80px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 35px;
+    border-bottom: 1px solid #dfe7f3;
+}
+
+.topbar h2 {
+    font-size: 24px;
+}
+
+.content {
+    padding: 35px;
+    background: transparent;
+}
+
+.content h3 {
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+.formulario-erro {
+    margin-bottom: 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.formulario-sucesso {
+    margin-bottom: 12px;
+    color: #15803d;
+    font-size: 14px;
+}
+
+/* TABELAS GENÉRICAS (usadas em produtos, estoque, movimentações, etc.) */
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.content thead {
+    background: #f8fafc;
+}
+
+.content th {
+    padding: 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.content td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+}
+
+.content tbody tr {
+    animation: revelar-linha 360ms ease both;
+    transition: background 180ms ease, transform 180ms ease;
+}
+
+.content tbody tr:hover {
+    background: #f5f8fc;
+}
+
+.content tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ANIMAÇÕES COMPARTILHADAS */
+
+@keyframes aparecer-fundo {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes subir-modal {
+    from { opacity: 0; transform: translateY(14px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes revelar-linha {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

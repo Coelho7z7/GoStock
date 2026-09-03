@@ -1,0 +1,10 @@
+/* Ponto de entrada do tema principal do GoStock.
+   O CSS foi dividido em partes menores para facilitar manutenção;
+   a ordem dos imports importa (cascata) e não deve ser alterada. */
+
+@import url("base-reset-layout.css");
+@import url("base-modais-formularios.css");
+@import url("base-produtos.css");
+@import url("base-acesso-negado.css");
+@import url("base-tema-escuro.css");
+@import url("base-animacoes.css");

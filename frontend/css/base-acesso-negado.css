@@ -1,0 +1,99 @@
+/* Variáveis de tema (:root) compartilhadas com a tela de login e os
+   estilos da página de acesso negado. */
+
+/* Identidade visual compartilhada com a tela de login */
+:root {
+    --shell: #080d18;
+    --sidebar: #0b1220;
+    --surface: #111a2b;
+    --surface-soft: #151f32;
+    --line: rgba(148, 163, 184, 0.16);
+    --text: #e5edf8;
+    --muted: #8fa1b8;
+    --accent: #2f80ed;
+    --accent-strong: #1d65c1;
+}
+
+body {
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at 75% 0%, #172742 0%, var(--shell) 48%, #050812 100%);
+    color: var(--text);
+}
+
+.acesso-negado-page {
+    display: grid;
+    min-height: 100vh;
+    place-items: center;
+    padding: 24px;
+}
+
+.acesso-negado-conteudo {
+    width: min(520px, 100%);
+}
+
+.acesso-negado-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 26px;
+    color: #fecaca;
+    background: #111a2b;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 16px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+    animation: subir-modal 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.acesso-negado-icone {
+    display: grid;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.14);
+    border-radius: 10px;
+}
+
+.acesso-negado-icone svg {
+    width: 21px;
+    height: 21px;
+}
+
+.acesso-negado-kicker {
+    color: #fca5a5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.acesso-negado-card h1 {
+    margin: 5px 0 6px;
+    color: #f8fbff;
+    font-size: 24px;
+}
+
+.acesso-negado-card p {
+    margin-bottom: 18px;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.acesso-negado-card button {
+    padding: 10px 16px;
+    color: white;
+    background: linear-gradient(135deg, #2f80ed, #1d65c1);
+    border: 0;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 560px) {
+    .acesso-negado-card {
+        padding: 22px;
+    }
+}
+
