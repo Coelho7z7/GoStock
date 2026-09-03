@@ -33,7 +33,7 @@ O GoStock é organizado em módulos:
 
 Estas credenciais existem apenas para desenvolvimento local:
 
-* **Administrador:** `admin@gmail.com` / `@admin12e` — role `admin`
+* **Administrador:** `***` / `***` — role `admin`
 * **Usuário:** `usuario@gmail.com` / `usuario123` — role `Usuario`
 
 ## Como executar
