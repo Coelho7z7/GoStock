@@ -15,6 +15,7 @@ func SeedUsuariosPadrao() error {
 		senha string
 		role  string
 	}{
+		{nome: "Matheus", email: "matheus@gmail.com", senha: "Dominio12e@", role: "Gerente"},
 		{nome: "Administrador", email: "admin@gmail.com", senha: "@admin12e", role: "ceo"},
 		{nome: "Usuario", email: "usuario@gmail.com", senha: "usuario123", role: "basico"},
 	}
