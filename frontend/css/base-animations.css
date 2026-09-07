@@ -1,0 +1,323 @@
+/* Microinterações globais e componentes da tela de usuários. */
+
+@keyframes page-entrada {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badge-entrada {
+    from { opacity: 0; transform: scale(.88); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes brilho-ceo {
+    0%, 100% { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0); }
+    50% { box-shadow: inset 0 0 18px rgba(37, 99, 235, .18); }
+}
+
+.main-content {
+    animation: page-entrada 420ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.sidebar nav a {
+    will-change: transform;
+}
+
+.sidebar nav a {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar nav a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(100deg, transparent 15%, rgba(255,255,255,.08) 50%, transparent 85%);
+    transform: translateX(-120%);
+}
+
+.sidebar nav a:hover {
+    transform: translateX(4px);
+    background: rgba(30, 41, 59, .92);
+    box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .12);
+}
+
+.sidebar nav a:hover::after {
+    opacity: 1;
+    animation: nav-sheen-global 650ms ease both;
+}
+
+.sidebar nav a.tab-active {
+    overflow: hidden;
+}
+
+.sidebar nav a.tab-active:hover {
+    box-shadow: inset 3px 0 0 #44b9df, inset 0 0 24px rgba(68, 185, 223, .07);
+}
+
+@keyframes nav-sheen-global {
+    to { transform: translateX(120%); }
+}
+
+.content tbody tr {
+    will-change: transform, opacity;
+}
+
+.content tbody tr:nth-child(1) { animation-delay: 30ms; }
+.content tbody tr:nth-child(2) { animation-delay: 65ms; }
+.content tbody tr:nth-child(3) { animation-delay: 100ms; }
+.content tbody tr:nth-child(4) { animation-delay: 135ms; }
+.content tbody tr:nth-child(5) { animation-delay: 170ms; }
+.content tbody tr:nth-child(6) { animation-delay: 205ms; }
+.content tbody tr:nth-child(7) { animation-delay: 240ms; }
+.content tbody tr:nth-child(8) { animation-delay: 275ms; }
+
+.content button,
+.edit-product-link,
+.new-product-button {
+    will-change: transform;
+    transition:
+        transform 180ms cubic-bezier(.2,.8,.2,1),
+        box-shadow 180ms ease,
+        background 180ms ease,
+        filter 180ms ease !important;
+}
+
+.content button:hover,
+.edit-product-link:hover {
+    filter: brightness(1.05);
+}
+
+.content button:active,
+.edit-product-link:active {
+    transform: translateY(1px) scale(.97);
+}
+
+.products-table {
+    transition: box-shadow 250ms ease, transform 250ms ease;
+}
+
+.products-table:hover {
+    box-shadow: inset 0 0 0 1px rgba(47, 128, 237, .16), inset 0 0 28px rgba(47, 128, 237, .05);
+}
+
+
+.products-tabs a {
+    position: relative;
+    overflow: hidden;
+}
+
+.products-tabs a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(100deg, transparent 15%, rgba(37, 99, 235, .10) 50%, transparent 85%);
+    transform: translateX(-120%);
+}
+
+.products-tabs a:hover::after {
+    opacity: 1;
+    animation: tabs-sheen 620ms ease both;
+}
+
+@keyframes tabs-sheen {
+    to { transform: translateX(120%); }
+}
+
+.role-badge,
+.role-protected {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    line-height: 1;
+    animation: badge-entrada 260ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.role-badge {
+    margin-left: 8px;
+    padding: 6px 9px;
+    vertical-align: middle;
+}
+
+.role-badge-ceo {
+    color: #93c5fd;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(68, 185, 223, 0.18));
+    border: 1px solid rgba(147, 197, 253, 0.4);
+    animation: badge-entrada 260ms cubic-bezier(.2,.8,.2,1) both, brilho-ceo 2.8s ease-in-out 400ms infinite;
+}
+
+.role-protected {
+    padding: 8px 10px;
+    color: #93c5fd;
+    background: rgba(37, 99, 235, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 999px;
+    cursor: default;
+}
+
+.role-help {
+    margin-top: 1px;
+    color: #8a93a6;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.role-badge-ceo svg,
+.role-protected svg {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.modal-create-content,
+.modal-edit-content {
+    transform-origin: center;
+    will-change: transform, opacity;
+}
+
+.close-modal-button {
+    transition: transform 160ms ease, color 160ms ease, background 160ms ease !important;
+}
+
+.close-modal-button:hover {
+    transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .main-content,
+    .content tbody tr,
+    .role-badge,
+    .role-protected,
+    .role-badge-ceo {
+        animation: none !important;
+    }
+
+    .sidebar nav a,
+    .products-tabs a,
+    .content button,
+    .edit-product-link,
+    .products-table,
+    .close-modal-button {
+        transition: none !important;
+    }
+
+    .sidebar nav a::after,
+    .products-tabs a::after {
+        animation: none !important;
+    }
+}
+
+.modal-create-content.modal-open,
+.modal-edit-content.modal-open {
+    animation: subir-modal 260ms cubic-bezier(.16, 1, .3, 1);
+}
+
+
+/* --- Tela de usuários: entrada real e microinterações --- */
+@keyframes user-heading-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes user-row-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes protected-pulse {
+    0%, 100% { box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0); }
+    50% { box-shadow: inset 0 0 18px rgba(37, 99, 235, .16); }
+}
+
+.products-page .content {
+    animation: page-entrada 500ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.products-page .products-filter,
+.products-page .products-header {
+    animation: user-heading-in 480ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.products-page .products-filter { animation-delay: 60ms; }
+.products-page .products-header { animation-delay: 110ms; }
+
+.products-page .products-table {
+    animation: user-heading-in 480ms cubic-bezier(.16, 1, .3, 1) 160ms both;
+}
+
+.products-page .products-table tbody tr {
+    opacity: 0;
+    animation: user-row-in 400ms cubic-bezier(.16, 1, .3, 1) forwards;
+}
+
+.products-page .products-table tbody tr:nth-child(1) { animation-delay: 220ms; }
+.products-page .products-table tbody tr:nth-child(2) { animation-delay: 270ms; }
+.products-page .products-table tbody tr:nth-child(3) { animation-delay: 320ms; }
+.products-page .products-table tbody tr:nth-child(4) { animation-delay: 370ms; }
+.products-page .products-table tbody tr:nth-child(5) { animation-delay: 420ms; }
+.products-page .products-table tbody tr:nth-child(6) { animation-delay: 470ms; }
+.products-page .products-table tbody tr:nth-child(7) { animation-delay: 520ms; }
+.products-page .products-table tbody tr:nth-child(8) { animation-delay: 570ms; }
+
+.products-page .products-table tbody tr:hover {
+    transform: translateX(5px);
+    transition: transform 180ms cubic-bezier(.2,.8,.2,1), background 180ms ease, box-shadow 180ms ease;
+}
+
+.products-page .new-product-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.products-page .new-product-button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 70%;
+    height: 100%;
+    transform: skewX(-18deg);
+    background: rgba(255,255,255,.14);
+}
+
+.products-page .new-product-button:hover::after {
+    animation: button-shine 650ms ease both;
+}
+
+@keyframes button-shine {
+    to { left: 140%; }
+}
+
+.products-page .role-badge-ceo {
+    animation: badge-entrada 260ms cubic-bezier(.2,.8,.2,1) both, protected-pulse 3s ease-in-out 400ms infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .products-page .content,
+    .products-page .products-filter,
+    .products-page .products-header,
+    .products-page .products-table,
+    .products-page .products-table tbody tr,
+    .products-page .role-badge-ceo {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .products-page .new-product-button::after {
+        animation: none !important;
+    }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoStock - Produtos</title>
+    <link rel="stylesheet" href="/css/base.css?v=6">
+</head>
+
+<body class="products-page">
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a class="tab-active" href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if .IsAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>Produtos</h2>
+            </header>
+
+            <section class="content">
+
+                <nav class="products-tabs" aria-label="Opções de produtos">
+                    <a class="product-tab-active" href="/produtos">Novo produto</a>
+                    <a href="/alterar-produto">Alterar produto</a>
+                    <a href="/estoque">Estoque</a>
+                </nav>
+
+                <form class="products-filter" method="GET" action="/produtos">
+                    <input type="search" name="busca" value="{{ .Search }}" placeholder="Buscar produto ou ID">
+                    <select name="ordem" aria-label="Ordenar produtos">
+                        <option value="recentes" {{ if eq .Order "recentes" }}selected{{ end }}>Mais recentes</option>
+                        <option value="nome" {{ if eq .Order "nome" }}selected{{ end }}>Nome</option>
+                        <option value="preco" {{ if eq .Order "preco" }}selected{{ end }}>Preço</option>
+                        <option value="estoque" {{ if eq .Order "estoque" }}selected{{ end }}>Estoque</option>
+                    </select>
+                    <button type="submit">Filtrar</button>
+                </form>
+
+                {{ if .Message }}
+                <p class="form-success" role="status">
+                    {{ .Message }}
+                </p>
+                {{ end }}
+
+                {{ if .Error }}
+                <p class="form-error" role="alert">
+                    {{ .Error }}
+                </p>
+                {{ end }}
+
+                <div class="products-header">
+
+                    <h3>Produtos cadastrados</h3>
+
+                    <button
+                        class="new-product-button"
+                        type="button"
+                        id="open-create-product">
+                        Novo produto
+                    </button>
+
+                </div>
+
+                <div class="products-table">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {{ range .Products }}
+
+                            <tr>
+
+                                <td>
+                                    {{ .ID }}
+                                </td>
+
+                                <td>
+                                    {{ .Name }}
+                                </td>
+
+                                <td>
+                                    R$ {{ printf "%.2f" .Price }}
+                                </td>
+
+                                <td>
+                                    <span class="stock-quantity {{ .StockStatus }}">
+                                        {{ .Quantity }}
+                                    </span>
+                                </td>
+
+                                <td class="product-actions">
+
+                                    <a
+                                        class="edit-product-link"
+                                        href="/alterar-produto">
+                                        Editar
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            {{ else }}
+
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum produto cadastrado.</span></div>
+                                </td>
+                            </tr>
+
+                            {{ end }}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {{ if gt .TotalPages 1 }}
+
+                <div class="pagination">
+
+                    {{ if gt .Page 1 }}
+
+                    <a href="/produtos?pagina={{ .PreviousPage }}">
+                        « Anterior
+                    </a>
+
+                    {{ end }}
+
+                    <span>
+                        Página {{ .Page }} de {{ .TotalPages }}
+                    </span>
+
+                    {{ if lt .Page .TotalPages }}
+
+                    <a href="/produtos?pagina={{ .NextPage }}">
+                        Próxima »
+                    </a>
+
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
+                <div
+                    class="modal-create"
+                    id="create-product-modal"
+                    hidden>
+
+                    <div
+                        class="modal-create-content"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="new-product-title">
+
+                        <div class="modal-create-header">
+
+                            <h3 id="new-product-title">
+                                Novo produto
+                            </h3>
+
+                            <button
+                                class="close-modal-button"
+                                type="button"
+                                id="close-create-product"
+                                aria-label="Fechar">
+                                &times;
+                            </button>
+
+                        </div>
+
+                        <form
+                            class="create-form"
+                            action="/produtos"
+                            method="POST">
+
+                            <label for="product-name">
+                                Nome do produto
+                            </label>
+
+                            <input
+                                id="product-name"
+                                type="text"
+                                name="nome"
+                                value="{{ .Name }}"
+                                placeholder="Ex.: Coca-Cola"
+                                required>
+
+                            <label for="product-quantity">
+                                Quantidade inicial
+                            </label>
+
+                            <input
+                                id="product-quantity"
+                                type="number"
+                                name="quantidade"
+                                value="{{ .Quantity }}"
+                                min="0"
+                                required>
+
+                            <label for="product-price">
+                                Preço unitário
+                            </label>
+
+                            <input
+                                id="product-price"
+                                type="number"
+                                name="preco"
+                                value="{{ .Price }}"
+                                min="0"
+                                step="0.01"
+                                placeholder="0,00"
+                                required>
+
+                            <button type="submit">
+                                Cadastrar produto
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=6"></script>
+
+</body>
+
+</html>

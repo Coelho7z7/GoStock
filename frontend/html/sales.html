@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GoStock - Vendas</title>
+
+    <link rel="stylesheet" href="/css/base.css?v=6">
+    <link rel="stylesheet" href="/css/pos.css?v=6">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a class="tab-active" href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                {{ if .IsAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>PDV - Vendas</h2>
+            </header>
+
+            <section class="content pos-page">
+
+                {{ if .Message }}
+                <p class="form-success" role="status">
+                    {{ .Message }}
+                </p>
+                {{ end }}
+
+                <form method="GET" action="/vendas" class="pos-search-form">
+                    <label for="search">Busca de produtos</label>
+                    <div class="pos-search-wrap">
+                        <input
+                            id="search"
+                            name="busca"
+                            type="text"
+                            value="{{ .Search }}"
+                            placeholder="Digite o nome ou ID do produto"
+                            autocomplete="off"
+                            autofocus
+                        >
+                        <button type="submit">Buscar</button>
+                    </div>
+                </form>
+
+                <form method="POST" action="/vendas" class="pos-form" id="pos-form">
+                    <div class="pos-layout">
+                        <div class="pos-card pos-card-list">
+                        <div class="pos-card-header">
+                            <h3>Produtos</h3>
+                        </div>
+
+                        <table class="pos-products-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Produto</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Quantidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ range .Products }}
+                                <tr class="pos-product-row">
+                                    <td>{{ .ID }}</td>
+                                    <td>{{ .Name }}</td>
+                                    <td>R$ {{ printf "%.2f" .Price }}</td>
+                                    <td>
+                                        <span class="stock-quantity {{ .StockStatus }}">
+                                            {{ .Quantity }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="produto_id" value="{{ .ID }}">
+                                        <div class="pos-quantity-control">
+                                            <input
+                                                type="number"
+                                                name="quantidade"
+                                                min="0"
+                                                max="{{ .Quantity }}"
+                                                value=""
+                                                placeholder="Qtd"
+                                                class="pos-quantity"
+                                                data-product-id="{{ .ID }}"
+                                                data-name="{{ .Name }}"
+                                                data-price="{{ .Price }}"
+                                            >
+                                            <button type="button" class="pos-add" aria-label="Adicionar {{ .Name }}">+</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{ else }}
+                                <tr>
+                                    <td colspan="5"><div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum produto encontrado.</span></div></td>
+                                </tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+
+                        <div class="pos-pagination" id="pos-pagination" aria-label="Paginação de produtos"></div>
+
+                        <p class="pos-error" id="pos-error" role="alert" hidden></p>
+
+                            <div class="pos-product-actions">
+                                <button type="button" class="proceed-btn" id="proceed-to-payment-btn" disabled>
+                                    Prosseguir para pagamento
+                                </button>
+                            </div>
+                        </div>
+
+                        <aside class="pos-card pos-cart" aria-labelledby="cart-title">
+                            <div class="pos-card-header">
+                                <h3 id="cart-title">Carrinho <span id="cart-counter">0 itens</span></h3>
+                            </div>
+                            <div class="pos-cart-content" id="cart-items">
+                                <p class="pos-cart-empty">Selecione quantidades para adicionar produtos.</p>
+                            </div>
+                            <div class="pos-cart-total">
+                                <span>Total</span>
+                                <strong id="cart-total">R$ 0,00</strong>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <!--
+                        O modal de pagamento fica DENTRO do <form id="pos-form">
+                        de propósito: assim o campo "forma_pagamento" é
+                        associado ao formulário da venda (posicionamento
+                        "fixed" no CSS não muda por causa disso). Antes,
+                        esse modal era uma div separada, fora do form, e a
+                        forma de pagamento escolhida nunca chegava a ser
+                        enviada ao servidor.
+                    -->
+                    <div class="modal-payment" id="payment-modal" hidden>
+                        <div class="modal-payment-content" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+                            <div class="modal-create-header">
+                                <h3 id="payment-title">Pagamento</h3>
+                                <button class="close-modal-button" type="button" id="close-payment" aria-label="Fechar">&times;</button>
+                            </div>
+
+                            <div class="pos-payment-form">
+                                <div class="pos-payment-field">
+                                    <label for="payment-method">Forma de pagamento</label>
+                                    <select id="payment-method" name="forma_pagamento">
+                                        <option value="dinheiro">Dinheiro</option>
+                                        <option value="cartao">Cartão</option>
+                                        <option value="pix">Pix</option>
+                                        <option value="debito">Débito</option>
+                                    </select>
+                                </div>
+
+                                <div class="pos-payment-field">
+                                    <label>Valor da venda</label>
+                                    <div class="pos-total-value" id="sale-total-value">R$ 0,00</div>
+                                </div>
+
+                                <button type="button" class="btn-finish" id="finish-sale-btn">Finalizar Venda</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="modal-receipt" id="receipt-modal" hidden>
+                    <div class="modal-receipt-content" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+                        <div class="modal-receipt-header">
+                            <div>
+                                <span class="receipt-kicker">Venda concluída</span>
+                                <h3 id="receipt-title">Nota da venda</h3>
+                            </div>
+                            <button type="button" class="close-modal-button" id="close-receipt" aria-label="Fechar">&times;</button>
+                        </div>
+                        <div class="receipt-summary">
+                            <div><span>Número</span><strong id="receipt-number">-</strong></div>
+                            <div><span>Pagamento</span><strong id="receipt-payment">-</strong></div>
+                        </div>
+                        <div class="receipt-items-wrap">
+                            <table class="receipt-items">
+                                <thead><tr><th>Item</th><th>Qtd.</th><th>Valor</th></tr></thead>
+                                <tbody id="receipt-items"></tbody>
+                            </table>
+                        </div>
+                        <div class="receipt-total"><span>Total</span><strong id="receipt-total">R$ 0,00</strong></div>
+                        <div class="receipt-actions">
+                            <button type="button" class="print-btn" id="print-receipt">Imprimir nota</button>
+                            <button type="button" class="new-sale-btn" id="new-sale">Nova venda</button>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('pos-form');
+                        const paymentModal = document.getElementById('payment-modal');
+                        const closePayment = document.getElementById('close-payment');
+                        const finishButton = document.getElementById('finish-sale-btn');
+                        const proceedButton = document.getElementById('proceed-to-payment-btn');
+                        const quantityInputs = Array.from(document.querySelectorAll('.pos-quantity'));
+                        const saleTotalValue = document.getElementById('sale-total-value');
+                        const paymentMethodSelect = document.getElementById('payment-method');
+                        const errorBox = document.getElementById('pos-error');
+                        const cartItems = document.getElementById('cart-items');
+                        const cartCounter = document.getElementById('cart-counter');
+                        const cartTotal = document.getElementById('cart-total');
+                        const receiptModal = document.getElementById('receipt-modal');
+                        const receiptItems = document.getElementById('receipt-items');
+                        const receiptPayment = document.getElementById('receipt-payment');
+                        const receiptNumber = document.getElementById('receipt-number');
+                        const receiptTotal = document.getElementById('receipt-total');
+                        const productRows = Array.from(document.querySelectorAll('.pos-product-row'));
+                        const pagination = document.getElementById('pos-pagination');
+                        const productsPerPage = 5;
+                        let currentPage = 1;
+                        let previousCartItemCount = 0;
+
+                        if (!form || !paymentModal || !finishButton || !proceedButton || !saleTotalValue) {
+                            return;
+                        }
+
+                        const formatCurrency = function (value) {
+                            return new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            }).format(value || 0);
+                        };
+
+                        const selectedItems = function () {
+                            return quantityInputs
+                                .map(function (input) {
+                                    return {
+                                        id: Number(input.dataset.productId || 0),
+                                        quantidade: Number(input.value || 0),
+                                        preco: Number(input.dataset.price || 0)
+                                    };
+                                })
+                                .filter(function (item) {
+                                    return item.id > 0 && item.quantidade > 0;
+                                });
+                        };
+
+                        const updateProductsPage = function () {
+                            const totalPages = Math.max(1, Math.ceil(productRows.length / productsPerPage));
+                            currentPage = Math.min(currentPage, totalPages);
+                            productRows.forEach(function (row, index) {
+                                row.hidden = Math.floor(index / productsPerPage) + 1 !== currentPage;
+                            });
+                            if (!pagination || totalPages <= 1) {
+                                if (pagination) pagination.innerHTML = '';
+                                return;
+                            }
+                            pagination.innerHTML = '<button type="button" class="pos-page-btn" data-page="' + (currentPage - 1) + '"' + (currentPage === 1 ? ' disabled' : '') + '>Anterior</button>' +
+                                '<span>Página ' + currentPage + ' de ' + totalPages + '</span>' +
+                                '<button type="button" class="pos-page-btn" data-page="' + (currentPage + 1) + '"' + (currentPage === totalPages ? ' disabled' : '') + '>Próxima</button>';
+                            pagination.querySelectorAll('[data-page]').forEach(function (button) {
+                                button.addEventListener('click', function () {
+                                    currentPage = Number(button.dataset.page);
+                                    updateProductsPage();
+                                });
+                            });
+                        };
+
+                        const updateSaleValue = function () {
+                            const items = selectedItems();
+                            const total = items.reduce(function (sum, item) {
+                                return sum + item.quantidade * item.preco;
+                            }, 0);
+
+                            saleTotalValue.textContent = formatCurrency(total);
+                            if (cartTotal) {
+                                cartTotal.textContent = formatCurrency(total);
+                            }
+                            if (cartCounter) {
+                                const itemCount = items.reduce(function (sum, item) {
+                                    return sum + item.quantidade;
+                                }, 0);
+                                cartCounter.textContent = itemCount + ' itens';
+                                if (itemCount !== previousCartItemCount && window.gsPulse) {
+                                    window.gsPulse(cartCounter);
+                                }
+                                previousCartItemCount = itemCount;
+                            }
+                            if (cartItems) {
+                                cartItems.innerHTML = items.length ? items.map(function (item) {
+                                    const input = quantityInputs.find(function (field) {
+                                        return Number(field.dataset.productId) === item.id;
+                                    });
+                                    return '<div class="cart-item"><div><strong>' + (input?.dataset.name || 'Produto #' + item.id) + '</strong><span>' + item.quantidade + ' x ' + formatCurrency(item.preco) + '</span></div><strong>' + formatCurrency(item.quantidade * item.preco) + '</strong><button type="button" class="cart-remove" data-product-id="' + item.id + '" aria-label="Remover item">×</button></div>';
+                                }).join('') : '<p class="pos-cart-empty">Selecione quantidades para adicionar produtos.</p>';
+                            }
+                        };
+
+                        const showError = function (message) {
+                            if (!errorBox) {
+                                return;
+                            }
+                            errorBox.textContent = message;
+                            errorBox.hidden = false;
+                        };
+
+                        const hideError = function () {
+                            if (!errorBox) {
+                                return;
+                            }
+                            errorBox.hidden = true;
+                            errorBox.textContent = '';
+                        };
+
+                        const openPayment = function () {
+                            paymentModal.hidden = false;
+                            updateSaleValue();
+                            saleTotalValue.scrollIntoView({ block: 'nearest' });
+                        };
+
+                        const closePaymentModal = function () {
+                            paymentModal.hidden = true;
+                        };
+
+                        const updatePaymentState = function () {
+                            proceedButton.disabled = selectedItems().length === 0;
+                        };
+
+                        quantityInputs.forEach(function (input) {
+                            input.addEventListener('input', function () {
+                                updatePaymentState();
+                                updateSaleValue();
+                            });
+                        });
+
+                        document.querySelectorAll('.pos-add').forEach(function (button) {
+                            button.addEventListener('click', function () {
+                                const input = button.parentElement.querySelector('.pos-quantity');
+                                const limit = Number(input.max || 0);
+                                const currentQuantity = Number(input.value || 0);
+                                if (currentQuantity < limit) {
+                                    input.value = currentQuantity + 1;
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            });
+                        });
+
+                        cartItems?.addEventListener('click', function (event) {
+                            const button = event.target.closest('.cart-remove');
+                            if (!button) return;
+                            const input = quantityInputs.find(function (field) {
+                                return Number(field.dataset.productId) === Number(button.dataset.productId);
+                            });
+                            if (input) {
+                                input.value = '';
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        });
+
+                        const filterProducts = function () {
+                            const search = (document.getElementById('search')?.value || '').trim().toLowerCase();
+                            productRows.forEach(function (row) {
+                                const text = row.textContent.toLowerCase();
+                                row.hidden = search !== '' && text.indexOf(search) === -1;
+                                if (window.gsSearch) {
+                                    window.gsSearch.highlight(row.children[1], row.hidden ? '' : search);
+                                }
+                            });
+                            if (search === '') {
+                                updateProductsPage();
+                            }
+                        };
+
+                        document.getElementById('search')?.addEventListener('input', filterProducts);
+
+                        updateProductsPage();
+
+                        proceedButton.addEventListener('click', function () {
+                            if (proceedButton.disabled) {
+                                return;
+                            }
+
+                            openPayment();
+                        });
+
+                        closePayment?.addEventListener('click', closePaymentModal);
+                        paymentModal.addEventListener('click', function (event) {
+                            if (event.target === paymentModal) {
+                                closePaymentModal();
+                            }
+                        });
+
+                        document.addEventListener('keydown', function (event) {
+                            if (event.key === 'Escape' && !paymentModal.hidden) {
+                                closePaymentModal();
+                            }
+                        });
+
+                        // A finalização é feita via fetch para /api/vendas,
+                        // que já existia no backend mas nunca era chamado
+                        // pelo front — a venda era enviada por um
+                        // form.submit() comum que não incluía a forma de
+                        // pagamento (o <select> ficava fora do <form>).
+                        finishButton.addEventListener('click', function () {
+                            const items = selectedItems();
+
+                            if (items.length === 0) {
+                                showError('Selecione pelo menos um produto com quantidade maior que zero.');
+                                return;
+                            }
+
+                            hideError();
+                            finishButton.disabled = true;
+                            finishButton.textContent = 'Finalizando...';
+
+                            fetch('/api/vendas', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    items: items.map(function (item) {
+                                        return { id: item.id, quantidade: item.quantidade };
+                                    }),
+                                    formaPagamento: paymentMethodSelect ? paymentMethodSelect.value : 'dinheiro'
+                                })
+                            })
+                                .then(function (response) {
+                                    if (!response.ok) {
+                                        return response.text().then(function (text) {
+                                            const looksLikeHtml = /^\s*</.test(text);
+                                            if (looksLikeHtml) {
+                                                // O servidor devolveu uma página inteira (ex.: acesso
+                                                // negado, erro 500) em vez de uma mensagem — nunca
+                                                // mostra esse HTML cru pro usuário.
+                                                if (response.status === 401 || response.status === 403) {
+                                                    throw new Error('Sua sessão expirou ou você não tem permissão para finalizar a venda. Faça login novamente.');
+                                                }
+                                                throw new Error('Não foi possível registrar a venda (erro ' + response.status + '). Tente novamente.');
+                                            }
+                                            throw new Error(text || 'Não foi possível registrar a venda.');
+                                        });
+                                    }
+                                    return response.json();
+                                })
+                                .then(function (data) {
+                                    const sale = data.venda;
+                                    receiptNumber.textContent = sale.numero;
+                                    receiptPayment.textContent = {
+                                        dinheiro: 'Dinheiro', cartao: 'Cartão', pix: 'Pix', debito: 'Débito'
+                                    }[sale.formaPagamento] || sale.formaPagamento;
+                                    receiptTotal.textContent = formatCurrency(sale.total);
+                                    receiptItems.innerHTML = sale.itens.map(function (item) {
+                                        return '<tr><td>' + item.nome + '</td><td>' + item.quantidade + '</td><td>' + formatCurrency(item.subtotal) + '</td></tr>';
+                                    }).join('');
+                                    paymentModal.hidden = true;
+                                    receiptModal.hidden = false;
+                                })
+                                .catch(function (error) {
+                                    const message = /json/i.test(error.message) || /Unexpected token/i.test(error.message)
+                                        ? 'Sua sessão pode ter expirado. Atualize a página e tente novamente.'
+                                        : error.message;
+                                    showError(message);
+                                    finishButton.disabled = false;
+                                    finishButton.textContent = 'Finalizar Venda';
+                                });
+                        });
+
+                        document.getElementById('close-receipt')?.addEventListener('click', function () {
+                            receiptModal.hidden = true;
+                        });
+                        document.getElementById('new-sale')?.addEventListener('click', function () {
+                            window.location.href = '/vendas';
+                        });
+                        document.getElementById('print-receipt')?.addEventListener('click', function () {
+                            window.print();
+                        });
+
+                        form.addEventListener('keydown', function (event) {
+                            if (event.key === 'Enter' && ['INPUT', 'SELECT'].includes(event.target.tagName)) {
+                                const field = event.target.name || '';
+                                if (field === 'quantidade' || field === 'valor_recebido' || field === 'forma_pagamento') {
+                                    event.preventDefault();
+                                }
+                            }
+                        });
+
+                        updatePaymentState();
+                        updateSaleValue();
+                    });
+                </script>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=6"></script>
+
+</body>
+</html>

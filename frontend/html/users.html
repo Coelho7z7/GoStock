@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoStock - Usuários</title>
+    <link rel="stylesheet" href="/css/base.css?v=6">
+</head>
+
+<body class="products-page">
+
+    <div class="dashboard">
+
+        <aside class="sidebar">
+
+            <h1 class="logo">
+                Go<span>Stock</span>
+            </h1>
+
+            <nav>
+                <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
+                <a href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
+                <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
+                <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
+                <a class="tab-active" href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="sidebar-logout">Sair</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <h2>Usuários</h2>
+            </header>
+
+            <section class="content">
+
+                <form class="products-filter" method="GET" action="/usuarios">
+                    <input type="search" name="busca" value="{{ .Search }}" placeholder="Buscar por nome ou email">
+                    <button type="submit">Filtrar</button>
+                </form>
+
+                {{ if .Message }}
+                <p class="form-success" role="status">
+                    {{ .Message }}
+                </p>
+                {{ end }}
+
+                {{ if .Error }}
+                <p class="form-error" role="alert">
+                    {{ .Error }}
+                </p>
+                {{ end }}
+
+                <div class="products-header">
+
+                    <h3>Usuários cadastrados</h3>
+
+                    <button
+                        class="new-product-button"
+                        type="button"
+                        id="open-create-user">
+                        Novo usuário
+                    </button>
+
+                </div>
+
+                <div class="products-table">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Permissão</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {{ range .Users }}
+
+                            <tr>
+
+                                <td>#{{ .ID }}</td>
+
+                                <td>
+                                    {{ .Name }}
+                                    {{ if eq .ID $.UserID }}<span class="role-badge role-badge-you">Você</span>{{ end }}
+                                </td>
+
+                                <td>{{ .Email }}</td>
+
+                                <td>
+                                    {{ if eq .Role "ceo" }}
+                                    <span class="role-badge role-badge-ceo">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7v5c0 4.8-3.2 7.8-8 9-4.8-1.2-8-4.2-8-9V7l8-4Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                                        CEO
+                                    </span>
+                                    {{ else if eq .Role "admin" }}
+                                    <span class="role-badge role-badge-admin">Administrador</span>
+                                    {{ else if eq .Role "gerente" }}
+                                    <span class="role-badge role-badge-manager">Gerente</span>
+                                    {{ else }}
+                                    <span class="role-badge role-badge-basic">Usuário</span>
+                                    {{ end }}
+                                </td>
+
+                                <td class="product-actions">
+
+                                    {{ if eq .Role "ceo" }}
+
+                                    <span class="role-protected" title="O CEO é reservado para admin@gmail.com e não pode ser alterado ou removido">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7v5c0 4.8-3.2 7.8-8 9-4.8-1.2-8-4.2-8-9V7l8-4Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                                        Protegido
+                                    </span>
+
+                                    {{ else if $.IsAdmin }}
+
+                                    <button
+                                        class="edit-product-button"
+                                        type="button"
+                                        title="Alterar permissão"
+                                        aria-label="Alterar permissão de {{ .Name }}"
+                                        data-id="{{ .ID }}"
+                                        data-name="{{ .Name }}"
+                                        data-role="{{ .Role }}">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+                                    </button>
+
+                                    <form class="delete-user-form" action="/usuarios" method="POST">
+                                        <input type="hidden" name="acao" value="remover">
+                                        <input type="hidden" name="usuario_id" value="{{ .ID }}">
+                                        <button
+                                            class="edit-product-button delete-user-button"
+                                            type="submit"
+                                            title="Remover usuário"
+                                            aria-label="Remover {{ .Name }}"
+                                            data-confirm="Remover o usuário {{ .Name }}?">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg>
+                                        </button>
+                                    </form>
+
+                                    {{ else }}
+
+                                    <span class="role-protected">—</span>
+
+                                    {{ end }}
+
+                                </td>
+
+                            </tr>
+
+                            {{ else }}
+
+                            <tr>
+                                <td colspan="5"><div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum usuário encontrado.</span></div></td>
+                            </tr>
+
+                            {{ end }}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="modal-create" id="create-user-modal" hidden>
+                    <div class="modal-create-content" role="dialog" aria-modal="true" aria-labelledby="create-user-title">
+                        <div class="modal-create-header">
+                            <div>
+                                <span class="edit-kicker">Usuários</span>
+                                <h3 id="create-user-title">Novo usuário</h3>
+                            </div>
+                            <button class="close-modal-button" type="button" id="close-create-user" aria-label="Fechar">&times;</button>
+                        </div>
+                        <form class="create-form" action="/usuarios" method="POST">
+                            <input type="hidden" name="acao" value="criar">
+                            <label for="new-user-name">Nome</label>
+                            <input type="text" name="nome" id="new-user-name" value="{{ .Name }}" required>
+                            <label for="new-user-email">Email</label>
+                            <input type="email" name="email" id="new-user-email" value="{{ .Email }}" placeholder="usuario@gmail.com" required>
+                            <label for="new-user-password">Senha</label>
+                            <input type="password" name="senha" id="new-user-password" minlength="6" required>
+                            {{ if .IsAdmin }}
+                            <label for="new-user-role">Permissão</label>
+                            <select name="role" id="new-user-role">
+                                <option value="basico">Usuário</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                            <small class="role-help">O cargo CEO é reservado exclusivamente para admin@gmail.com.</small>
+                            {{ else }}
+                            <input type="hidden" name="role" value="basico">
+                            <small class="role-help">Gerentes só podem cadastrar usuários com permissão de Usuário.</small>
+                            {{ end }}
+                            <button class="save-button" type="submit">Criar usuário</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="modal-edit" id="edit-user-modal" hidden>
+                    <div class="modal-edit-content" role="dialog" aria-modal="true" aria-labelledby="edit-user-title">
+                        <div class="modal-create-header">
+                            <div>
+                                <span class="edit-kicker">Usuários</span>
+                                <h3 id="edit-user-title">Alterar permissão</h3>
+                            </div>
+                            <button class="close-modal-button" type="button" id="close-edit-user" aria-label="Fechar">&times;</button>
+                        </div>
+                        <form class="create-form" action="/usuarios" method="POST">
+                            <input type="hidden" name="acao" value="alterar_permissao">
+                            <input type="hidden" name="usuario_id" id="edit-user-id">
+                            <label for="edit-user-name-display">Usuário</label>
+                            <input type="text" id="edit-user-name-display" disabled>
+                            <label for="edit-user-role">Permissão</label>
+                            <select name="role" id="edit-user-role">
+                                <option value="basico">Usuário</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                            <button class="save-button" type="submit">Salvar alterações</button>
+                        </form>
+                    </div>
+                </div>
+
+                {{ if gt .TotalPages 1 }}
+
+                <div class="pagination">
+
+                    {{ if gt .Page 1 }}
+                    <a href="/usuarios?pagina={{ .PreviousPage }}">« Anterior</a>
+                    {{ end }}
+
+                    <span>Página {{ .Page }} de {{ .TotalPages }}</span>
+
+                    {{ if lt .Page .TotalPages }}
+                    <a href="/usuarios?pagina={{ .NextPage }}">Próxima »</a>
+                    {{ end }}
+
+                </div>
+
+                {{ end }}
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="/js/app.js?v=6"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const createModal = document.getElementById('create-user-modal');
+            const openCreate = document.getElementById('open-create-user');
+            const closeCreate = document.getElementById('close-create-user');
+            const editModal = document.getElementById('edit-user-modal');
+            const closeEdit = document.getElementById('close-edit-user');
+
+            const lockScroll = function () {
+                document.body.style.overflow =
+                    (!createModal.hidden || !editModal.hidden) ? 'hidden' : '';
+            };
+
+            const openModal = function (modal, focusEl) {
+                modal.hidden = false;
+                requestAnimationFrame(function () {
+                    modal.querySelector('.modal-create-content, .modal-edit-content')?.classList.add('modal-open');
+                    focusEl?.focus();
+                });
+                lockScroll();
+            };
+
+            const closeModal = function (modal) {
+                modal.hidden = true;
+                modal.querySelector('.modal-create-content, .modal-edit-content')?.classList.remove('modal-open');
+                lockScroll();
+            };
+
+            if (openCreate) {
+                openCreate.addEventListener('click', function () {
+                    openModal(createModal, createModal.querySelector('input'));
+                });
+            }
+            if (closeCreate) {
+                closeCreate.addEventListener('click', function () { closeModal(createModal); });
+            }
+            createModal.addEventListener('click', function (event) {
+                if (event.target === createModal) closeModal(createModal);
+            });
+
+            const idField = document.getElementById('edit-user-id');
+            const nameDisplayField = document.getElementById('edit-user-name-display');
+            const roleField = document.getElementById('edit-user-role');
+
+            document.querySelectorAll('.edit-product-button[data-id]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    idField.value = button.dataset.id;
+                    nameDisplayField.value = button.dataset.name;
+                    roleField.value = button.dataset.role;
+                    openModal(editModal, roleField);
+                });
+            });
+            if (closeEdit) {
+                closeEdit.addEventListener('click', function () { closeModal(editModal); });
+            }
+            editModal.addEventListener('click', function (event) {
+                if (event.target === editModal) closeModal(editModal);
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key !== 'Escape') return;
+                if (!createModal.hidden) closeModal(createModal);
+                if (!editModal.hidden) closeModal(editModal);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

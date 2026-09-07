@@ -6,53 +6,53 @@ import (
 	"testing"
 )
 
-func TestExtrairItensVendaFormulario(t *testing.T) {
+func TestExtractSaleItemsFromForm(t *testing.T) {
 	ids := []string{"1", "2", "3", "4"}
-	quantidades := []string{"", "2", "0", "5"}
+	quantities := []string{"", "2", "0", "5"}
 
-	itens := extrairItensVendaFormulario(ids, quantidades)
-	if len(itens) != 2 {
-		t.Fatalf("esperava 2 itens válidos, recebeu %d", len(itens))
+	items := extractSaleItemsFromForm(ids, quantities)
+	if len(items) != 2 {
+		t.Fatalf("esperava 2 itens válidos, recebeu %d", len(items))
 	}
 
-	if itens[0].ProdutoID != 2 || itens[0].Quantidade != 2 {
-		t.Fatalf("primeiro item inesperado: %+v", itens[0])
+	if items[0].ProductID != 2 || items[0].Quantity != 2 {
+		t.Fatalf("primeiro item inesperado: %+v", items[0])
 	}
 
-	if itens[1].ProdutoID != 4 || itens[1].Quantidade != 5 {
-		t.Fatalf("segundo item inesperado: %+v", itens[1])
+	if items[1].ProductID != 4 || items[1].Quantity != 5 {
+		t.Fatalf("segundo item inesperado: %+v", items[1])
 	}
 }
 
-func TestExtrairItensVendaFormularioSemItensValidos(t *testing.T) {
+func TestExtractSaleItemsFromFormNoValidItems(t *testing.T) {
 	ids := []string{"1", "2"}
-	quantidades := []string{"", "0"}
+	quantities := []string{"", "0"}
 
-	itens := extrairItensVendaFormulario(ids, quantidades)
-	if len(itens) != 0 {
-		t.Fatalf("esperava 0 itens válidos, recebeu %d", len(itens))
+	items := extractSaleItemsFromForm(ids, quantities)
+	if len(items) != 0 {
+		t.Fatalf("esperava 0 itens válidos, recebeu %d", len(items))
 	}
 }
 
-func TestItensVendaDoFormulario(t *testing.T) {
+func TestSaleItemsFromForm(t *testing.T) {
 	body := strings.NewReader("produto_id=10&produto_id=11&produto_id=12&quantidade=1&quantidade=&quantidade=2")
 	req := httptest.NewRequest("POST", "/vendas", body)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	itens, err := itensVendaDoFormulario(req)
+	items, err := saleItemsFromForm(req)
 	if err != nil {
 		t.Fatalf("não deveria haver erro ao processar o formulário: %v", err)
 	}
 
-	if len(itens) != 2 {
-		t.Fatalf("esperava 2 itens válidos, recebeu %d", len(itens))
+	if len(items) != 2 {
+		t.Fatalf("esperava 2 itens válidos, recebeu %d", len(items))
 	}
 
-	if itens[0].ProdutoID != 10 || itens[0].Quantidade != 1 {
-		t.Fatalf("primeiro item inesperado: %+v", itens[0])
+	if items[0].ProductID != 10 || items[0].Quantity != 1 {
+		t.Fatalf("primeiro item inesperado: %+v", items[0])
 	}
 
-	if itens[1].ProdutoID != 12 || itens[1].Quantidade != 2 {
-		t.Fatalf("segundo item inesperado: %+v", itens[1])
+	if items[1].ProductID != 12 || items[1].Quantity != 2 {
+		t.Fatalf("segundo item inesperado: %+v", items[1])
 	}
 }
