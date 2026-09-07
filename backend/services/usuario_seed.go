@@ -3,7 +3,7 @@ package services
 import (
 	"fmt"
 
-	database "gostock/backend/Database"
+	database "gostock/backend/database"
 
 	"golang.org/x/crypto/bcrypt"
 )
