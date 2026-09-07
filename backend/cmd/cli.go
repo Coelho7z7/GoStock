@@ -11,9 +11,9 @@ import (
 	"gostock/backend/ui"
 )
 
-// executarCLI roda o menu de terminal (login/cadastro + operações de
+// runCLI roda o menu de terminal (login/cadastro + operações de
 // estoque), em paralelo ao servidor web.
-func executarCLI(reader *bufio.Reader) {
+func runCLI(reader *bufio.Reader) {
 	for {
 		fmt.Println()
 		fmt.Println("========= GOSTOCK =========")
@@ -21,19 +21,19 @@ func executarCLI(reader *bufio.Reader) {
 		fmt.Println("2 - Entrar")
 		fmt.Println("3 - Sair")
 
-		opcao, err := utilsLerOpcao(reader, "Escolha uma opção: ")
+		option, err := readMenuOption(reader, "Escolha uma opção: ")
 		if err != nil {
 			fmt.Println("Opção inválida.")
 			continue
 		}
 
-		switch opcao {
+		switch option {
 		case 1:
-			services.CadastrarUsuario(reader)
+			services.CreateUser(reader)
 		case 2:
-			usuario, sucesso := services.Login(reader)
-			if sucesso {
-				menuEstoque(reader, usuario)
+			user, success := services.Login(reader)
+			if success {
+				stockMenu(reader, user)
 			}
 		case 3:
 			fmt.Println("Encerrando...")
@@ -44,36 +44,36 @@ func executarCLI(reader *bufio.Reader) {
 	}
 }
 
-// menuEstoque exibe as operações disponíveis para um usuário já
+// stockMenu exibe as operações disponíveis para um usuário já
 // autenticado no terminal.
-func menuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
+func stockMenu(reader *bufio.Reader, user *models.User) {
 	for {
 		fmt.Println()
-		ui.ExibirMenu()
+		ui.ShowMenu()
 
-		opcao, err := utilsLerOpcao(reader, "Escolha uma opção: ")
+		option, err := readMenuOption(reader, "Escolha uma opção: ")
 		if err != nil {
 			fmt.Println("Opção inválida.")
 			continue
 		}
 
-		switch opcao {
+		switch option {
 		case 1:
-			services.CadastrarProduto(reader, usuario.ID)
+			services.CreateProduct(reader, user.ID)
 		case 2:
-			services.ListarProdutos()
+			services.ListProducts()
 		case 3:
-			services.BuscarProduto(reader)
+			services.FindProduct(reader)
 		case 4:
-			services.RemoverProduto(reader)
+			services.DeleteProduct(reader)
 		case 5:
-			services.AtualizarProduto(reader, usuario.ID)
+			services.UpdateProduct(reader, user.ID)
 		case 6:
-			services.AdicionarEstoque(reader, usuario.ID)
+			services.AddStock(reader, user.ID)
 		case 7:
-			services.RegistrarSaida(reader, usuario.ID)
+			services.RegisterStockExit(reader, user.ID)
 		case 8:
-			services.ListarMovimentacoes()
+			services.ListMovements()
 		case 9:
 			fmt.Println("Saindo da conta...")
 			return
@@ -83,16 +83,16 @@ func menuEstoque(reader *bufio.Reader, usuario *models.Usuario) {
 	}
 }
 
-// utilsLerOpcao lê um número inteiro do terminal.
-func utilsLerOpcao(reader *bufio.Reader, mensagem string) (int, error) {
-	fmt.Print(mensagem)
-	texto, err := reader.ReadString('\n')
+// readMenuOption lê um número inteiro do terminal.
+func readMenuOption(reader *bufio.Reader, message string) (int, error) {
+	fmt.Print(message)
+	text, err := reader.ReadString('\n')
 	if err != nil && !errors.Is(err, io.EOF) {
 		return 0, err
 	}
-	var opcao int
-	if _, scanErr := fmt.Sscanf(texto, "%d", &opcao); scanErr != nil {
+	var option int
+	if _, scanErr := fmt.Sscanf(text, "%d", &option); scanErr != nil {
 		return 0, scanErr
 	}
-	return opcao, nil
+	return option, nil
 }

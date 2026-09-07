@@ -7,7 +7,7 @@
 
     <title>GoStock - Login</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=6">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
         <main class="login-page">
 
         <div class="login-hero">
-            <svg class="hero-chart" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+            <svg class="hero-chart" viewBox="0 0 500 300" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <polyline points="0,220 90,180 180,200 270,110 360,140 450,50 500,70" fill="none" stroke="#2563eb"
                     stroke-width="2" opacity="0.35" />
                 <polyline points="0,220 90,180 180,200 270,110 360,140 450,50 500,70 500,300 0,300"
@@ -63,13 +63,13 @@
                     </div>
 
                     <div class="input-group">
-                        <label for="senha">Senha</label>
+                        <label for="password">Senha</label>
 
-                        <div class="campo-senha">
-                            <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+                        <div class="password-field">
+                            <input type="password" id="password" name="senha" placeholder="Digite sua senha" required>
 
-                            <button type="button" class="olho" id="mostrarSenha" aria-label="Mostrar senha">
-                                <svg id="iconeOlho" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            <button type="button" class="eye" id="togglePassword" aria-label="Mostrar senha">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
                                     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
@@ -94,7 +94,7 @@
 
     </main>
 
-    {{ if .Erro }}
+    {{ if .Error }}
     <div class="login-alert" role="alert" aria-live="assertive">
         <span class="login-alert-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -106,12 +106,12 @@
         </span>
         <span>
             <strong>Não foi possível entrar</strong>
-            <small>{{ .Erro }}</small>
+            <small>{{ .Error }}</small>
         </span>
     </div>
     {{ end }}
 
-    <script src="/js/app.js"></script>
+    <script src="/js/app.js?v=6"></script>
 
 </body>
 

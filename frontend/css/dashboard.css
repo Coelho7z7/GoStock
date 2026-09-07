@@ -1,4 +1,4 @@
-@import url("base-animacoes.css");
+@import url("base-animations.css");
 
 * {
     margin: 0;
@@ -82,14 +82,14 @@ nav a:hover {
     background: #1e293b;
     color: white;
 }
-nav a.aba-ativa {
+nav a.tab-active {
     color: #f8fbff;
     background: linear-gradient(135deg, rgba(47, 128, 237, 0.24), rgba(68, 185, 223, 0.1));
     border-color: rgba(68, 185, 223, 0.28);
-    box-shadow: inset 3px 0 0 #44b9df, inset 0 0 24px rgba(68, 185, 223, .07);
+    box-shadow: inset 3px 0 0 #44b9df, 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-nav a.aba-ativa .nav-icon {
+nav a.tab-active .nav-icon {
     color: #61c8ef;
 }
 
@@ -218,6 +218,11 @@ nav a.aba-ativa .nav-icon {
     font-weight: 800;
 }
 
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
 .card-title {
     display: block;
     color: #64748b;
@@ -245,7 +250,7 @@ nav a.aba-ativa .nav-icon {
     border: 1px solid #e2e8f0;
     color: #0f172a;
 }
-.atividade-section {
+.activity-section {
     margin-top: 20px;
 }
 
@@ -256,17 +261,17 @@ nav a.aba-ativa .nav-icon {
     align-items: start;
 }
 
-.grafico-section,
-.dashboard-grid .atividade-section {
+.chart-section,
+.dashboard-grid .activity-section {
     margin-top: 0;
 }
 
-.grafico-section small {
+.chart-section small {
     color: var(--muted);
     font-size: 12px;
 }
 
-.grafico-barras {
+.chart-bars {
     display: flex;
     align-items: end;
     justify-content: space-between;
@@ -275,7 +280,7 @@ nav a.aba-ativa .nav-icon {
     padding: 12px 8px 0;
 }
 
-.grafico-coluna {
+.chart-column {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -285,7 +290,7 @@ nav a.aba-ativa .nav-icon {
     height: 132px;
 }
 
-.grafico-barra {
+.chart-bar {
     width: min(34px, 70%);
     min-height: 3px;
     border-radius: 9px 9px 3px 3px;
@@ -294,11 +299,11 @@ nav a.aba-ativa .nav-icon {
     transition: height 400ms ease, filter 180ms ease;
 }
 
-.grafico-barra:hover {
+.chart-bar:hover {
     filter: brightness(1.2);
 }
 
-.grafico-coluna span {
+.chart-column span {
     color: var(--muted);
     font-size: 11px;
 }
@@ -437,7 +442,7 @@ nav a:hover {
 }
 
 .content {
-    animation: conteudo-entrada 500ms ease both;
+    animation: content-entrada 500ms ease both;
 }
 
 .content h3 {
@@ -463,7 +468,7 @@ nav a:hover {
 .card:hover {
     transform: translateY(-5px);
     border-color: rgba(68, 185, 223, 0.35);
-    box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .18), inset 0 0 30px rgba(68, 185, 223, .06);
+    box-shadow: 0 22px 42px rgba(0, 0, 0, 0.26);
 }
 
 .card-title,
@@ -480,11 +485,11 @@ nav a:hover {
     color: #69b6ff;
 }
 
-.atividade-section {
+.activity-section {
     margin-top: 28px;
 }
 
-.atividade-tipo {
+.activity-type {
     display: inline-flex;
     align-items: center;
     padding: 5px 9px;
@@ -493,24 +498,24 @@ nav a:hover {
     font-weight: 700;
 }
 
-.atividade-ENTRADA {
+.activity-ENTRADA {
     color: #8ac7ff;
     background: rgba(47, 128, 237, 0.16);
 }
 
-.atividade-SAIDA {
+.activity-SAIDA {
     color: #c4a0ff;
     background: rgba(124, 58, 237, 0.2);
 }
 
-.atividade-ATUALIZACAO {
+.activity-ATUALIZACAO {
     color: #fbbf62;
     background: rgba(217, 119, 6, 0.18);
 }
 
 .content {
     padding: 24px clamp(18px, 3vw, 36px);
-    animation: conteudo-fade 420ms ease both;
+    animation: content-fade 420ms ease both;
 }
 
 .topbar {
@@ -545,7 +550,7 @@ nav a {
     padding: 18px;
 }
 
-@keyframes conteudo-fade {
+@keyframes content-fade {
     from { opacity: 0; }
     to { opacity: 1; }
 }
@@ -568,7 +573,7 @@ tbody tr:hover {
     background: rgba(47, 128, 237, 0.08);
 }
 
-@keyframes conteudo-entrada {
+@keyframes content-entrada {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
@@ -702,57 +707,57 @@ tbody tr:hover {
     margin-top: 28px;
 }
 
-.grafico-section,
-.dashboard-grid .atividade-section {
+.chart-section,
+.dashboard-grid .activity-section {
     height: 320px;
     overflow: hidden;
 }
 
-.grafico-barras {
+.chart-bars {
     min-height: 218px;
     padding-top: 14px;
 }
 
-.grafico-coluna {
+.chart-column {
     height: 190px;
 }
 
-.dashboard-grid .atividade-section .table-container {
+.dashboard-grid .activity-section .table-container {
     max-height: none;
     overflow: visible;
 }
 
-.dashboard-grid .atividade-section table {
+.dashboard-grid .activity-section table {
     font-size: 12px;
     border-collapse: separate;
     border-spacing: 0 7px;
 }
 
-.dashboard-grid .atividade-section th,
-.dashboard-grid .atividade-section td {
+.dashboard-grid .activity-section th,
+.dashboard-grid .activity-section td {
     padding: 8px 10px;
 }
 
-.dashboard-grid .atividade-section tbody tr {
+.dashboard-grid .activity-section tbody tr {
     background: #152238;
 }
 
-.dashboard-grid .atividade-section tbody td {
+.dashboard-grid .activity-section tbody td {
     border-top: 1px solid rgba(148, 163, 184, 0.1);
     border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.dashboard-grid .atividade-section tbody td:first-child {
+.dashboard-grid .activity-section tbody td:first-child {
     border-left: 1px solid rgba(148, 163, 184, 0.1);
     border-radius: 9px 0 0 9px;
 }
 
-.dashboard-grid .atividade-section tbody td:last-child {
+.dashboard-grid .activity-section tbody td:last-child {
     border-right: 1px solid rgba(148, 163, 184, 0.1);
     border-radius: 0 9px 9px 0;
 }
 
-.dashboard-grid .atividade-section .atividade-produto {
+.dashboard-grid .activity-section .activity-product {
     max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -764,8 +769,8 @@ tbody tr:hover {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .grafico-section,
-    .dashboard-grid .atividade-section {
+    .chart-section,
+    .dashboard-grid .activity-section {
         height: auto;
     }
 }
@@ -790,7 +795,6 @@ tbody tr:hover {
         gap: 22px;
     }
 }
-
 
 /* --- Microinterações e hierarquia visual --- */
 .user {
@@ -828,6 +832,12 @@ tbody tr:hover {
     color: #d8c5ff;
     background: rgba(124, 58, 237, .14);
     border-color: rgba(167, 139, 250, .22);
+}
+
+.user-role-manager {
+    color: #fbbf62;
+    background: rgba(217, 119, 6, .16);
+    border-color: rgba(251, 191, 98, .28);
 }
 
 .user-role-user {
@@ -879,23 +889,23 @@ tbody tr:hover {
 .dashboard .cards .card:nth-child(4) { animation-delay: 240ms; }
 .dashboard .cards .card:nth-child(5) { animation-delay: 290ms; }
 
-.dashboard .grafico-section,
-.dashboard .atividade-section {
+.dashboard .chart-section,
+.dashboard .activity-section {
     animation: section-in 520ms cubic-bezier(.16, 1, .3, 1) 350ms both;
 }
 
-.dashboard .grafico-barra {
+.dashboard .chart-bar {
     transform-origin: bottom;
     animation: bar-grow 700ms cubic-bezier(.16, 1, .3, 1) both;
 }
 
-.dashboard .grafico-coluna:nth-child(1) .grafico-barra { animation-delay: 430ms; }
-.dashboard .grafico-coluna:nth-child(2) .grafico-barra { animation-delay: 480ms; }
-.dashboard .grafico-coluna:nth-child(3) .grafico-barra { animation-delay: 530ms; }
-.dashboard .grafico-coluna:nth-child(4) .grafico-barra { animation-delay: 580ms; }
-.dashboard .grafico-coluna:nth-child(5) .grafico-barra { animation-delay: 630ms; }
-.dashboard .grafico-coluna:nth-child(6) .grafico-barra { animation-delay: 680ms; }
-.dashboard .grafico-coluna:nth-child(7) .grafico-barra { animation-delay: 730ms; }
+.dashboard .chart-column:nth-child(1) .chart-bar { animation-delay: 430ms; }
+.dashboard .chart-column:nth-child(2) .chart-bar { animation-delay: 480ms; }
+.dashboard .chart-column:nth-child(3) .chart-bar { animation-delay: 530ms; }
+.dashboard .chart-column:nth-child(4) .chart-bar { animation-delay: 580ms; }
+.dashboard .chart-column:nth-child(5) .chart-bar { animation-delay: 630ms; }
+.dashboard .chart-column:nth-child(6) .chart-bar { animation-delay: 680ms; }
+.dashboard .chart-column:nth-child(7) .chart-bar { animation-delay: 730ms; }
 
 .dashboard .cards .card {
     overflow: hidden;
@@ -922,11 +932,11 @@ tbody tr:hover {
     to { transform: translateX(100%); }
 }
 
-.dashboard .dashboard-grid .atividade-section tbody tr {
+.dashboard .dashboard-grid .activity-section tbody tr {
     transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
-.dashboard .dashboard-grid .atividade-section tbody tr:hover {
+.dashboard .dashboard-grid .activity-section tbody tr:hover {
     transform: translateX(3px);
     background: #1a2a43;
     box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .12), inset 0 0 18px rgba(68, 185, 223, .05);
@@ -936,9 +946,9 @@ tbody tr:hover {
     .dashboard .sidebar,
     .dashboard .main-content,
     .dashboard .cards .card,
-    .dashboard .grafico-section,
-    .dashboard .atividade-section,
-    .dashboard .grafico-barra {
+    .dashboard .chart-section,
+    .dashboard .activity-section,
+    .dashboard .chart-bar {
         animation: none !important;
         opacity: 1 !important;
         transform: none !important;

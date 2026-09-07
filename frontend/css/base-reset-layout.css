@@ -112,7 +112,7 @@ body {
 
 /* NAVEGAÇÃO EM ABAS (produtos / estoque / alterar produto) */
 
-.abas-produtos {
+.products-tabs {
     display: flex;
     width: fit-content;
     max-width: 100%;
@@ -124,7 +124,7 @@ body {
     border-radius: 12px;
 }
 
-.abas-produtos a {
+.products-tabs a {
     color: #4b5563;
     text-decoration: none;
     padding: 10px 16px;
@@ -134,14 +134,14 @@ body {
     transition: color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
 
-.abas-produtos a:hover,
-.abas-produtos .aba-produto-ativa {
+.products-tabs a:hover,
+.products-tabs .product-tab-active {
     color: #174ea6;
     background: white;
     box-shadow: 0 2px 8px rgba(31, 61, 104, 0.1);
 }
 
-.abas-produtos .aba-produto-ativa {
+.products-tabs .product-tab-active {
     outline: 1px solid rgba(47, 128, 237, 0.24);
 }
 
@@ -177,13 +177,13 @@ body {
     margin-bottom: 25px;
 }
 
-.formulario-erro {
+.form-error {
     margin-bottom: 12px;
     color: #b91c1c;
     font-size: 14px;
 }
 
-.formulario-sucesso {
+.form-success {
     margin-bottom: 12px;
     color: #15803d;
     font-size: 14px;

@@ -2,7 +2,7 @@ package ui
 
 import "fmt"
 
-func ExibirMenu() {
+func ShowMenu() {
 	fmt.Println("========= ESTOQUE =========")
 	fmt.Println("1 - Cadastrar produto")
 	fmt.Println("2 - Listar produtos")

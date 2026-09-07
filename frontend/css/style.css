@@ -36,6 +36,40 @@ body {
     overflow: hidden;
 }
 
+.login-hero::before,
+.login-hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+.login-hero::before {
+    width: 360px;
+    height: 360px;
+    top: -120px;
+    left: -100px;
+    background: radial-gradient(circle, #2563eb 0%, transparent 70%);
+    animation: flutuarMancha 9s ease-in-out infinite;
+}
+
+.login-hero::after {
+    width: 300px;
+    height: 300px;
+    bottom: -100px;
+    right: 10%;
+    background: radial-gradient(circle, #44b9df 0%, transparent 70%);
+    animation: flutuarMancha 11s ease-in-out infinite reverse;
+}
+
+@keyframes flutuarMancha {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -24px) scale(1.08); }
+}
+
 .login-logo {
     display: flex;
     align-items: center;
@@ -78,6 +112,13 @@ body {
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 16px 18px;
+    transition: transform 220ms cubic-bezier(.22,.8,.2,1), background 220ms ease, border-color 220ms ease;
+}
+
+.badge:hover {
+    transform: translateY(-5px) scale(1.03);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
 }
 
 .badge strong {
@@ -146,6 +187,11 @@ body {
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 6px;
+    transition: color 200ms ease;
+}
+
+.input-group:focus-within label {
+    color: #60a5fa;
 }
 
 .input-group input {
@@ -168,11 +214,11 @@ body {
     color: #64748b;
 }
 
-.campo-senha {
+.password-field {
     position: relative;
 }
 
-.campo-senha input {
+.password-field input {
     width: 100%;
     padding: 12px 46px 12px 14px;
     background: #0b0d16;
@@ -183,12 +229,12 @@ body {
     outline: none;
 }
 
-.campo-senha input:focus {
+.password-field input:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-.campo-senha .olho {
+.password-field .eye {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -203,11 +249,11 @@ body {
     justify-content: center;
 }
 
-.campo-senha .olho:hover {
+.password-field .eye:hover {
     color: #2563eb;
 }
 
-.campo-senha .olho svg {
+.password-field .eye svg {
     height: 18px;
     width: 18px
 }
@@ -252,6 +298,12 @@ form button[type="submit"]:hover {
     border: 1px solid #7f1d1d;
     border-radius: 10px;
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    animation: alertaEntrada 480ms cubic-bezier(.22,1.2,.36,1);
+}
+
+@keyframes alertaEntrada {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .login-alert-icon svg {
@@ -343,12 +395,12 @@ form button[type="submit"]:hover {
 }
 
 .input-group input,
-.campo-senha input {
+.password-field input {
     padding: 14px 16px;
     font-size: 15px;
 }
 
-.campo-senha input {
+.password-field input {
     padding-right: 48px;
 }
 
@@ -363,10 +415,11 @@ form button[type="submit"] {
 
 .hero-chart {
     position: absolute;
-    bottom: 0;
+    left: 0;
     right: 0;
-    width: 60%;
-    height: 55%;
+    bottom: 0;
+    width: 100%;
+    height: 42%;
     z-index: 0;
     pointer-events: none;
     opacity: 1;
@@ -377,18 +430,20 @@ form button[type="submit"] {
     position: relative;
     z-index: 1;
 }
-.hero-chart {
-    animation: respirarGrafico 4s ease-in-out infinite;
-}
-
-.hero-chart {
-    animation: respirarGrafico 4s ease-in-out 2.2s infinite;
-}
 
 .hero-chart polyline:first-child {
     stroke-dasharray: 700;
     stroke-dashoffset: 700;
     animation: desenharLinha 1.8s ease-out 0.4s forwards;
+}
+
+.hero-chart polyline:last-child {
+    opacity: 0;
+    animation: areaEntrada 1.2s ease-out 1.4s forwards;
+}
+
+@keyframes areaEntrada {
+    to { opacity: 0.5; }
 }
 
 @keyframes desenharLinha {

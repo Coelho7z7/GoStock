@@ -5,33 +5,33 @@ import (
 	"database/sql"
 	"fmt"
 
-	database "gostock/backend/Database"
+	database "gostock/backend/database"
 	"gostock/backend/utils"
 )
 
-func AdicionarEstoque(reader *bufio.Reader, usuarioID int) {
-	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+func AddStock(reader *bufio.Reader, userID int) {
+	id, err := utils.ReadInt(reader, "Digite o ID do produto: ")
 	if err != nil {
 		fmt.Println("ID inválido.")
 		return
 	}
 
-	produtoID, nome, quantidadeAtual, err := buscarDadosEstoque(id)
+	productID, name, currentStock, err := getStockData(id)
 	if err != nil {
 		fmt.Println("Produto não encontrado.")
 		return
 	}
 
-	fmt.Println("Produto:", nome)
-	fmt.Println("Estoque atual:", quantidadeAtual)
+	fmt.Println("Produto:", name)
+	fmt.Println("Estoque atual:", currentStock)
 
-	quantidade := utils.LerQuantidadeValida(reader, "Quantidade que chegou: ")
-	if quantidade <= 0 {
+	quantity := utils.ReadValidQuantity(reader, "Quantidade que chegou: ")
+	if quantity <= 0 {
 		fmt.Println("A quantidade deve ser maior que zero.")
 		return
 	}
 
-	if err := AdicionarEstoqueWeb(produtoID, quantidade, usuarioID); err != nil {
+	if err := AddStockWeb(productID, quantity, userID); err != nil {
 		fmt.Println("Erro ao atualizar estoque:", err)
 		return
 	}
@@ -39,8 +39,8 @@ func AdicionarEstoque(reader *bufio.Reader, usuarioID int) {
 	fmt.Println("Estoque atualizado com sucesso!")
 }
 
-func AdicionarEstoqueWeb(produtoID int, quantidade int, usuarioID int) error {
-	if quantidade <= 0 {
+func AddStockWeb(productID int, quantity int, userID int) error {
+	if quantity <= 0 {
 		return fmt.Errorf("a quantidade deve ser maior que zero")
 	}
 
@@ -54,52 +54,52 @@ func AdicionarEstoqueWeb(produtoID int, quantidade int, usuarioID int) error {
 		UPDATE produtos
 		SET quantidade = quantidade + ?
 		WHERE id = ? AND ativo = 1
-	`, quantidade, produtoID)
+	`, quantity, productID)
 	if err != nil {
 		return err
 	}
 
-	linhas, err := result.RowsAffected()
+	rows, err := result.RowsAffected()
 	if err != nil {
 		return err
 	}
-	if linhas == 0 {
+	if rows == 0 {
 		return fmt.Errorf("produto não encontrado")
 	}
 
-	if err := registrarMovimentacaoTx(tx, produtoID, usuarioID, "ENTRADA", quantidade); err != nil {
+	if err := registerMovementTx(tx, productID, userID, "ENTRADA", quantity); err != nil {
 		return err
 	}
 
 	return tx.Commit()
 }
 
-func RegistrarSaida(reader *bufio.Reader, usuarioID int) {
-	id, err := utils.LerInteiro(reader, "Digite o ID do produto: ")
+func RegisterStockExit(reader *bufio.Reader, userID int) {
+	id, err := utils.ReadInt(reader, "Digite o ID do produto: ")
 	if err != nil {
 		fmt.Println("ID inválido.")
 		return
 	}
 
-	produtoID, nome, quantidadeAtual, err := buscarDadosEstoque(id)
+	productID, name, currentStock, err := getStockData(id)
 	if err != nil {
 		fmt.Println("Produto não encontrado.")
 		return
 	}
 
-	fmt.Println("Produto:", nome)
-	fmt.Println("Estoque atual:", quantidadeAtual)
+	fmt.Println("Produto:", name)
+	fmt.Println("Estoque atual:", currentStock)
 
-	quantidade := utils.LerQuantidadeValida(reader, "Quantidade que saiu: ")
-	if quantidade <= 0 {
+	quantity := utils.ReadValidQuantity(reader, "Quantidade que saiu: ")
+	if quantity <= 0 {
 		fmt.Println("A quantidade deve ser maior que zero.")
 		return
 	}
 
-	if err := RegistrarSaidaWeb(produtoID, quantidade, usuarioID); err != nil {
+	if err := RegisterStockExitWeb(productID, quantity, userID); err != nil {
 		if err.Error() == "estoque insuficiente" {
 			fmt.Println("Estoque insuficiente.")
-			fmt.Println("Estoque disponível:", quantidadeAtual)
+			fmt.Println("Estoque disponível:", currentStock)
 			return
 		}
 
@@ -110,8 +110,8 @@ func RegistrarSaida(reader *bufio.Reader, usuarioID int) {
 	fmt.Println("Saída registrada com sucesso!")
 }
 
-func RegistrarSaidaWeb(produtoID int, quantidade int, usuarioID int) error {
-	if quantidade <= 0 {
+func RegisterStockExitWeb(productID int, quantity int, userID int) error {
+	if quantity <= 0 {
 		return fmt.Errorf("a quantidade deve ser maior que zero")
 	}
 
@@ -121,13 +121,13 @@ func RegistrarSaidaWeb(produtoID int, quantidade int, usuarioID int) error {
 	}
 	defer tx.Rollback()
 
-	var estoque int
+	var stock int
 
 	err = tx.QueryRow(`
 		SELECT quantidade
 		FROM produtos
 		WHERE id = ? AND ativo = 1
-	`, produtoID).Scan(&estoque)
+	`, productID).Scan(&stock)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -137,7 +137,7 @@ func RegistrarSaidaWeb(produtoID int, quantidade int, usuarioID int) error {
 		return err
 	}
 
-	if quantidade > estoque {
+	if quantity > stock {
 		return fmt.Errorf("estoque insuficiente")
 	}
 
@@ -145,42 +145,42 @@ func RegistrarSaidaWeb(produtoID int, quantidade int, usuarioID int) error {
 		UPDATE produtos
 		SET quantidade = quantidade - ?
 		WHERE id = ?
-	`, quantidade, produtoID)
+	`, quantity, productID)
 
 	if err != nil {
 		return err
 	}
 
-	if err := registrarMovimentacaoTx(
+	if err := registerMovementTx(
 		tx,
-		produtoID,
-		usuarioID,
+		productID,
+		userID,
 		"SAIDA",
-		quantidade,
+		quantity,
 	); err != nil {
 		return err
 	}
 
 	return tx.Commit()
 }
-func buscarDadosEstoque(produtoID int) (int, string, int, error) {
-	var nome string
-	var quantidade int
+func getStockData(productID int) (int, string, int, error) {
+	var name string
+	var quantity int
 
 	err := database.DB.QueryRow(`
 		SELECT id, nome, quantidade
 		FROM produtos
 		WHERE id = ?
-	`, produtoID).Scan(&produtoID, &nome, &quantidade)
+	`, productID).Scan(&productID, &name, &quantity)
 
-	return produtoID, nome, quantidade, err
+	return productID, name, quantity, err
 }
 
-func registrarMovimentacaoTx(tx *sql.Tx, produtoID int, usuarioID int, tipo string, quantidade int) error {
+func registerMovementTx(tx *sql.Tx, productID int, userID int, movementType string, quantity int) error {
 	_, err := tx.Exec(`
 		INSERT INTO movimentacoes
 		(produto_id, usuario_id, tipo, quantidade)
 		VALUES (?, ?, ?, ?)
-	`, produtoID, usuarioID, tipo, quantidade)
+	`, productID, userID, movementType, quantity)
 	return err
 }

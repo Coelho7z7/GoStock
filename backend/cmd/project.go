@@ -6,28 +6,28 @@ import (
 	"path/filepath"
 )
 
-// prepararDiretorioProjeto garante que o processo esteja rodando com o
+// prepareProjectDirectory garante que o processo esteja rodando com o
 // diretório de trabalho na raiz do projeto (onde ficam as pastas
 // frontend/ e backend/), independente de onde o binário foi chamado.
-func prepararDiretorioProjeto() error {
-	diretorio, err := os.Getwd()
+func prepareProjectDirectory() error {
+	dir, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
 	for {
-		if _, err := os.Stat(filepath.Join(diretorio, "frontend", "html", "index.html")); err == nil {
-			return os.Chdir(diretorio)
+		if _, err := os.Stat(filepath.Join(dir, "frontend", "html", "index.html")); err == nil {
+			return os.Chdir(dir)
 		}
-		projetoAninhado := filepath.Join(diretorio, "GoStock")
-		if _, err := os.Stat(filepath.Join(projetoAninhado, "frontend", "html", "index.html")); err == nil {
-			return os.Chdir(projetoAninhado)
+		nestedProject := filepath.Join(dir, "GoStock")
+		if _, err := os.Stat(filepath.Join(nestedProject, "frontend", "html", "index.html")); err == nil {
+			return os.Chdir(nestedProject)
 		}
 
-		parent := filepath.Dir(diretorio)
-		if parent == diretorio {
+		parent := filepath.Dir(dir)
+		if parent == dir {
 			return fmt.Errorf("frontend/html/index.html não encontrado")
 		}
-		diretorio = parent
+		dir = parent
 	}
 }

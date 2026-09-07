@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"time"
 
-	database "gostock/backend/Database"
+	database "gostock/backend/database"
 )
 
-// criarSessao gera um token aleatório, guarda apenas o hash dele no
+// createSession gera um token aleatório, guarda apenas o hash dele no
 // banco (nunca o token em texto puro) e devolve o token para ser
 // colocado no cookie do navegador.
-func criarSessao(usuarioID int) (string, error) {
+func createSession(userID int) (string, error) {
 	bytes := make([]byte, 32)
 
 	if _, err := rand.Read(bytes); err != nil {
@@ -25,12 +25,12 @@ func criarSessao(usuarioID int) (string, error) {
 	hash := sha256.Sum256([]byte(token))
 	tokenHash := hex.EncodeToString(hash[:])
 
-	expiraEm := time.Now().Add(30 * 24 * time.Hour)
+	expiresAt := time.Now().Add(30 * 24 * time.Hour)
 
 	_, err := database.DB.Exec(`
 		INSERT INTO sessoes (usuario_id, token_hash, expira_em)
 		VALUES (?, ?, ?)
-	`, usuarioID, tokenHash, expiraEm)
+	`, userID, tokenHash, expiresAt)
 
 	if err != nil {
 		return "", err
@@ -39,9 +39,9 @@ func criarSessao(usuarioID int) (string, error) {
 	return token, nil
 }
 
-// usuarioDaSessao lê o cookie de sessão da requisição e retorna o ID
+// userFromSession lê o cookie de sessão da requisição e retorna o ID
 // do usuário logado, se a sessão existir e ainda não tiver expirado.
-func usuarioDaSessao(r *http.Request) (int, bool) {
+func userFromSession(r *http.Request) (int, bool) {
 	cookie, err := r.Cookie("sessao")
 
 	if err != nil {
@@ -51,22 +51,22 @@ func usuarioDaSessao(r *http.Request) (int, bool) {
 	hash := sha256.Sum256([]byte(cookie.Value))
 	tokenHash := hex.EncodeToString(hash[:])
 
-	var usuarioID int
+	var userID int
 	var role string
-	var expiraEm time.Time
+	var expiresAt time.Time
 
 	err = database.DB.QueryRow(`
 		SELECT s.usuario_id, s.expira_em, u.role
 		FROM sessoes s
 		JOIN usuarios u ON u.id = s.usuario_id
 		WHERE token_hash = ?
-	`, tokenHash).Scan(&usuarioID, &expiraEm, &role)
+	`, tokenHash).Scan(&userID, &expiresAt, &role)
 
 	if err != nil {
 		return 0, false
 	}
 
-	if time.Now().After(expiraEm) {
+	if time.Now().After(expiresAt) {
 		database.DB.Exec(`
 			DELETE FROM sessoes
 			WHERE token_hash = ?
@@ -75,5 +75,5 @@ func usuarioDaSessao(r *http.Request) (int, bool) {
 		return 0, false
 	}
 
-	return usuarioID, true
+	return userID, true
 }

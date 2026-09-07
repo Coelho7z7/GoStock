@@ -8,7 +8,7 @@ import (
 
 var DB *sql.DB
 
-func Conectar() error {
+func Connect() error {
 	var err error
 
 	DB, err = sql.Open("sqlite", "backend/data/gostock.db")
@@ -25,7 +25,7 @@ func Conectar() error {
 	return err
 }
 
-func CriarTabelas() error {
+func CreateTables() error {
 	query := `
 		CREATE TABLE IF NOT EXISTS produtos (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +39,8 @@ func CriarTabelas() error {
 		nome TEXT NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		senha TEXT NOT NULL,
-		role TEXT NOT NULL DEFAULT 'basico'
+		role TEXT NOT NULL DEFAULT 'basico',
+		ativo INTEGER NOT NULL DEFAULT 1
 		);
 
 	CREATE TABLE IF NOT EXISTS movimentacoes (
@@ -84,37 +85,53 @@ func CriarTabelas() error {
 		return err
 	}
 
-	var colunaAtivo int
+	var activeColumn int
 	err = DB.QueryRow(`
 		SELECT COUNT(*)
 		FROM pragma_table_info('produtos')
 		WHERE name = 'ativo'
-	`).Scan(&colunaAtivo)
+	`).Scan(&activeColumn)
 	if err != nil {
 		return err
 	}
-	if colunaAtivo == 0 {
+	if activeColumn == 0 {
 		if _, err = DB.Exec(`ALTER TABLE produtos ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`); err != nil {
 			return err
 		}
 	}
 
-	var colunaRole int
+	var roleColumn int
 	err = DB.QueryRow(`
 		SELECT COUNT(*)
 		FROM pragma_table_info('usuarios')
 		WHERE name = 'role'
-	`).Scan(&colunaRole)
+	`).Scan(&roleColumn)
 	if err != nil {
 		return err
 	}
-	if colunaRole == 0 {
+	if roleColumn == 0 {
 		if _, err = DB.Exec(`ALTER TABLE usuarios ADD COLUMN role TEXT NOT NULL DEFAULT 'basico'`); err != nil {
 			return err
 		}
 	}
 
+	var userActiveColumn int
+	err = DB.QueryRow(`
+		SELECT COUNT(*)
+		FROM pragma_table_info('usuarios')
+		WHERE name = 'ativo'
+	`).Scan(&userActiveColumn)
+	if err != nil {
+		return err
+	}
+	if userActiveColumn == 0 {
+		if _, err = DB.Exec(`ALTER TABLE usuarios ADD COLUMN ativo INTEGER NOT NULL DEFAULT 1`); err != nil {
+			return err
+		}
+	}
+
 	// O CEO é uma identidade reservada: somente admin@gmail.com pode possuir esse cargo.
+	// Isso corrige o banco a cada inicialização, mesmo que alguém tenha mexido direto nele.
 	if _, err = DB.Exec(`
 		UPDATE usuarios
 		SET role = CASE
@@ -126,16 +143,16 @@ func CriarTabelas() error {
 		return err
 	}
 
-	var colunaFormaPagamento int
+	var paymentMethodColumn int
 	err = DB.QueryRow(`
 		SELECT COUNT(*)
 		FROM pragma_table_info('vendas')
 		WHERE name = 'forma_pagamento'
-	`).Scan(&colunaFormaPagamento)
+	`).Scan(&paymentMethodColumn)
 	if err != nil {
 		return err
 	}
-	if colunaFormaPagamento == 0 {
+	if paymentMethodColumn == 0 {
 		_, err = DB.Exec(`ALTER TABLE vendas ADD COLUMN forma_pagamento TEXT NOT NULL DEFAULT 'dinheiro'`)
 	}
 

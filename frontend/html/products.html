@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Produtos</title>
-    <link rel="stylesheet" href="/css/base.css?v=5">
+    <link rel="stylesheet" href="/css/base.css?v=6">
 </head>
 
-<body class="pagina-produtos">
+<body class="products-page">
 
     <div class="dashboard">
 
@@ -20,11 +20,11 @@
 
             <nav>
                 <a href="/dashboard"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>Dashboard</a>
-                <a class="aba-ativa" href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
+                <a class="tab-active" href="/produtos"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"></path><path d="m4 7.5 8 4.5 8-4.5M12 12v9"></path></svg>Produtos</a>
                 <a href="/estoque"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v13H4zM7 7V4h10v3M8 11h8M8 15h5"></path></svg>Estoque</a>
                 <a href="/vendas"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11h10.9L21 8H6M9 19h.01M18 19h.01"></path></svg>Vendas</a>
                 <a href="/movimentacoes"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7a6 6 0 0 1 0 10M6 17A6 6 0 0 1 6 7"></path></svg>Movimentações</a>
-                {{ if .EhAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
+                {{ if .IsAdmin }}<a href="/usuarios"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Usuários</a>{{ end }}
             </nav>
 
             <div class="sidebar-footer">
@@ -41,49 +41,49 @@
 
             <section class="content">
 
-                <nav class="abas-produtos" aria-label="Opções de produtos">
-                    <a class="aba-produto-ativa" href="/produtos">Novo produto</a>
+                <nav class="products-tabs" aria-label="Opções de produtos">
+                    <a class="product-tab-active" href="/produtos">Novo produto</a>
                     <a href="/alterar-produto">Alterar produto</a>
                     <a href="/estoque">Estoque</a>
                 </nav>
 
-                <form class="filtro-produtos" method="GET" action="/produtos">
-                    <input type="search" name="busca" value="{{ .Busca }}" placeholder="Buscar produto ou ID">
+                <form class="products-filter" method="GET" action="/produtos">
+                    <input type="search" name="busca" value="{{ .Search }}" placeholder="Buscar produto ou ID">
                     <select name="ordem" aria-label="Ordenar produtos">
-                        <option value="recentes" {{ if eq .Ordem "recentes" }}selected{{ end }}>Mais recentes</option>
-                        <option value="nome" {{ if eq .Ordem "nome" }}selected{{ end }}>Nome</option>
-                        <option value="preco" {{ if eq .Ordem "preco" }}selected{{ end }}>Preço</option>
-                        <option value="estoque" {{ if eq .Ordem "estoque" }}selected{{ end }}>Estoque</option>
+                        <option value="recentes" {{ if eq .Order "recentes" }}selected{{ end }}>Mais recentes</option>
+                        <option value="nome" {{ if eq .Order "nome" }}selected{{ end }}>Nome</option>
+                        <option value="preco" {{ if eq .Order "preco" }}selected{{ end }}>Preço</option>
+                        <option value="estoque" {{ if eq .Order "estoque" }}selected{{ end }}>Estoque</option>
                     </select>
                     <button type="submit">Filtrar</button>
                 </form>
 
-                {{ if .Mensagem }}
-                <p class="formulario-sucesso" role="status">
-                    {{ .Mensagem }}
+                {{ if .Message }}
+                <p class="form-success" role="status">
+                    {{ .Message }}
                 </p>
                 {{ end }}
 
-                {{ if .Erro }}
-                <p class="formulario-erro" role="alert">
-                    {{ .Erro }}
+                {{ if .Error }}
+                <p class="form-error" role="alert">
+                    {{ .Error }}
                 </p>
                 {{ end }}
 
-                <div class="cabecalho-produtos">
+                <div class="products-header">
 
                     <h3>Produtos cadastrados</h3>
 
                     <button
-                        class="botao-novo-produto"
+                        class="new-product-button"
                         type="button"
-                        id="abrir-cadastro-produto">
+                        id="open-create-product">
                         Novo produto
                     </button>
 
                 </div>
 
-                <div class="tabela-produtos">
+                <div class="products-table">
 
                     <table>
 
@@ -99,7 +99,7 @@
 
                         <tbody>
 
-                            {{ range .Produtos }}
+                            {{ range .Products }}
 
                             <tr>
 
@@ -108,23 +108,23 @@
                                 </td>
 
                                 <td>
-                                    {{ .Nome }}
+                                    {{ .Name }}
                                 </td>
 
                                 <td>
-                                    R$ {{ printf "%.2f" .Preco }}
+                                    R$ {{ printf "%.2f" .Price }}
                                 </td>
 
                                 <td>
-                                    <span class="estoque-quantidade {{ .StatusEstoque }}">
-                                        {{ .Quantidade }}
+                                    <span class="stock-quantity {{ .StockStatus }}">
+                                        {{ .Quantity }}
                                     </span>
                                 </td>
 
-                                <td class="acoes-produto">
+                                <td class="product-actions">
 
                                     <a
-                                        class="link-editar-produto"
+                                        class="edit-product-link"
                                         href="/alterar-produto">
                                         Editar
                                     </a>
@@ -137,7 +137,7 @@
 
                             <tr>
                                 <td colspan="5">
-                                    Nenhum produto cadastrado.
+                                    <div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum produto cadastrado.</span></div>
                                 </td>
                             </tr>
 
@@ -149,25 +149,25 @@
 
                 </div>
 
-                {{ if gt .TotalPaginas 1 }}
+                {{ if gt .TotalPages 1 }}
 
-                <div class="paginacao">
+                <div class="pagination">
 
-                    {{ if gt .Pagina 1 }}
+                    {{ if gt .Page 1 }}
 
-                    <a href="/produtos?pagina={{ .PaginaAnterior }}">
+                    <a href="/produtos?pagina={{ .PreviousPage }}">
                         « Anterior
                     </a>
 
                     {{ end }}
 
                     <span>
-                        Página {{ .Pagina }} de {{ .TotalPaginas }}
+                        Página {{ .Page }} de {{ .TotalPages }}
                     </span>
 
-                    {{ if lt .Pagina .TotalPaginas }}
+                    {{ if lt .Page .TotalPages }}
 
-                    <a href="/produtos?pagina={{ .PaginaProxima }}">
+                    <a href="/produtos?pagina={{ .NextPage }}">
                         Próxima »
                     </a>
 
@@ -178,26 +178,26 @@
                 {{ end }}
 
                 <div
-                    class="modal-cadastro"
-                    id="modal-cadastro-produto"
+                    class="modal-create"
+                    id="create-product-modal"
                     hidden>
 
                     <div
-                        class="modal-cadastro-conteudo"
+                        class="modal-create-content"
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="titulo-novo-produto">
+                        aria-labelledby="new-product-title">
 
-                        <div class="modal-cadastro-cabecalho">
+                        <div class="modal-create-header">
 
-                            <h3 id="titulo-novo-produto">
+                            <h3 id="new-product-title">
                                 Novo produto
                             </h3>
 
                             <button
-                                class="botao-fechar-modal"
+                                class="close-modal-button"
                                 type="button"
-                                id="fechar-cadastro-produto"
+                                id="close-create-product"
                                 aria-label="Fechar">
                                 &times;
                             </button>
@@ -205,43 +205,43 @@
                         </div>
 
                         <form
-                            class="cadastro-form"
+                            class="create-form"
                             action="/produtos"
                             method="POST">
 
-                            <label for="nome">
+                            <label for="product-name">
                                 Nome do produto
                             </label>
 
                             <input
-                                id="nome"
+                                id="product-name"
                                 type="text"
                                 name="nome"
-                                value="{{ .Nome }}"
+                                value="{{ .Name }}"
                                 placeholder="Ex.: Coca-Cola"
                                 required>
 
-                            <label for="quantidade">
+                            <label for="product-quantity">
                                 Quantidade inicial
                             </label>
 
                             <input
-                                id="quantidade"
+                                id="product-quantity"
                                 type="number"
                                 name="quantidade"
-                                value="{{ .Quantidade }}"
+                                value="{{ .Quantity }}"
                                 min="0"
                                 required>
 
-                            <label for="preco">
+                            <label for="product-price">
                                 Preço unitário
                             </label>
 
                             <input
-                                id="preco"
+                                id="product-price"
                                 type="number"
                                 name="preco"
-                                value="{{ .Preco }}"
+                                value="{{ .Price }}"
                                 min="0"
                                 step="0.01"
                                 placeholder="0,00"
@@ -263,7 +263,7 @@
 
     </div>
 
-    <script src="/js/app.js?v=2"></script>
+    <script src="/js/app.js?v=6"></script>
 
 </body>
 

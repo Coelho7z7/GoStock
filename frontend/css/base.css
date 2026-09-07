@@ -3,8 +3,8 @@
    a ordem dos imports importa (cascata) e não deve ser alterada. */
 
 @import url("base-reset-layout.css");
-@import url("base-modais-formularios.css");
-@import url("base-produtos.css");
-@import url("base-acesso-negado.css");
-@import url("base-tema-escuro.css");
-@import url("base-animacoes.css");
+@import url("base-modals-forms.css");
+@import url("base-products.css");
+@import url("base-access-denied.css");
+@import url("base-dark-theme.css");
+@import url("base-animations.css");
