@@ -1,1 +1,2 @@
-
+backend/data/*.db
+backend/data/*.db-journal

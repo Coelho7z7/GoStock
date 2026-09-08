@@ -1,23 +1,56 @@
 package services
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"os"
 
 	database "gostock/backend/database"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
+// seedPassword lê a senha padrão de uma variável de ambiente; se ela não
+// estiver definida, gera uma senha aleatória e imprime uma única vez no log
+// (nunca fica hardcoded no código-fonte nem versionada no git).
+func seedPassword(envVar, label string) (string, error) {
+	if pw := os.Getenv(envVar); pw != "" {
+		return pw, nil
+	}
+
+	buf := make([]byte, 12)
+	if _, err := rand.Read(buf); err != nil {
+		return "", fmt.Errorf("gerar senha aleatória para %s: %w", label, err)
+	}
+	pw := base64.RawURLEncoding.EncodeToString(buf)
+	fmt.Printf("[seed] %s: variável %s não definida, gerando senha temporária: %s\n", label, envVar, pw)
+	return pw, nil
+}
+
 func SeedDefaultUsers() error {
+	gerentePw, err := seedPassword("SEED_GERENTE_PASSWORD", "Matheus (gerente)")
+	if err != nil {
+		return err
+	}
+	ceoPw, err := seedPassword("SEED_CEO_PASSWORD", "Administrador (ceo)")
+	if err != nil {
+		return err
+	}
+	usuarioPw, err := seedPassword("SEED_USUARIO_PASSWORD", "Usuario (basico)")
+	if err != nil {
+		return err
+	}
+
 	users := []struct {
 		name     string
 		email    string
 		password string
 		role     string
 	}{
-		{name: "Matheus", email: "matheus@gmail.com", password: "Dominio12e@", role: "gerente"},
-		{name: "Administrador", email: "admin@gmail.com", password: "@admin12e", role: "ceo"},
-		{name: "Usuario", email: "usuario@gmail.com", password: "usuario123", role: "basico"},
+		{name: "Matheus", email: "matheus@gmail.com", password: gerentePw, role: "gerente"},
+		{name: "Administrador", email: "admin@gmail.com", password: ceoPw, role: "ceo"},
+		{name: "Usuario", email: "usuario@gmail.com", password: usuarioPw, role: "basico"},
 	}
 
 	for _, user := range users {

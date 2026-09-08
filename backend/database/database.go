@@ -2,16 +2,28 @@ package database
 
 import (
 	"database/sql"
+	"os"
 
 	_ "gosqlite.org"
 )
 
 var DB *sql.DB
 
+// dbPath retorna o caminho do arquivo SQLite. Em produção (Railway), a
+// variável DB_PATH aponta para dentro do volume persistente (ex: /data/gostock.db),
+// evitando que os dados sumam a cada deploy. Sem a variável, usa o caminho
+// local de sempre (dev).
+func dbPath() string {
+	if p := os.Getenv("DB_PATH"); p != "" {
+		return p
+	}
+	return "backend/data/gostock.db"
+}
+
 func Connect() error {
 	var err error
 
-	DB, err = sql.Open("sqlite", "backend/data/gostock.db")
+	DB, err = sql.Open("sqlite", dbPath())
 	if err != nil {
 		return err
 	}
