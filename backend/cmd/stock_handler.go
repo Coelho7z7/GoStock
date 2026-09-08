@@ -21,14 +21,14 @@ func stockHandler(w http.ResponseWriter, r *http.Request) {
 	const productsPerPage = 5
 
 	data := struct {
-		Products       []models.Product
-		Message        string
-		Error          string
-		PreviousPage   int
-		NextPage       int
-		TotalPages     int
-		Page           int
-		IsAdmin        bool
+		Products     []models.Product
+		Message      string
+		Error        string
+		PreviousPage int
+		NextPage     int
+		TotalPages   int
+		Page         int
+		IsAdmin      bool
 	}{IsAdmin: canViewUsersTab(r)}
 
 	messages := map[string]string{

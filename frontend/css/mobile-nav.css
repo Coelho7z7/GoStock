@@ -377,19 +377,19 @@ body.mobile-menu-open {
         overflow: visible !important;
     }
 
-    .content table,
-    .content table tbody,
-    .content table tr,
-    .content table td {
+    .content table:not(.pos-products-table):not(.receipt-items),
+    .content table:not(.pos-products-table):not(.receipt-items) tbody,
+    .content table:not(.pos-products-table):not(.receipt-items) tr,
+    .content table:not(.pos-products-table):not(.receipt-items) td {
         display: block;
         width: 100%;
     }
 
-    .content table thead {
+    .content table:not(.pos-products-table):not(.receipt-items) thead {
         display: none;
     }
 
-    .content table tbody tr {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody tr {
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 4px 12px;
@@ -401,11 +401,11 @@ body.mobile-menu-open {
         box-shadow: 0 5px 16px rgba(0, 0, 0, .10);
     }
 
-    .content table tbody tr:last-child {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody tr:last-child {
         margin-bottom: 0;
     }
 
-    .content table tbody td {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td {
         display: flex;
         align-items: baseline;
         justify-content: flex-start;
@@ -416,7 +416,7 @@ body.mobile-menu-open {
         min-width: 0;
     }
 
-    .content table tbody td::before {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td::before {
         content: attr(data-label);
         flex: 0 0 78px;
         color: var(--muted, #64748b);
@@ -426,12 +426,12 @@ body.mobile-menu-open {
         letter-spacing: .04em;
     }
 
-    .content table tbody td[data-label="Produto"] {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[data-label="Produto"] {
         font-size: 14px !important;
         font-weight: 700;
     }
 
-    .content table tbody td[data-label="Ações"] {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[data-label="Ações"] {
         grid-column: 1 / -1;
         justify-content: flex-end;
         padding-top: 9px !important;
@@ -439,11 +439,11 @@ body.mobile-menu-open {
         border-top: 1px solid rgba(148, 163, 184, .12) !important;
     }
 
-    .content table tbody td[colspan] {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[colspan] {
         display: block;
     }
 
-    .content table tbody td[colspan]::before {
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[colspan]::before {
         display: none;
     }
 
@@ -451,51 +451,6 @@ body.mobile-menu-open {
         padding: 25px 10px !important;
     }
 
-
-    /* O seletor de produtos do PDV mantém suas colunas e desliza horizontalmente. */
-    .pos-card-list {
-        overflow: hidden !important;
-    }
-
-    .pos-card-list .pos-products-table {
-        display: table !important;
-        width: 100%;
-        min-width: 610px !important;
-    }
-
-    .pos-card-list .pos-products-table thead {
-        display: table-header-group !important;
-    }
-
-    .pos-card-list .pos-products-table tbody {
-        display: table-row-group !important;
-    }
-
-    .pos-card-list .pos-products-table tr {
-        display: table-row !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-
-    .pos-card-list .pos-products-table th,
-    .pos-card-list .pos-products-table td {
-        display: table-cell !important;
-        width: auto !important;
-        padding: 9px 12px !important;
-        border-bottom: 1px solid rgba(148, 163, 184, .12) !important;
-    }
-
-    .pos-card-list .pos-products-table td::before {
-        display: none !important;
-    }
-
-    .pos-card-list {
-        overflow-x: auto !important;
-    }
 
     /* Paginação */
     .pagination {

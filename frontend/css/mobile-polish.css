@@ -1,0 +1,556 @@
+/* ================================================================
+   GoStock — acabamento final responsivo
+   Regras finais carregadas depois de todos os estilos existentes.
+   ================================================================ */
+
+@media (max-width: 760px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .content {
+        padding-top: 16px !important;
+        padding-bottom: 32px !important;
+    }
+
+    .topbar {
+        border-bottom: 1px solid rgba(148, 163, 184, .14) !important;
+    }
+
+    /* Navegação mobile */
+    .mobile-menu-button {
+        position: relative;
+        isolation: isolate;
+        background: #0b1220 !important;
+        border: 1px solid #223149 !important;
+        color: #e8f1fb !important;
+        box-shadow: 0 8px 22px rgba(2, 8, 23, .24), inset 0 1px 0 rgba(255,255,255,.04) !important;
+    }
+
+    .mobile-menu-button::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        z-index: -1;
+        border-radius: 7px;
+        background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0));
+        pointer-events: none;
+    }
+
+    .mobile-menu-button svg {
+        stroke-width: 2.25 !important;
+    }
+
+    /* Dashboard: composição compacta e sem faixas vazias */
+    .dashboard .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        margin-top: 14px !important;
+    }
+
+    .dashboard .cards .card:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .dashboard .card {
+        min-height: 122px !important;
+        padding: 15px !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .dashboard .card strong {
+        margin-top: 2px;
+    }
+
+    .dashboard .card small {
+        margin-top: auto;
+        padding-top: 8px;
+    }
+
+    .dashboard .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-top: 12px !important;
+    }
+
+    .dashboard .chart-section,
+    .dashboard .dashboard-grid .activity-section {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        padding: 15px !important;
+    }
+
+    .dashboard .chart-bars {
+        height: 154px !important;
+        min-height: 154px !important;
+        padding: 10px 0 0 !important;
+    }
+
+    .dashboard .chart-column {
+        height: 132px !important;
+    }
+
+    .dashboard .chart-bar {
+        width: min(24px, 62%) !important;
+    }
+
+    .dashboard .activity-section .section-header {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .dashboard .activity-section .section-header a {
+        white-space: nowrap;
+    }
+
+    /* O nome do produto deixa de disputar espaço com o rótulo. */
+    .dashboard .activity-section tbody tr {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        gap: 6px 10px !important;
+        padding: 11px 12px !important;
+    }
+
+    .dashboard .activity-section tbody td {
+        display: block !important;
+        width: auto !important;
+        padding: 0 !important;
+        text-align: left !important;
+        min-width: 0;
+    }
+
+    .dashboard .activity-section tbody td::before {
+        display: block !important;
+        margin-bottom: 3px;
+        font-size: 9px !important;
+    }
+
+    .dashboard .activity-section tbody td:first-child {
+        grid-column: 1 / -1;
+        border: 0 !important;
+    }
+
+    .dashboard .activity-section tbody td:nth-child(2) {
+        min-width: 0;
+    }
+
+    .dashboard .activity-section tbody td:nth-child(2) .activity-product,
+    .dashboard .activity-section .activity-product {
+        display: block;
+        max-width: none !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px !important;
+    }
+
+    .dashboard .activity-section tbody td:nth-child(3),
+    .dashboard .activity-section tbody td:nth-child(4) {
+        text-align: right !important;
+    }
+
+    .dashboard .activity-section tbody td:nth-child(4) {
+        grid-column: 1 / -1;
+        padding-top: 3px !important;
+        border-top: 1px solid rgba(148,163,184,.09) !important;
+    }
+
+    /* Páginas de lista: uma página por vez, sem tabelas esmagadas. */
+    .page-table {
+        width: 100%;
+        background: transparent;
+    }
+
+    .page-table table {
+        margin: 0;
+    }
+
+    .page-table tbody tr {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 6px !important;
+        padding: 13px 14px !important;
+        margin-bottom: 10px !important;
+        background: #101a2c !important;
+        border: 1px solid rgba(148,163,184,.14) !important;
+        box-shadow: 0 8px 20px rgba(2, 8, 23, .12) !important;
+    }
+
+    .page-table tbody td {
+        display: grid !important;
+        grid-template-columns: 92px minmax(0, 1fr) !important;
+        align-items: start !important;
+        gap: 10px !important;
+        text-align: left !important;
+        padding: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .page-table tbody td::before {
+        flex: none !important;
+        width: auto !important;
+        padding-top: 1px;
+        font-size: 9px !important;
+        line-height: 1.2;
+        opacity: .72;
+    }
+
+    .page-table tbody td:not([data-label="Ações"]) {
+        border: 0 !important;
+    }
+
+    .page-table tbody td[data-label="Produto"] {
+        font-size: 14px !important;
+        color: #f5f8fc !important;
+        font-weight: 700;
+    }
+
+    .page-table tbody td[data-label="Ações"] {
+        display: flex !important;
+        grid-column: 1 / -1 !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        margin-top: 5px;
+        padding-top: 10px !important;
+        border-top: 1px solid rgba(148,163,184,.1) !important;
+    }
+
+    /* Movimentações: produto em destaque, data/hora agrupadas e tipo como badge. */
+    .movement-table tbody tr {
+        gap: 7px !important;
+    }
+
+    .movement-table tbody td[data-label="Produto"] {
+        order: 1;
+    }
+
+    .movement-table tbody td[data-label="Usuário"] {
+        order: 2;
+    }
+
+    .movement-table tbody td[data-label="Tipo"] {
+        order: 3;
+    }
+
+    .movement-table tbody td[data-label="Quantidade"] {
+        order: 4;
+    }
+
+    .movement-table tbody td[data-label="Data"] {
+        order: 5;
+    }
+
+    .movement-table tbody td[data-label="Horário"] {
+        order: 6;
+    }
+
+    .movement-table tbody td[data-label="Tipo"] .activity-type,
+    .movement-table tbody td[data-label="Tipo"] span {
+        justify-self: start;
+    }
+
+    /* Estoque: ações sempre ficam numa faixa própria e alinhada. */
+    .stock-table tbody tr {
+        gap: 9px !important;
+    }
+
+    .stock-table tbody td[data-label="Estoque atual"] {
+        align-items: center !important;
+    }
+
+    .stock-table .product-actions {
+        display: grid !important;
+        grid-template-columns: minmax(78px, 90px) minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 7px !important;
+        align-items: center !important;
+        padding-top: 10px !important;
+    }
+
+    .stock-table .product-actions::before {
+        display: none !important;
+    }
+
+    .stock-table .product-actions input[type="number"],
+    .stock-table .product-actions button {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 42px !important;
+        margin: 0 !important;
+    }
+
+    .stock-table .product-actions input[type="number"] {
+        padding: 9px 8px !important;
+        text-align: center;
+    }
+
+    .stock-table .product-actions button {
+        padding: 8px 7px !important;
+        font-size: 11px !important;
+    }
+
+    /* Produtos / editar / usuários */
+    .products-table {
+        overflow: visible !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .products-table .page-table tbody td[data-label="Ações"] {
+        justify-content: flex-end !important;
+    }
+
+    .products-table .product-actions {
+        flex-wrap: nowrap !important;
+    }
+
+    .products-table .edit-product-button {
+        min-width: 42px !important;
+        min-height: 42px !important;
+    }
+
+    .users-table tbody td[data-label="Email"] {
+        overflow-wrap: anywhere;
+    }
+
+    .users-table .product-actions {
+        justify-content: flex-start !important;
+    }
+
+    /* Subnavegação de produtos */
+    .products-tabs {
+        width: 100% !important;
+        margin-bottom: 18px !important;
+        justify-content: stretch;
+    }
+
+    .products-tabs a {
+        flex: 1 0 auto;
+        text-align: center;
+    }
+
+    /* Botões, paginação e mensagens */
+    .pagination {
+        margin-top: 14px !important;
+        grid-template-columns: 1fr 1fr !important;
+        align-items: center;
+    }
+
+    .pagination span {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        font-size: 11px;
+        color: var(--muted);
+    }
+
+    .pagination a {
+        min-height: 42px !important;
+        font-size: 12px;
+    }
+
+    .form-error,
+    .form-success {
+        margin: 0 0 12px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .stock-table .product-actions {
+        grid-template-columns: 76px 1fr 1fr !important;
+    }
+
+    .page-table tbody td {
+        grid-template-columns: 82px minmax(0, 1fr) !important;
+        gap: 8px !important;
+    }
+}
+
+
+/* ================================================================
+   GoStock — correções finais de layout mobile
+   Escopo separado para impedir que as tabelas administrativas
+   interfiram no PDV e no comprovante.
+   ================================================================ */
+@media (max-width: 760px) {
+    /* PDV: manter a tabela de produtos como tabela real e permitir
+       rolagem horizontal no próprio painel. */
+    .pos-card-list {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .pos-card-list .pos-products-table {
+        display: table !important;
+        width: max-content !important;
+        min-width: 610px !important;
+        table-layout: fixed;
+        margin: 0;
+    }
+
+    .pos-card-list .pos-products-table thead {
+        display: table-header-group !important;
+    }
+
+    .pos-card-list .pos-products-table tbody {
+        display: table-row-group !important;
+    }
+
+    .pos-card-list .pos-products-table tr {
+        display: table-row !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .pos-card-list .pos-products-table th,
+    .pos-card-list .pos-products-table td {
+        display: table-cell !important;
+        width: auto !important;
+        padding: 10px 12px !important;
+        border-bottom: 1px solid rgba(148, 163, 184, .12) !important;
+        vertical-align: middle;
+    }
+
+    .pos-card-list .pos-products-table th:nth-child(1),
+    .pos-card-list .pos-products-table td:nth-child(1) { width: 58px !important; }
+    .pos-card-list .pos-products-table th:nth-child(2),
+    .pos-card-list .pos-products-table td:nth-child(2) { width: 220px !important; }
+    .pos-card-list .pos-products-table th:nth-child(3),
+    .pos-card-list .pos-products-table td:nth-child(3) { width: 105px !important; }
+    .pos-card-list .pos-products-table th:nth-child(4),
+    .pos-card-list .pos-products-table td:nth-child(4) { width: 100px !important; }
+    .pos-card-list .pos-products-table th:nth-child(5),
+    .pos-card-list .pos-products-table td:nth-child(5) { width: 127px !important; }
+
+    .pos-card-list .pos-products-table td::before {
+        display: none !important;
+        content: none !important;
+    }
+
+    .pos-quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .pos-quantity {
+        width: 82px !important;
+        min-width: 82px !important;
+    }
+
+    .pos-add {
+        width: 40px !important;
+        min-width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* O comprovante também continua em tabela e rola horizontalmente,
+       evitando que colunas de preço/data sejam espremidas. */
+    .receipt-items-wrap {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .receipt-items {
+        display: table !important;
+        width: max-content !important;
+        min-width: 100% !important;
+        border-collapse: collapse;
+    }
+
+    .receipt-items thead,
+    .receipt-items tbody {
+        display: table-row-group;
+    }
+
+    .receipt-items tr {
+        display: table-row !important;
+    }
+
+    .receipt-items th,
+    .receipt-items td {
+        display: table-cell !important;
+        white-space: nowrap;
+    }
+
+    .receipt-items td::before,
+    .receipt-items th::before {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* A ação de estoque ocupa uma faixa própria, sem parecer uma célula
+       de tabela quebrada. */
+    .stock-table tbody td[data-label="Movimentar"] {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .stock-table .product-actions {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 82px minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 8px !important;
+        align-items: stretch !important;
+    }
+
+    .stock-table .product-actions input[type="number"],
+    .stock-table .product-actions button {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Melhor equilíbrio do dashboard em aparelhos pequenos. */
+    .dashboard .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .dashboard .cards .card:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .dashboard .activity-section .table-container {
+        overflow: visible !important;
+    }
+
+    .dashboard .activity-section tbody tr {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+
+    .dashboard .activity-section tbody td[data-label="Ação"] {
+        grid-column: 1 / -1 !important;
+    }
+}
+
+@media (max-width: 360px) {
+    :root {
+        --gs-mobile-gutter: 13px;
+    }
+
+    .dashboard .cards {
+        gap: 8px !important;
+    }
+
+    .dashboard .card {
+        padding: 13px !important;
+    }
+
+    .page-table tbody td {
+        grid-template-columns: 76px minmax(0, 1fr) !important;
+        gap: 7px !important;
+    }
+
+    .stock-table .product-actions {
+        grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 6px !important;
+    }
+}

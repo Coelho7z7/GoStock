@@ -21,10 +21,10 @@ type RegisteredSaleItem struct {
 }
 
 type RegisteredSale struct {
-	Number        int                   `json:"numero"`
-	PaymentMethod string                `json:"formaPagamento"`
-	Total         float64               `json:"total"`
-	Items         []RegisteredSaleItem  `json:"itens"`
+	Number        int                  `json:"numero"`
+	PaymentMethod string               `json:"formaPagamento"`
+	Total         float64              `json:"total"`
+	Items         []RegisteredSaleItem `json:"itens"`
 }
 
 // validPaymentMethods lists the payment methods accepted by the POS.

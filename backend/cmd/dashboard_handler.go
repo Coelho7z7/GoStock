@@ -29,9 +29,9 @@ type ChartDay struct {
 }
 
 type SummaryData struct {
-	TotalStock    int
-	TotalSales    int
-	Revenue       float64
+	TotalStock     int
+	TotalSales     int
+	Revenue        float64
 	TotalMovements int
 }
 
