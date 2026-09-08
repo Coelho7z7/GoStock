@@ -1,0 +1,192 @@
+diff --git a/.gitignore b/.gitignore
+index 8b13789..e1fdeb9 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1 +1,2 @@
+-
++backend/data/*.db
++backend/data/*.db-journal
+diff --git a/backend/data/gostock.db b/backend/data/gostock.db
+deleted file mode 100644
+index 9f59153..0000000
+Binary files a/backend/data/gostock.db and /dev/null differ
+diff --git a/backend/database/database.go b/backend/database/database.go
+index 7a977d0..41f4149 100644
+--- a/backend/database/database.go
++++ b/backend/database/database.go
+@@ -2,16 +2,28 @@ package database
+ 
+ import (
+ 	"database/sql"
++	"os"
+ 
+ 	_ "gosqlite.org"
+ )
+ 
+ var DB *sql.DB
+ 
++// dbPath retorna o caminho do arquivo SQLite. Em produção (Railway), a
++// variável DB_PATH aponta para dentro do volume persistente (ex: /data/gostock.db),
++// evitando que os dados sumam a cada deploy. Sem a variável, usa o caminho
++// local de sempre (dev).
++func dbPath() string {
++	if p := os.Getenv("DB_PATH"); p != "" {
++		return p
++	}
++	return "backend/data/gostock.db"
++}
++
+ func Connect() error {
+ 	var err error
+ 
+-	DB, err = sql.Open("sqlite", "backend/data/gostock.db")
++	DB, err = sql.Open("sqlite", dbPath())
+ 	if err != nil {
+ 		return err
+ 	}
+diff --git a/backend/services/user_seed.go b/backend/services/user_seed.go
+index d8ffb16..85b27de 100644
+--- a/backend/services/user_seed.go
++++ b/backend/services/user_seed.go
+@@ -1,23 +1,56 @@
+ package services
+ 
+ import (
++	"crypto/rand"
++	"encoding/base64"
+ 	"fmt"
++	"os"
+ 
+ 	database "gostock/backend/database"
+ 
+ 	"golang.org/x/crypto/bcrypt"
+ )
+ 
++// seedPassword lê a senha padrão de uma variável de ambiente; se ela não
++// estiver definida, gera uma senha aleatória e imprime uma única vez no log
++// (nunca fica hardcoded no código-fonte nem versionada no git).
++func seedPassword(envVar, label string) (string, error) {
++	if pw := os.Getenv(envVar); pw != "" {
++		return pw, nil
++	}
++
++	buf := make([]byte, 12)
++	if _, err := rand.Read(buf); err != nil {
++		return "", fmt.Errorf("gerar senha aleatória para %s: %w", label, err)
++	}
++	pw := base64.RawURLEncoding.EncodeToString(buf)
++	fmt.Printf("[seed] %s: variável %s não definida, gerando senha temporária: %s\n", label, envVar, pw)
++	return pw, nil
++}
++
+ func SeedDefaultUsers() error {
++	gerentePw, err := seedPassword("SEED_GERENTE_PASSWORD", "Matheus (gerente)")
++	if err != nil {
++		return err
++	}
++	ceoPw, err := seedPassword("SEED_CEO_PASSWORD", "Administrador (ceo)")
++	if err != nil {
++		return err
++	}
++	usuarioPw, err := seedPassword("SEED_USUARIO_PASSWORD", "Usuario (basico)")
++	if err != nil {
++		return err
++	}
++
+ 	users := []struct {
+ 		name     string
+ 		email    string
+ 		password string
+ 		role     string
+ 	}{
+-		{name: "Matheus", email: "matheus@gmail.com", password: "Dominio12e@", role: "gerente"},
+-		{name: "Administrador", email: "admin@gmail.com", password: "@admin12e", role: "ceo"},
+-		{name: "Usuario", email: "usuario@gmail.com", password: "usuario123", role: "basico"},
++		{name: "Matheus", email: "matheus@gmail.com", password: gerentePw, role: "gerente"},
++		{name: "Administrador", email: "admin@gmail.com", password: ceoPw, role: "ceo"},
++		{name: "Usuario", email: "usuario@gmail.com", password: usuarioPw, role: "basico"},
+ 	}
+ 
+ 	for _, user := range users {
+diff --git a/backend/services/usuario_seed.go b/backend/services/usuario_seed.go
+deleted file mode 100644
+index ba998b2..0000000
+--- a/backend/services/usuario_seed.go
++++ /dev/null
+@@ -1,76 +0,0 @@
+-package services
+-
+-import (
+-	"fmt"
+-
+-	database "gostock/backend/database"
+-
+-	"golang.org/x/crypto/bcrypt"
+-)
+-
+-func SeedUsuariosPadrao() error {
+-	usuarios := []struct {
+-		nome  string
+-		email string
+-		senha string
+-		role  string
+-	}{
+-		{nome: "Matheus", email: "matheus@gmail.com", senha: "Dominio12e@", role: "Gerente"},
+-		{nome: "Administrador", email: "admin@gmail.com", senha: "@admin12e", role: "ceo"},
+-		{nome: "Usuario", email: "usuario@gmail.com", senha: "usuario123", role: "basico"},
+-	}
+-
+-	for _, usuario := range usuarios {
+-		var existe bool
+-		if err := database.DB.QueryRow(`
+-			SELECT EXISTS(SELECT 1 FROM usuarios WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)))
+-		`, usuario.email).Scan(&existe); err != nil {
+-			return err
+-		}
+-
+-		if usuario.email == "admin@gmail.com" {
+-			// A conta CEO é criada apenas se ainda não existir e, se existir,
+-			// recebe somente a correção de identidade/cargo; a senha existente
+-			// não é sobrescrita em cada inicialização.
+-			if !existe {
+-				hash, err := bcrypt.GenerateFromPassword([]byte(usuario.senha), bcrypt.DefaultCost)
+-				if err != nil {
+-					return fmt.Errorf("gerar senha de %s: %w", usuario.email, err)
+-				}
+-				if _, err := database.DB.Exec(`
+-					INSERT INTO usuarios (nome, email, senha, role)
+-					VALUES (?, ?, ?, 'ceo')
+-				`, usuario.nome, usuario.email, string(hash)); err != nil {
+-					return fmt.Errorf("inserir usuário %s: %w", usuario.email, err)
+-				}
+-			} else {
+-				if _, err := database.DB.Exec(`
+-					UPDATE usuarios
+-					SET role = 'ceo'
+-					WHERE LOWER(TRIM(email)) = 'admin@gmail.com'
+-				`); err != nil {
+-					return fmt.Errorf("proteger usuário %s: %w", usuario.email, err)
+-				}
+-			}
+-			continue
+-		}
+-
+-		if existe {
+-			continue
+-		}
+-
+-		hash, err := bcrypt.GenerateFromPassword([]byte(usuario.senha), bcrypt.DefaultCost)
+-		if err != nil {
+-			return fmt.Errorf("gerar senha de %s: %w", usuario.email, err)
+-		}
+-
+-		if _, err := database.DB.Exec(`
+-			INSERT INTO usuarios (nome, email, senha, role)
+-			VALUES (?, ?, ?, ?)
+-		`, usuario.nome, usuario.email, string(hash), usuario.role); err != nil {
+-			return fmt.Errorf("inserir usuário %s: %w", usuario.email, err)
+-		}
+-	}
+-
+-	return nil
+-}
