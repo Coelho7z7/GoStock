@@ -557,7 +557,7 @@ body:has(.modal-receipt:not([hidden])) {
         padding: 12px 14px;
     }
 
-    .pos-card-lista {
+    .pos-card-list {
         overflow-x: auto;
     }
 

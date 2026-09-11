@@ -1,2 +1,4 @@
 backend/data/*.db
 backend/data/*.db-journal
+*.exe
+*.patch

@@ -499,6 +499,14 @@ body:has(.modal-edit:not([hidden])) {
 }
 
 @media (max-width: 700px) {
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar {
+        padding: 18px 16px;
+    }
+
     .topbar {
         height: 58px;
         padding: 0 16px;

@@ -382,7 +382,7 @@ tbody tr:last-child td {
 }
 
 body {
-    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background: radial-gradient(circle at 75% 0%, #172742 0%, var(--shell) 48%, #050812 100%);
     color: var(--text);
 }
@@ -962,4 +962,29 @@ tbody tr:hover {
 
 .dashboard .cards .card:hover {
     box-shadow: inset 0 0 0 1px rgba(68, 185, 223, .22), inset 0 0 34px rgba(68, 185, 223, .08);
+}
+
+/* Reafirma os ajustes mobile: regras posteriores acima (grid de 2 colunas,
+   .user sempre visível) tinham prioridade de cascata sobre os media queries
+   anteriores e quebravam o layout em telas estreitas. */
+@media (max-width: 700px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar {
+        height: auto;
+        min-height: 58px;
+        padding: 10px 16px;
+    }
+
+    .topbar p {
+        max-width: 100%;
+    }
+
+    .user {
+        display: none;
+    }
 }
