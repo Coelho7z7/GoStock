@@ -220,6 +220,15 @@
         border-top: 1px solid rgba(148,163,184,.1) !important;
     }
 
+    .page-table tbody td[data-label="Ações"]::before {
+        display: none !important;
+    }
+
+    .page-table tbody td[data-label="Ações"] .edit-product-link,
+    .page-table tbody td[data-label="Ações"] .edit-product-button {
+        flex: 1 1 auto;
+    }
+
     /* Movimentações: produto em destaque, data/hora agrupadas e tipo como badge. */
     .movement-table tbody tr {
         gap: 7px !important;
@@ -491,7 +500,6 @@
     /* A ação de estoque ocupa uma faixa própria, sem parecer uma célula
        de tabela quebrada. */
     .stock-table tbody td[data-label="Movimentar"] {
-        display: block !important;
         width: 100% !important;
     }
 
