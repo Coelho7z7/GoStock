@@ -45,6 +45,7 @@
 }
 
 .modal-create-content {
+    position: relative;
     width: min(560px, 100%);
     max-height: calc(100vh - 48px);
     overflow-y: auto;
@@ -53,6 +54,23 @@
     border-radius: 12px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
     animation: subir-modal 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal-create-content::before,
+.modal-edit-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 64px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent, #2f80ed), var(--accent-cyan, #44b9df));
+    border-radius: 0 0 6px 6px;
+    transform: translateX(-50%);
+}
+
+.modal-edit-content {
+    position: relative;
 }
 
 .create-container {
@@ -163,6 +181,25 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     opacity: 0.6;
+}
+
+.empty-table-cta {
+    margin-top: 4px;
+    padding: 10px 18px !important;
+    border: 1px solid var(--accent-border, rgba(47, 128, 237, 0.3)) !important;
+    border-radius: 8px;
+    color: #dff7ff !important;
+    background: rgba(47, 128, 237, 0.14) !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 180ms ease, transform 180ms ease, border-color 180ms ease;
+}
+
+.empty-table-cta:hover {
+    background: linear-gradient(135deg, var(--accent, #2f80ed), var(--accent-strong, #1d65c1)) !important;
+    border-color: transparent !important;
+    transform: translateY(-1px);
 }
 
 /* Efeito de revelar linhas em cascata, só na tela de produtos */

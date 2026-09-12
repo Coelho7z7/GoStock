@@ -1,6 +1,46 @@
 /* Tema escuro: reforça sidebar, conteúdo, tabelas, formulários, modais
    (create e edição), paginação e badges sobre as regras anteriores. */
 
+:root {
+    --accent-gold: #f5b942;
+    --accent-gold-soft: rgba(245, 185, 66, 0.16);
+    --accent-gold-border: rgba(245, 185, 66, 0.32);
+}
+
+/* Acessibilidade + acabamento: anel de foco consistente e scrollbar fina
+   combinando com o tema, em vez dos padrões crus do navegador. */
+:focus-visible {
+    outline: 2px solid var(--accent-cyan, #44b9df);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.45);
+    background-clip: padding-box;
+}
+
 .dashboard {
     background: transparent;
 }
@@ -158,8 +198,16 @@
     border-bottom-color: var(--line);
 }
 
+.content tbody tr {
+    transition: background 180ms ease;
+}
+
 .content tbody tr:hover {
     background: rgba(47, 128, 237, 0.08);
+}
+
+.content tbody tr:hover td:first-child {
+    box-shadow: inset 3px 0 0 var(--accent-cyan, #44b9df);
 }
 
 .content input[type="number"],

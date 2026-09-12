@@ -48,8 +48,8 @@ func SeedDefaultUsers() error {
 		password string
 		role     string
 	}{
-		{name: "Matheus", email: "matheus@gmail.com", password: gerentePw, role: "gerente"},
-		{name: "Administrador", email: "admin@gmail.com", password: ceoPw, role: "ceo"},
+		{name: "Gerente", email: "gerente@gmail.com", password: gerentePw, role: "gerente"},
+		{name: "Administrador", email: "ceo@gmail.com", password: ceoPw, role: "ceo"},
 		{name: "Usuario", email: "usuario@gmail.com", password: usuarioPw, role: "basico"},
 	}
 
@@ -61,7 +61,7 @@ func SeedDefaultUsers() error {
 			return err
 		}
 
-		if user.email == "admin@gmail.com" {
+		if user.email == "ceo@gmail.com" {
 			// A conta CEO é criada apenas se ainda não existir e, se existir,
 			// recebe somente a correção de identidade/cargo; a senha existente
 			// não é sobrescrita em cada inicialização.
@@ -80,7 +80,7 @@ func SeedDefaultUsers() error {
 				if _, err := database.DB.Exec(`
 					UPDATE usuarios
 					SET role = 'ceo'
-					WHERE LOWER(TRIM(email)) = 'admin@gmail.com'
+					WHERE LOWER(TRIM(email)) = 'ceo@gmail.com'
 				`); err != nil {
 					return fmt.Errorf("proteger usuário %s: %w", user.email, err)
 				}

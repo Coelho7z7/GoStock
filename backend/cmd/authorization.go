@@ -9,7 +9,7 @@ import (
 )
 
 // isAdmin indica se o usuário logado tem poderes de administrador.
-// O CEO (reservado a admin@gmail.com) também conta como admin aqui — ele
+// O CEO (reservado a ceo@gmail.com) também conta como admin aqui — ele
 // fica acima do administrador na hierarquia, então tudo que um admin pode
 // fazer o CEO também pode.
 func isAdmin(r *http.Request) bool {

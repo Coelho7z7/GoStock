@@ -88,19 +88,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Modal de cadastro de produto (Produtos)
+    // Modal de cadastro de produto (Produtos). Mais de um botão pode abrir
+    // o mesmo modal (o cabeçalho da lista e o CTA do estado vazio).
     const createModal = document.getElementById("create-product-modal");
-    const openCreateModal = document.getElementById("open-create-product");
+    const openCreateButtons = document.querySelectorAll("#open-create-product, [data-open='create-product-modal']");
     const closeCreateModal = document.getElementById("close-create-product");
 
-    if (createModal && openCreateModal && closeCreateModal) {
+    if (createModal && openCreateButtons.length && closeCreateModal) {
         const closeModal = function () {
             createModal.hidden = true;
         };
 
-        openCreateModal.addEventListener("click", function () {
-            createModal.hidden = false;
-            createModal.querySelector("input")?.focus();
+        openCreateButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                createModal.hidden = false;
+                createModal.querySelector("input")?.focus();
+            });
         });
 
         closeCreateModal.addEventListener("click", closeModal);

@@ -130,6 +130,7 @@
 }
 
 .modal-confirm-content {
+    position: relative;
     width: min(380px, 100%);
     padding: 30px 28px 26px;
     text-align: center;
@@ -137,6 +138,18 @@
     border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 18px;
     box-shadow: 0 28px 80px rgba(0, 0, 0, 0.46);
+}
+
+.modal-confirm-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 64px;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444, #f59e0b);
+    border-radius: 0 0 6px 6px;
+    transform: translateX(-50%);
 }
 
 .modal-confirm-icon {

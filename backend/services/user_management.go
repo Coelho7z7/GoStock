@@ -79,14 +79,14 @@ func CreateUserWeb(name, email, password, role string) error {
 		return errors.New("Email inválido. Use um endereço @gmail.com.")
 	}
 	// O endereço do CEO é reservado e não pode ser reutilizado por outra conta.
-	if strings.EqualFold(email, "admin@gmail.com") {
-		return errors.New("O email admin@gmail.com é reservado ao CEO e não pode ser cadastrado.")
+	if strings.EqualFold(email, "ceo@gmail.com") {
+		return errors.New("O email ceo@gmail.com é reservado ao CEO e não pode ser cadastrado.")
 	}
 	if !utils.ValidatePassword(password) {
 		return errors.New("A senha deve ter no mínimo 6 caracteres e 1 caractere especial.")
 	}
 	if strings.EqualFold(role, "ceo") {
-		return errors.New("O cargo CEO é reservado exclusivamente para admin@gmail.com.")
+		return errors.New("O cargo CEO é reservado exclusivamente para ceo@gmail.com.")
 	}
 	if !validRoles[role] {
 		return errors.New("Permissão inválida.")
@@ -111,11 +111,11 @@ func CreateUserWeb(name, email, password, role string) error {
 // alteração de permissão ou remoção, mesmo por um administrador).
 func isCEO(user *models.User) bool {
 	return strings.EqualFold(strings.TrimSpace(user.Role), "ceo") ||
-		strings.EqualFold(strings.TrimSpace(user.Email), "admin@gmail.com")
+		strings.EqualFold(strings.TrimSpace(user.Email), "ceo@gmail.com")
 }
 
 // UpdateUserRoleWeb altera a permissão de um usuário.
-// O cargo CEO é exclusivo do admin@gmail.com e nunca pode ser alterado —
+// O cargo CEO é exclusivo do ceo@gmail.com e nunca pode ser alterado —
 // nem por outro administrador. Restrito a administradores (validado no
 // handler, e o CEO também conta como administrador).
 func UpdateUserRoleWeb(targetID int, newRole string) error {

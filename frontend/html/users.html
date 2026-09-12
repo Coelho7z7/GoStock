@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Usuários</title>
-    <link rel="stylesheet" href="/css/base.css?v=6">
-    <link rel="stylesheet" href="/css/mobile-nav.css?v=4">
-    <link rel="stylesheet" href="/css/mobile-polish.css?v=4">
+    <link rel="stylesheet" href="/css/base.css?v=7">
+    <link rel="stylesheet" href="/css/mobile-nav.css?v=5">
+    <link rel="stylesheet" href="/css/mobile-polish.css?v=5">
 
 </head>
 
@@ -128,7 +128,7 @@
 
                                     {{ if eq .Role "ceo" }}
 
-                                    <span class="role-protected" title="O CEO é reservado para admin@gmail.com e não pode ser alterado ou removido">
+                                    <span class="role-protected" title="O CEO é reservado para ceo@gmail.com e não pode ser alterado ou removido">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 7v5c0 4.8-3.2 7.8-8 9-4.8-1.2-8-4.2-8-9V7l8-4Z"></path><path d="m9 12 2 2 4-4"></path></svg>
                                         Protegido
                                     </span>
@@ -172,7 +172,7 @@
                             {{ else }}
 
                             <tr>
-                                <td colspan="5"><div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum usuário encontrado.</span></div></td>
+                                <td colspan="5"><div class="empty-table"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg><span>Nenhum usuário encontrado.</span><button type="button" class="empty-table-cta" data-open="create-user-modal">Cadastrar usuário</button></div></td>
                             </tr>
 
                             {{ end }}
@@ -207,7 +207,7 @@
                                 <option value="gerente">Gerente</option>
                                 <option value="admin">Administrador</option>
                             </select>
-                            <small class="role-help">O cargo CEO é reservado exclusivamente para admin@gmail.com.</small>
+                            <small class="role-help">O cargo CEO é reservado exclusivamente para ceo@gmail.com.</small>
                             {{ else }}
                             <input type="hidden" name="role" value="basico">
                             <small class="role-help">Gerentes só podem cadastrar usuários com permissão de Usuário.</small>
@@ -270,7 +270,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const createModal = document.getElementById('create-user-modal');
-            const openCreate = document.getElementById('open-create-user');
+            const openCreateButtons = document.querySelectorAll('#open-create-user, [data-open="create-user-modal"]');
             const closeCreate = document.getElementById('close-create-user');
             const editModal = document.getElementById('edit-user-modal');
             const closeEdit = document.getElementById('close-edit-user');
@@ -295,11 +295,11 @@
                 lockScroll();
             };
 
-            if (openCreate) {
-                openCreate.addEventListener('click', function () {
+            openCreateButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
                     openModal(createModal, createModal.querySelector('input'));
                 });
-            }
+            });
             if (closeCreate) {
                 closeCreate.addEventListener('click', function () { closeModal(createModal); });
             }

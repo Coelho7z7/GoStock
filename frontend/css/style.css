@@ -4,6 +4,38 @@
     box-sizing: border-box;
 }
 
+:focus-visible {
+    outline: 2px solid #44b9df;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.45);
+    background-clip: padding-box;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     background: radial-gradient(circle at 50% 0%, #1a2744 0%, #0a0e1a 55%, #05070d 100%);
@@ -28,13 +60,17 @@ body {
     flex: 1;
     min-width: 0;
     padding: 60px clamp(32px, 6vw, 96px);
-    background: #0a0e1a;
+    background:
+        radial-gradient(circle, rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+        #0a0e1a;
+    background-size: 28px 28px, auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     overflow: hidden;
 }
+
 
 .login-hero::before,
 .login-hero::after {
@@ -112,13 +148,31 @@ body {
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 16px 18px;
-    transition: transform 220ms cubic-bezier(.22,.8,.2,1), background 220ms ease, border-color 220ms ease;
+    transition: transform 220ms cubic-bezier(.22,.8,.2,1), background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
 .badge:hover {
     transform: translateY(-5px) scale(1.03);
     background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.18);
+    border-color: rgba(68, 185, 223, 0.35);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.badge-icon {
+    display: flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    color: #44b9df;
+    background: rgba(68, 185, 223, 0.14);
+    border-radius: 7px;
+}
+
+.badge-icon svg {
+    width: 15px;
+    height: 15px;
 }
 
 .badge strong {

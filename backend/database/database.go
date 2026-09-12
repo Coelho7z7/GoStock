@@ -142,12 +142,25 @@ func CreateTables() error {
 		}
 	}
 
-	// O CEO é uma identidade reservada: somente admin@gmail.com pode possuir esse cargo.
+	// Migração: a identidade reservada do CEO era admin@gmail.com; agora é
+	// ceo@gmail.com. Renomeia o email da conta existente uma única vez
+	// (nada mais nela muda) antes da correção de cargo abaixo, para que a
+	// conta continue sendo reconhecida como CEO sem duplicar nem perder
+	// a permissão.
+	if _, err = DB.Exec(`
+		UPDATE usuarios SET email = 'ceo@gmail.com'
+		WHERE LOWER(TRIM(email)) = 'admin@gmail.com'
+		AND NOT EXISTS (SELECT 1 FROM usuarios WHERE LOWER(TRIM(email)) = 'ceo@gmail.com')
+	`); err != nil {
+		return err
+	}
+
+	// O CEO é uma identidade reservada: somente ceo@gmail.com pode possuir esse cargo.
 	// Isso corrige o banco a cada inicialização, mesmo que alguém tenha mexido direto nele.
 	if _, err = DB.Exec(`
 		UPDATE usuarios
 		SET role = CASE
-			WHEN LOWER(TRIM(email)) = 'admin@gmail.com' THEN 'ceo'
+			WHEN LOWER(TRIM(email)) = 'ceo@gmail.com' THEN 'ceo'
 			WHEN LOWER(TRIM(role)) = 'ceo' THEN 'basico'
 			ELSE role
 		END
