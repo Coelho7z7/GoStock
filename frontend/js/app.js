@@ -1,5 +1,64 @@
 // Toggle de mostrar/ocultar senha (Login)
+
+// ---------------------------------------------------------------------
+// Navegação mobile: sidebar sanduíche, overlay, ESC e fechamento ao navegar.
+// Também transforma cabeçalhos de tabela em data-labels para a visualização
+// em cards no celular.
+// ---------------------------------------------------------------------
+function initMobileNavigation() {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.mobile-sidebar-overlay');
+    if (!menuButton || !sidebar || !overlay) return;
+
+    const setOpen = function (open) {
+        document.body.classList.toggle('mobile-menu-open', open);
+        menuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+        menuButton.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    };
+
+    menuButton.addEventListener('click', function () {
+        setOpen(!document.body.classList.contains('mobile-menu-open'));
+    });
+
+    overlay.addEventListener('click', function () {
+        setOpen(false);
+    });
+
+    sidebar.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            setOpen(false);
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') setOpen(false);
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 760) setOpen(false);
+    });
+}
+
+function initResponsiveTableLabels() {
+    document.querySelectorAll('.content table').forEach(function (table) {
+        const headers = Array.from(table.querySelectorAll('thead th')).map(function (th) {
+            return th.textContent.trim();
+        });
+        if (!headers.length) return;
+
+        table.querySelectorAll('tbody tr').forEach(function (row) {
+            Array.from(row.children).forEach(function (cell, index) {
+                if (cell.hasAttribute('colspan')) return;
+                if (headers[index]) cell.setAttribute('data-label', headers[index]);
+            });
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+    initMobileNavigation();
+    initResponsiveTableLabels();
     const password = document.getElementById("password");
     const togglePassword = document.getElementById("togglePassword");
     const eyeIcon = document.getElementById("eyeIcon");

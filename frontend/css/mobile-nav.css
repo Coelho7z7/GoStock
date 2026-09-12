@@ -1,0 +1,837 @@
+/* ================================================================
+   GoStock — experiência mobile
+   Este arquivo é carregado por último para transformar o layout
+   desktop em uma interface mobile de verdade, sem quebrar o desktop.
+   ================================================================ */
+
+:root {
+    --gs-mobile-sidebar: min(320px, 86vw);
+    --gs-mobile-gutter: 16px;
+    --gs-mobile-header: 64px;
+}
+
+.mobile-menu-button {
+    display: none;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, .08);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-button svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.mobile-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(2, 8, 23, .56);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+body.mobile-menu-open {
+    overflow: hidden;
+}
+
+@media (max-width: 760px) {
+    .dashboard {
+        display: block !important;
+        min-height: 100dvh;
+    }
+
+    .mobile-menu-button {
+        display: inline-flex;
+    }
+
+    .mobile-sidebar-overlay {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    body.mobile-menu-open .mobile-sidebar-overlay {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .sidebar {
+        width: var(--gs-mobile-sidebar) !important;
+        min-height: 100dvh !important;
+        height: 100dvh !important;
+        position: fixed !important;
+        inset: 0 auto 0 0 !important;
+        z-index: 999 !important;
+        padding: 22px 16px 18px !important;
+        overflow-y: auto;
+        transform: translateX(-105%);
+        box-shadow: 18px 0 45px rgba(2, 8, 23, .24);
+        transition: transform 260ms cubic-bezier(.22,.8,.2,1);
+        visibility: hidden;
+    }
+
+    body.mobile-menu-open .sidebar {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .sidebar .logo {
+        margin: 0 0 26px !important;
+        font-size: 26px !important;
+    }
+
+    .sidebar nav,
+    .sidebar > nav {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        overflow: visible !important;
+    }
+
+    .sidebar nav a,
+    .sidebar > nav a {
+        width: 100%;
+        min-height: 50px;
+        padding: 13px 14px !important;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .sidebar nav a.tab-active,
+    .sidebar > nav a.tab-active {
+        box-shadow: inset 3px 0 0 #44b9df, 0 8px 20px rgba(0, 0, 0, .12);
+    }
+
+    .sidebar-footer {
+        padding-top: 18px !important;
+        margin-top: auto !important;
+    }
+
+    .sidebar-logout {
+        min-height: 48px;
+    }
+
+    .main-content {
+        width: 100% !important;
+        min-width: 0;
+        margin-left: 0 !important;
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        min-height: var(--gs-mobile-header) !important;
+        height: auto !important;
+        padding: 10px var(--gs-mobile-gutter) !important;
+        gap: 12px;
+        box-shadow: 0 6px 22px rgba(15, 23, 42, .05);
+    }
+
+    .topbar > div:first-child,
+    .topbar > h2 {
+        min-width: 0;
+    }
+
+    .topbar h2 {
+        margin: 0 !important;
+        font-size: 19px !important;
+        line-height: 1.15;
+    }
+
+    .topbar p {
+        margin-top: 3px !important;
+        font-size: 11.5px !important;
+        line-height: 1.35;
+    }
+
+    .topbar .user {
+        min-width: 0;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .topbar .user-name {
+        display: block;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12px;
+    }
+
+    .topbar .user-role {
+        display: inline-flex;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 3px;
+        font-size: 10px;
+    }
+
+    .content {
+        width: 100%;
+        padding: 18px var(--gs-mobile-gutter) 28px !important;
+    }
+
+    .content h3 {
+        font-size: 19px !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* Cabeçalhos de páginas */
+    .content-heading,
+    .products-header,
+    .section-header {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .content-heading {
+        margin-bottom: 16px !important;
+    }
+
+    .content-heading h3 {
+        margin-bottom: 0 !important;
+    }
+
+    .dashboard-date {
+        font-size: 11px !important;
+    }
+
+    /* Dashboard: cards feitos para leitura vertical, não só para caber. */
+    .cards {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .card,
+    .products-section {
+        border-radius: 16px !important;
+    }
+
+    .cards .card {
+        min-width: 0;
+        padding: 15px !important;
+    }
+
+    .card-icon {
+        width: 34px !important;
+        height: 34px !important;
+        margin-bottom: 10px !important;
+        font-size: 12px !important;
+    }
+
+    .card-title {
+        font-size: 11px !important;
+    }
+
+    .card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: clamp(18px, 5.2vw, 25px) !important;
+        line-height: 1.05;
+        overflow-wrap: anywhere;
+    }
+
+    .card small {
+        display: block;
+        margin-top: 6px;
+        font-size: 10.5px !important;
+        line-height: 1.3;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .products-section {
+        padding: 15px !important;
+    }
+
+    .section-header h3 {
+        margin: 0 !important;
+        font-size: 17px !important;
+    }
+
+    .section-header small,
+    .section-header a {
+        font-size: 11px !important;
+    }
+
+    /* Gráfico */
+    .chart-bars {
+        min-height: 160px !important;
+        gap: 7px !important;
+        padding: 10px 2px 2px !important;
+    }
+
+    .chart-column span {
+        font-size: 9px !important;
+    }
+
+    /* Abas internas: rolagem controlada, sem estourar a tela. */
+    .products-tabs {
+        width: 100% !important;
+        max-width: 100%;
+        margin-bottom: 20px !important;
+        padding: 4px !important;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .products-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .products-tabs a {
+        flex: 0 0 auto;
+        padding: 9px 12px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+    }
+
+    /* Filtros */
+    .products-filter {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 9px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .products-filter input,
+    .products-filter select,
+    .products-filter button,
+    .new-product-button,
+    .product-actions button,
+    .product-actions a,
+    .pagination a {
+        min-height: 44px;
+    }
+
+    .products-header {
+        align-items: flex-start !important;
+        margin-bottom: 12px !important;
+    }
+
+    .products-header h3 {
+        flex: 1 1 auto;
+        margin-bottom: 0 !important;
+    }
+
+    .new-product-button {
+        width: 100%;
+    }
+
+    .product-actions {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .product-actions input[type="number"] {
+        width: 82px;
+        min-height: 42px;
+    }
+
+    .product-actions button,
+    .product-actions a {
+        flex: 1 1 112px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    /* Tabelas viram blocos de informação no mobile. */
+    .products-table,
+    .table-container,
+    .content table {
+        width: 100%;
+        min-width: 0 !important;
+    }
+
+    .products-table,
+    .table-container {
+        overflow: visible !important;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items),
+    .content table:not(.pos-products-table):not(.receipt-items) tbody,
+    .content table:not(.pos-products-table):not(.receipt-items) tr,
+    .content table:not(.pos-products-table):not(.receipt-items) td {
+        display: block;
+        width: 100%;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) thead {
+        display: none;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 12px;
+        padding: 13px 14px;
+        margin-bottom: 9px;
+        border: 1px solid rgba(148, 163, 184, .16);
+        border-radius: 14px;
+        background: var(--surface, rgba(255, 255, 255, .76));
+        box-shadow: 0 5px 16px rgba(0, 0, 0, .10);
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 3px 0 !important;
+        border: 0 !important;
+        font-size: 13px !important;
+        min-width: 0;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td::before {
+        content: attr(data-label);
+        flex: 0 0 78px;
+        color: var(--muted, #64748b);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[data-label="Produto"] {
+        font-size: 14px !important;
+        font-weight: 700;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[data-label="Ações"] {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+        padding-top: 9px !important;
+        margin-top: 5px;
+        border-top: 1px solid rgba(148, 163, 184, .12) !important;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[colspan] {
+        display: block;
+    }
+
+    .content table:not(.pos-products-table):not(.receipt-items) tbody td[colspan]::before {
+        display: none;
+    }
+
+    .empty-table {
+        padding: 25px 10px !important;
+    }
+
+
+    /* Paginação */
+    .pagination {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: 8px !important;
+        text-align: center;
+        margin-top: 16px !important;
+    }
+
+    .pagination a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Modais */
+    .modal-create,
+    .modal-edit,
+    .modal-payment,
+    .modal-receipt {
+        padding: 12px !important;
+        align-items: end !important;
+    }
+
+    .modal-create-content,
+    .modal-edit-content,
+    .modal-payment-content,
+    .modal-receipt-content {
+        width: 100% !important;
+        max-width: none !important;
+        max-height: min(90dvh, 760px);
+        overflow-y: auto;
+        border-radius: 20px 20px 14px 14px !important;
+        padding: 20px 17px !important;
+    }
+
+    .create-form input,
+    .create-form select,
+    .create-form button,
+    .pos-payment-form input,
+    .pos-payment-form select,
+    .pos-payment-form button {
+        min-height: 44px;
+    }
+
+    /* PDV */
+    .pos-layout {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+    }
+
+    .pos-card {
+        border-radius: 16px !important;
+    }
+
+    .pos-search-wrap {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 9px !important;
+    }
+
+    .pos-search-wrap input,
+    .pos-search-wrap button {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .pos-product-actions {
+        padding: 12px 14px 15px !important;
+    }
+
+    .proceed-btn {
+        width: 100%;
+        min-width: 0 !important;
+    }
+
+    .pos-card-list .pos-products-table {
+        min-width: 0 !important;
+    }
+
+    /* Mensagens */
+    .form-error,
+    .form-success {
+        padding: 11px 12px;
+        border-radius: 10px;
+        font-size: 12px !important;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 420px) {
+    .cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    .card {
+        padding: 14px !important;
+    }
+
+    .topbar .user {
+        display: none;
+    }
+
+    .topbar {
+        gap: 10px;
+    }
+
+    .content {
+        padding-left: 13px !important;
+        padding-right: 13px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .mobile-sidebar-overlay {
+        transition: none !important;
+    }
+}
+
+
+/* ================================================================
+   GoStock — acabamento mobile v2
+   Regras finais para priorizar uma experiência mobile coesa.
+   ================================================================ */
+@media (max-width: 760px) {
+    :root {
+        --gs-mobile-gutter: 14px;
+    }
+
+    /* Botão hambúrguer alinhado ao visual escuro da navegação. */
+    .mobile-menu-button {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        border: 1px solid #27364d;
+        border-radius: 11px;
+        background: #111a2b;
+        color: #e5edf8;
+        box-shadow: 0 7px 20px rgba(15, 23, 42, .18), inset 0 1px 0 rgba(255,255,255,.035);
+        transition: background .2s ease, border-color .2s ease, transform .12s ease, box-shadow .2s ease;
+    }
+
+    .mobile-menu-button:hover {
+        background: #17233a;
+        border-color: #334968;
+    }
+
+    .mobile-menu-button:active {
+        transform: scale(.95);
+    }
+
+    .mobile-menu-button svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.15;
+    }
+
+    body.mobile-menu-open .mobile-menu-button {
+        background: #17233a;
+        border-color: #3a587e;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .24), 0 0 0 3px rgba(47,128,237,.08);
+    }
+
+    .topbar {
+        gap: 10px !important;
+        padding: 9px var(--gs-mobile-gutter) !important;
+    }
+
+    .topbar > div:first-of-type {
+        flex: 1 1 auto;
+    }
+
+    /* Evita que heranças do desktop criem áreas vazias no dashboard. */
+    .dashboard-grid,
+    .dashboard-grid .chart-section,
+    .dashboard-grid .activity-section {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .dashboard-grid {
+        margin-top: 14px !important;
+    }
+
+    .chart-section,
+    .dashboard-grid .activity-section {
+        overflow: visible !important;
+    }
+
+    .chart-section {
+        padding-bottom: 12px !important;
+    }
+
+    .chart-bars {
+        min-height: 172px !important;
+        height: 172px !important;
+        align-items: flex-end;
+        padding: 12px 2px 0 !important;
+    }
+
+    .chart-column {
+        height: 148px !important;
+        gap: 6px;
+    }
+
+    .chart-bar {
+        width: min(28px, 70%);
+    }
+
+    .activity-section .table-container {
+        overflow: visible !important;
+    }
+
+    .dashboard-grid .activity-section table {
+        border-spacing: 0 !important;
+    }
+
+    .dashboard-grid .activity-section table thead {
+        display: none;
+    }
+
+    .dashboard-grid .activity-section table,
+    .dashboard-grid .activity-section tbody,
+    .dashboard-grid .activity-section tr,
+    .dashboard-grid .activity-section td {
+        display: block;
+        width: 100%;
+    }
+
+    .dashboard-grid .activity-section tbody tr {
+        position: relative;
+        margin: 0 0 8px;
+        padding: 10px 12px;
+        background: #111a2b;
+        border: 1px solid rgba(148,163,184,.12);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(15,23,42,.08);
+    }
+
+    .dashboard-grid .activity-section tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .dashboard-grid .activity-section tbody td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        text-align: right;
+    }
+
+    .dashboard-grid .activity-section tbody td::before {
+        content: attr(data-label);
+        color: #7f91a8;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        text-align: left;
+        flex: 0 0 auto;
+    }
+
+    .dashboard-grid .activity-section tbody td:first-child {
+        padding-top: 0 !important;
+    }
+
+    .dashboard-grid .activity-section tbody td:last-child {
+        padding-bottom: 0 !important;
+    }
+
+    .dashboard-grid .activity-section .activity-product {
+        max-width: 58%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Cards de métricas mais compactos e previsíveis. */
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        margin-top: 12px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .cards .card {
+        min-height: 126px !important;
+        padding: 14px !important;
+    }
+
+    .cards .card:nth-child(5) {
+        grid-column: 1 / -1;
+    }
+
+    .cards .card:nth-child(5) strong {
+        font-size: 22px !important;
+    }
+
+    .card-icon {
+        width: 32px !important;
+        height: 32px !important;
+        margin-bottom: 9px !important;
+    }
+
+    .card-title {
+        line-height: 1.2;
+        margin-bottom: 5px !important;
+    }
+
+    .card strong {
+        line-height: 1.08 !important;
+    }
+
+    /* Menos respiro artificial no início do conteúdo. */
+    .content {
+        padding-top: 14px !important;
+    }
+
+    .content-heading {
+        margin-bottom: 10px !important;
+    }
+
+    .content-heading h3 {
+        font-size: 18px !important;
+    }
+
+    .eyebrow {
+        font-size: 9px !important;
+    }
+
+    /* Botões, links e campos mantêm área de toque confortável. */
+    button,
+    input,
+    select,
+    textarea,
+    .pagination a,
+    .product-actions a,
+    .product-actions button,
+    .new-product-button,
+    .proceed-btn {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-menu-button {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+    }
+
+    .topbar h2 {
+        font-size: 17px !important;
+    }
+
+    .topbar p {
+        max-width: 155px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cards {
+        gap: 8px !important;
+    }
+
+    .cards .card {
+        min-height: 120px !important;
+        padding: 12px !important;
+    }
+
+    .card strong {
+        font-size: 19px !important;
+    }
+
+    .card small {
+        font-size: 10px !important;
+    }
+}

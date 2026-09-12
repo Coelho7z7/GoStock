@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoStock - Produtos</title>
     <link rel="stylesheet" href="/css/base.css?v=6">
+    <link rel="stylesheet" href="/css/mobile-nav.css?v=4">
+    <link rel="stylesheet" href="/css/mobile-polish.css?v=4">
+
 </head>
 
 <body class="products-page">
@@ -32,10 +35,16 @@
             </div>
 
         </aside>
+        <div class="mobile-sidebar-overlay" aria-hidden="true"></div>
 
         <main class="main-content">
 
             <header class="topbar">
+                <button class="mobile-menu-button" type="button" aria-label="Abrir menu" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
                 <h2>Produtos</h2>
             </header>
 
@@ -83,7 +92,7 @@
 
                 </div>
 
-                <div class="products-table">
+                <div class="products-table page-table products-list-table">
 
                     <table>
 
@@ -263,7 +272,7 @@
 
     </div>
 
-    <script src="/js/app.js?v=6"></script>
+    <script src="/js/app.js?v=9"></script>
 
 </body>
 
